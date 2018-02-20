@@ -178,8 +178,8 @@ begin
  da_x0:=0;
  da_y0:=0;
  da_x1:=2048;
- da_y1:=2038;
- ff:='t_2048_400r.j2k';
+ da_y1:=2048;
+ ff:='t_2048.j2k';
  decom_test(da_x0,da_y0,da_x1,da_y1,ff);
  DrawBitmap(Window,'C:\test_wr.bmp',0,0,DECOMP,ENCODE,TCP_DISTORATIO,FILTER, COMPRESSION_RATIO,DIS_CR_FLG);
  end;
