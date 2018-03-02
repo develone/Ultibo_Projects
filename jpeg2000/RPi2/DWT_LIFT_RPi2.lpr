@@ -10,6 +10,8 @@ uses
  Platform,
  Threads,
  Console,
+ HTTP,         {Include HTTP and WebStatus so we can see from a web browser what is happening}
+ WebStatus,
  SysUtils,  { TimeToStr & Time }
  { needed by bitmap }
  GraphicsConsole, {Include the GraphicsConsole unit so we can create a graphics window}
@@ -40,7 +42,7 @@ var
  Handle1:THandle;
  {Handle2:THandle;}
  Window:TWindowHandle;
-
+ HTTPListener:THTTPListener;
 
  IPAddress : string;
 
@@ -127,9 +129,13 @@ begin
  // wait for IP address and SD Card to be initialised.
  WaitForSDDrive;
  IPAddress := WaitForIPComplete;
+ {Create and start the HTTP Listener for our web status page}
+ HTTPListener:=THTTPListener.Create;
+ HTTPListener.Active:=True;
  {Wait a few seconds for all initialization (like filesystem and network) to be done}
  Sleep(5000);
-
+ {Register the web status page, the "Thread List" page will allow us to see what is happening in the example}
+ WebStatusRegister(HTTPListener,'','',True);
  {Create a graphics window to display our bitmap, let's use the new CONSOLE_POSITION_FULLSCREEN option}
  Window:=GraphicsWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_BOTTOM);
 
