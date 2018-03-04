@@ -1,0 +1,3 @@
+export PATH=/home/pi/ultibo/core/fpc/bin:$PATH
+fpc -B -Tlinux -Parm @/home/pi/ultibo/core/fpc/bin/fpc.cfg -O2 Trig.pas
+0.0174532925  86.60253906
