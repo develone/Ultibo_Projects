@@ -1,0 +1,2 @@
+export PATH=/home/pi/ultibo/core/fpc/bin:$PATH
+fpc -B -Tlinux -Parm @/home/pi/ultibo/core/fpc/bin/fpc.cfg -O2 Divide.pas
