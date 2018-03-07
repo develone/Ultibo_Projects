@@ -17,12 +17,16 @@ program PWM_TFTP;
 uses
   {InitUnit,     Include InitUnit to allow us to change the startup behaviour}
   RaspberryPi2, {Include RaspberryPi2 to make sure all standard functions are included}
+  GlobalConfig,
   GlobalConst,
   GlobalTypes,
+  Platform,
   Threads,
   Console,
   HTTP,         {Include HTTP and WebStatus so we can see from a web browser what is happening}
   WebStatus,
+  Classes,
+
 
 
   uTFTP,
@@ -34,10 +38,12 @@ uses
      ShellUpdate,
      RemoteShell,
   { needed for telnet }
+  Logging,
   SysUtils,
   PWM;   {Include the PWM unit to allow access to the functions}
 
 var
+ MyPLoggingDevice : ^TLoggingDevice;
  PWM0Device:PPWMDevice;
  PWM1Device:PPWMDevice;
   Count:Integer;
@@ -47,12 +53,100 @@ var
  TCP : TWinsock2TCPClient;
  IPAddress : string;
 
+ function WaitForIPComplete : string;
+
+var
+
+  TCP : TWinsock2TCPClient;
+
 begin
+
+  TCP := TWinsock2TCPClient.Create;
+
+  Result := TCP.LocalAddress;
+
+  if (Result = '') or (Result = '0.0.0.0') or (Result = '255.255.255.255') then
+
+    begin
+
+      while (Result = '') or (Result = '0.0.0.0') or (Result = '255.255.255.255') do
+
+        begin
+
+          sleep (1500);
+
+          Result := TCP.LocalAddress;
+
+        end;
+
+    end;
+
+  TCP.Free;
+
+end;
+
+
+
+procedure Msg (Sender : TObject; s : string);
+
+begin
+
+  ConsoleWindowWriteLn (Handle, s);
+
+end;
+
+
+
+procedure WaitForSDDrive;
+
+begin
+
+  while not DirectoryExists ('C:\') do sleep (500);
+
+end;
+
+begin
+ {
+ The following 3 lines are logging to the console}
+ CONSOLE_REGISTER_LOGGING:=True;
+ LoggingConsoleDeviceAdd(ConsoleDeviceGetDefault);
+ LoggingDeviceSetDefault(LoggingDeviceFindByType(LOGGING_TYPE_CONSOLE));
+
+
+ {The following 2 lines are logging to a file
+ LoggingDeviceSetTarget(LoggingDeviceFindByType(LOGGING_TYPE_FILE),'c:\ultibologging.log');
+ LoggingDeviceSetDefault(LoggingDeviceFindByType(LOGGING_TYPE_FILE));
+ MyPLoggingDevice:=LoggingDeviceGetDefault;
+ LoggingDeviceRedirectOutput(MyPLoggingDevice);}
+
  {Create a console window to show what is happening}
  handle:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_LEFT,True);
 
+ {
+ The following 3 lines are logging to the console}
+ CONSOLE_REGISTER_LOGGING:=True;
+ LoggingConsoleDeviceAdd(ConsoleDeviceGetDefault);
+ LoggingDeviceSetDefault(LoggingDeviceFindByType(LOGGING_TYPE_CONSOLE));
+
+
+ {The following 2 lines are logging to a file
+ LoggingDeviceSetTarget(LoggingDeviceFindByType(LOGGING_TYPE_FILE),'c:\ultibologging.log');
+ LoggingDeviceSetDefault(LoggingDeviceFindByType(LOGGING_TYPE_FILE));
+ MyPLoggingDevice:=LoggingDeviceGetDefault;
+ LoggingDeviceRedirectOutput(MyPLoggingDevice);}
+ {Create a console window to show what is happening}
+
  {Display a startup message on the console}
  ConsoleWindowWriteLn(handle,'Starting PWM_TFTP example');
+
+ ConsoleWindowWriteLn (handle, 'Local Address ' + IPAddress);
+ SetOnMsg (@Msg);
+ {Create and start the HTTP Listener for our web status page}
+ HTTPListener:=THTTPListener.Create;
+ HTTPListener.Active:=True;
+
+ {Register the web status page, the "Thread List" page will allow us to see what is happening in the example}
+ WebStatusRegister(HTTPListener,'','',True);
 
  {Create and start the HTTP Listener for our web status page}
  HTTPListener:=THTTPListener.Create;
