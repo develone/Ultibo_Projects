@@ -1,7 +1,6 @@
 # Ultibo_Projects
 # HelloPi/HelloVideo_TFTP/RPi2/HelloVideo_TFTP.lpi
-Plays the camera.h264 video that can be created with 
-
+Plays the camera.h264 video that can be created with
 #RaspiVid_TFTP/RPi2/RaspiVid_TFTP.lpi requires a RPi Camera 
 
     The Raspbian RPi3B was created using the zip file that I created with pi-gen.
