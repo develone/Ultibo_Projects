@@ -2,7 +2,7 @@
 **RaspiVid_TFTP/RPi2/RaspiVid_TFTP.lpi requires a RPi Camera**
 **HelloPi/HelloVideo_TFTP/RPi2/HelloVideo_TFTP.lpi**
 Plays the camera.h264 video that can be created with
-**jpeg2000/RPi2/DWT_LIFT_RPi2.lpi** 
+**jpeg2000/RPi2/DWT_LIFT_RPi2.lpi**   
 
     The Raspbian RPi3B was created using the zip file that I created with pi-gen.
     https://github.com/develone/pi-gen
