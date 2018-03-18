@@ -1,0 +1,58 @@
+pi@pi3-1:~/Ultibo_Projects $ ./run_demos.sh 185 demo
+tftping UltiboDemoRPi2_TFTP kernel7.img
+to ultibo system  192.168.1.185
+tftp> tftp> Sent 2784448 bytes in 10.7 seconds
+tftp> pi@pi3-1:~/Ultibo_Projects $ ./run_demos.sh 200 demo
+tftping UltiboDemoRPi2_TFTP kernel7.img
+to ultibo system  192.168.1.200
+tftp> tftp> Sent 2784448 bytes in 12.4 seconds
+tftp> pi@pi3-1:~/Ultibo_Projects $ ./run_demos.sh 185 gps
+tftping gps kernel7.img
+to ultibo system  192.168.1.185
+tftp> tftp> Sent 2794928 bytes in 14.0 seconds
+tftp> pi@pi3-1:~/Ultibo_Projects $ ./run_demos.sh 200 gps
+no gps  192.168.1.200
+pi@pi3-1:~/Ultibo_Projects $ ./run_demos.sh 185 playvideo
+tftping HelloVideo_TFTP kernel7.img
+to ultibo system  192.168.1.185
+tftp> tftp> Sent 3185412 bytes in 11.7 seconds
+tftp> pi@pi3-1:~/Ultibo_Projects $ ./run_demos.sh 200 playvideo
+tftping HelloVideo_TFTP kernel7.img
+to ultibo system  192.168.1.200
+tftp> tftp> Sent 3185412 bytes in 14.5 seconds
+tftp> pi@pi3-1:~/Ultibo_Projects $ ./run_demos.sh 185 video
+No camera  ultibo sytem  192.168.1.185
+pi@pi3-1:~/Ultibo_Projects $ ./run_demos.sh 200 video
+tftping RaspiVid_TFTP kernel7.img
+to ultibo system  192.168.1.200
+tftp> tftp> Sent 3145892 bytes in 10.1 seconds
+tftp> pi@pi3-1:~/Ultibo_Projects $ ./run_demos.sh 185 jpeg
+tftping DWT_LIFT_RPi2 kernel7.img
+to ultibo system  192.168.1.185
+tftp> tftp> Sent 3111876 bytes in 10.6 seconds
+tftp> pi@pi3-1:~/Ultibo_Projects $ ./run_demos.sh 200 jpeg
+tftping DWT_LIFT_RPi2 kernel7.img
+to ultibo system  192.168.1.200
+tftp> tftp> Sent 3111876 bytes in 29.0 seconds
+tftp> pi@pi3-1:~/Ultibo_Projects $ ./run_demos.sh 185 servo
+tftping PWM_TFTP_SERVO kernel7.img
+to ultibo system  192.168.1.185
+tftp> tftp> Sent 2743472 bytes in 8.8 seconds
+tftp> pi@pi3-1:~/Ultibo_Projects $ ./run_demos.sh 200 servo
+no servo  192.168.1.200
+pi@pi3-1:~/Ultibo_Projects $ ./run_demos.sh 185 RemoteLed
+tftping RemoteLed kernel7.img
+to ultibo system  192.168.1.185
+tftp> tftp> Sent 2567312 bytes in 12.9 seconds
+tftp> pi@pi3-1:~/Ultibo_Projects $ ./run_demos.sh 200 RemoteLed
+tftping RemoteLed kernel7.img
+to ultibo system  192.168.1.200
+tftp> tftp> Sent 2567312 bytes in 9.3 seconds
+pi@pi3-1:~/Ultibo_Projects $ ./run_demos.sh 185 OpenGLES
+tftping HelloGLES  kernel7.img
+to ultibo system  192.168.1.185
+tftp> tftp> Sent 2977120 bytes in 10.7 seconds
+tftp> pi@pi3-1:~/Ultibo_Projects $ ./run_demos.sh 200 demo
+tftping UltiboDemoRPi2_TFTP kernel7.img
+to ultibo system  192.168.1.200
+tftp> tftp> Sent 2784448 bytes in 9.6 seconds

@@ -128,6 +128,26 @@ else
 						echo "no kernel7.img"
 				fi	
 				cd ../../
+			else
+			
+				if [ $2 = "OpenGLES" ]; then
+					cd OpenGLES/HelloGLES/RPi2
+					if [ -e kernel7.img ]; then
+						if [ $1 = "185" ]; then
+							echo "tftping HelloGLES  kernel7.img"
+							echo "to ultibo system " $RPI2
+							tftp $RPI2 < cmdstftp
+		
+						else
+							echo "tftping HelloGLES  kernel7.img"
+							echo "to ultibo system " $RPI3
+							tftp $RPI3 < cmdstftp	 	 
+						fi
+					else	
+						echo "no kernel7.img"
+				fi	
+				cd ../../../
+			fi
 			fi
 			fi	
 		fi
