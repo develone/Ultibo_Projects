@@ -147,10 +147,52 @@ else
 						echo "no kernel7.img"
 				fi	
 				cd ../../../
+				else
+			
+				if [ $2 = "HelloTeapot" ]; then
+					cd HelloTeapot/RPi2
+					if [ -e kernel7.img ]; then
+						if [ $1 = "185" ]; then
+							echo "tftping HelloTeapot  kernel7.img"
+							echo "to ultibo system " $RPI2
+							tftp $RPI2 < cmdstftp
+		
+						else
+							echo "tftping HelloTeapot  kernel7.img"
+							echo "to ultibo system " $RPI3
+							tftp $RPI3 < cmdstftp	 	 
+						fi
+				else	
+						echo "no kernel7.img"
+				fi	
+				cd ../../
+				else
+			
+					if [ $2 = "HelloVideo" ]; then
+						cd HelloVideo/RPi2
+						if [ -e kernel7.img ]; then
+							if [ $1 = "185" ]; then
+								echo "tftping HelloVideo  kernel7.img"
+								echo "to ultibo system " $RPI2
+								tftp $RPI2 < cmdstftp
+		
+							else
+								echo "tftping HelloTeapot  kernel7.img"
+								echo "to ultibo system " $RPI3
+								tftp $RPI3 < cmdstftp	 	 
+							fi
+					else	
+						echo "no kernel7.img"
+				fi	
+				cd ../../
+	
+			fi
+
 			fi
 			fi
 			fi	
 		fi
+fi
 fi
 fi
 fi
