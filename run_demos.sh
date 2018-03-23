@@ -149,21 +149,21 @@ else
 				cd ../../../
 				else
 			
-				if [ $2 = "HelloTeapot" ]; then
-					cd HelloTeapot/RPi2
-					if [ -e kernel7.img ]; then
-						if [ $1 = "185" ]; then
-							echo "tftping HelloTeapot  kernel7.img"
-							echo "to ultibo system " $RPI2
-							tftp $RPI2 < cmdstftp
-		
-						else
-							echo "tftping HelloTeapot  kernel7.img"
-							echo "to ultibo system " $RPI3
-							tftp $RPI3 < cmdstftp	 	 
-						fi
-				else	
-						echo "no kernel7.img"
+					if [ $2 = "HelloTeapot" ]; then
+						cd HelloTeapot/RPi2
+						if [ -e kernel7.img ]; then
+							if [ $1 = "185" ]; then
+								echo "tftping HelloTeapot  kernel7.img"
+								echo "to ultibo system " $RPI2
+								tftp $RPI2 < cmdstftp
+			
+							else
+								echo "tftping HelloTeapot  kernel7.img"
+								echo "to ultibo system " $RPI3
+								tftp $RPI3 < cmdstftp	 	 
+							fi
+						else	
+							echo "no kernel7.img"
 				fi	
 				cd ../../
 				else
@@ -181,12 +181,30 @@ else
 								echo "to ultibo system " $RPI3
 								tftp $RPI3 < cmdstftp	 	 
 							fi
-					else	
-						echo "no kernel7.img"
-				fi	
+						else	
+							echo "no kernel7.img"
+						fi	
 				cd ../../
-	
-			fi
+				else
+			
+					if [ $2 = "wall" ]; then
+						cd wall/RPi2
+						if [ -e kernel7.img ]; then
+							if [ $1 = "185" ]; then
+								echo "tftping wall  kernel7.img"
+								echo "to ultibo system " $RPI2
+								tftp $RPI2 < cmdstftp
+		
+							else
+								echo "tftping wall  kernel7.img"
+								echo "to ultibo system " $RPI3
+								tftp $RPI3 < cmdstftp	 	 
+							fi
+						else	
+							echo "no kernel7.img"
+					fi	
+					cd ../../
+				fi
 
 			fi
 			fi
@@ -197,4 +215,4 @@ fi
 fi
 fi
 fi
-
+fi
