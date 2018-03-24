@@ -150,9 +150,9 @@ begin
          DrawBitmap(Window,'C:\image1.bmp',768,256);
          DrawBitmap(Window,'C:\image2.bmp',1024,256);
          DrawBitmap(Window,'C:\image3.bmp',1280,256);
-
-         {Sleep for 1 second}
-         Sleep(1000);
+         DrawBitmap(Window,'C:\image4.bmp',0,512);
+         {Sleep for 8 second}
+         Sleep(8000);
 
          DrawBitmap(Window,'C:\image3.bmp',0,0);
          DrawBitmap(Window,'C:\image2.bmp',256,0);
@@ -172,8 +172,8 @@ begin
          DrawBitmap(Window,'C:\image3.bmp',1024,256);
          DrawBitmap(Window,'C:\image1.bmp',1280,256);
 
-         {Sleep for 1 second}
-         Sleep(1000)
+         {Sleep for 8 second}
+         Sleep(8000)
 
   end;
 
