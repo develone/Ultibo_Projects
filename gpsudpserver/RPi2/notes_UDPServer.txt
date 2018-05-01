@@ -8,6 +8,8 @@ InitUnitGPS.pas This is where the IP & port get set.
 	SYSLOG_SERVER_DEFAULT:='192.168.1.181';
 	SYSLOG_PORT_DEFAULT:=8888;
 	Requires a server running on the server.
+ServerUnitGPS.pas
+	SendDataTo('192.168.1.181',8888,PChar(MessageText),Length(MessageText));  
 Client_Server_Ex/server.c 
 	#define PORT 8888   //The port on which to listen for incoming data	
 Working on RPi2B
