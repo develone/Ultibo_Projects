@@ -1,0 +1,199 @@
+05/01/18
+
+Starting with ultibo/core/examples/Advanced/UDPServer/RPi2/
+UDPServer.lpr		UDPServerGPS.lpr	
+InitUnit.pas		InitUnitGPS.pas				
+ServerUnit.pas		ServerUnitGPS
+InitUnitGPS.pas This is where the IP & port get set.
+	SYSLOG_SERVER_DEFAULT:='192.168.1.181';
+	SYSLOG_PORT_DEFAULT:=8888;
+	Requires a server running on the server.
+Client_Server_Ex/server.c 
+	#define PORT 8888   //The port on which to listen for incoming data	
+Working on RPi2B
+UDPServerGPS.lpr
+	RaspberryPi2 
+ServerUnitGPS.pas
+	RaspberryPi2 
+	BCM2836 
+	BCM2709
+InitUnitGPS.pas
+
+Testing for RPi3B+
+Only splash not booting to Console.
+
+UDPServerGPS.lpr
+	RaspberryPi3 
+ServerUnitGPS.pas
+	RaspberryPi3 
+	BCM2837 
+	BCM2710
+	
+InitUnitGPS.pas	 
+ServerUnitGPS Reading of GPS receiver.
+	Includes a C lib to compute a checksum  of GPS msgs.
+		libgps.a
+		checksum_ultibo.c with libbuild.sh
+		libbuild.sh WR	passes -D WR when compiling.
+		./libbuild.sh XX
+			Compiling checksum_ultibo.c
+			Not compiling with -D WR 
+			Creating libgps.a	
+			Tue  1 May 15:14:58 UTC 2018
+			-rw-r--r-- 1 pi pi 1208 May  1 15:14 checksum_ultibo.o
+			-rw-r--r-- 1 pi pi 1448 May  1 15:14 libgps.a
+
+		used to write data to micro sd-card
+		#ifdef WR
+			FILE *ofp;
+			ofp = fopen("gps.dat","a+");
+		
+1c1
+< program UDPServer;
+---
+> program UDPServerGPS;
+16c16
+< { This version is for Raspberry Pi 2B and will also work on a 3B/3B+.          }
+---
+> { This version is for Raspberry Pi 2B and will also work on a 3B.              }
+21c21
+<   InitUnit,     {Include InitUnit to allow us to change the startup behaviour}
+---
+>   InitUnitGPS,     {Include InitUnit to allow us to change the startup behaviour}
+24,25c24,25
+<   ServerUnit;   {Include ServerUnit which contains the main code for our server}
+<  
+---
+>   ServerUnitGPS;   {Include ServerUnit which contains the main code for our server}
+> 
+30,31c30,31
+<   
+<  {Initialize our UDP Server} 
+---
+> 
+>  {Initialize our UDP Server}
+33c33
+<  
+---
+> 
+35,36c35,36
+<  ServerStart; 
+<  
+---
+>  ServerStart;
+> 
+40c40,41
+<  
+\ No newline at end of file
+---
+> 
+> 
+1c1
+< unit InitUnit;
+---
+> unit InitUnitGPS;
+43,44c43,44
+<  SYSLOG_SERVER_DEFAULT:='127.0.0.1';
+<  SYSLOG_PORT_DEFAULT:=514;
+---
+>  SYSLOG_SERVER_DEFAULT:='192.168.1.181';
+>  SYSLOG_PORT_DEFAULT:=8888;
+1c1
+< unit ServerUnit;
+---
+> unit ServerUnitGPS;
+4c4
+< 
+---
+> {$linklib gps}
+14a15,21
+>   RaspberryPi2,
+>   Framebuffer,
+>   SysUtils,
+>   Serial,
+>   BCM2836,
+>   BCM2709,
+>   GlobalConfig, {Include the global configuration unit so we can modify some parameters}
+19d25
+<   SysUtils,
+21a28,29
+>   Syscalls,
+>   GPIO,      {Include the GPIO unit to allow access to the functions}
+23c31
+< 
+---
+> procedure test(Count:Longword;pchar:Pointer); cdecl; external 'libgps' name 'test'; 
+54c62
+< 
+---
+>  
+71c79
+<  FWindowHandle:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_FULL,False);
+---
+>  FWindowHandle:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_FULL,True);
+147c155,156
+<    //SendDataTo('192.168.123.123',514,PChar(MessageText),Length(MessageText)); 
+---
+>    //SendDataTo('192.168.123.123',8888,PChar(MessageText),Length(MessageText)); 
+>    SendDataTo('192.168.1.181',8888,PChar(MessageText),Length(MessageText));
+189a199,204
+>  flg:LongWord;
+>  Count:LongWord;
+>  Character:Char;
+>  Characters:String;
+>  LastValue:LongWord;
+>  CurrentValue:LongWord;
+190a206
+>  flg:=0;
+213,214c229,230
+<    {Set the port to listen on (514 for SysLog)}
+<    DemoUDPListener.BoundPort:=514;
+---
+>    {Set the port to listen on (8888 for SysLog)}
+>    DemoUDPListener.BoundPort:=8888;
+218c234,239
+<    
+---
+>    GPIOPullSelect(GPIO_PIN_18,GPIO_PULL_UP);
+>    GPIOFunctionSelect(GPIO_PIN_18,GPIO_FUNCTION_IN);
+>    GPIOPullSelect(GPIO_PIN_16,GPIO_PULL_NONE);
+>    GPIOFunctionSelect(GPIO_PIN_16,GPIO_FUNCTION_OUT);
+>    GPIOOutputSet(GPIO_PIN_16,GPIO_LEVEL_HIGH);
+>     
+221a243,253
+>     LoggingOutput('Logging message sent by ' + ThreadGetName(ThreadGetCurrent) + ' flg '+ IntToStr(flg) + ' at ' + DateTimeToStr(Now));
+>     if SerialOpen(9600,SERIAL_DATA_8BIT,SERIAL_STOP_1BIT,SERIAL_PARITY_NONE,SERIAL_FLOW_NONE,0,0) = ERROR_SUCCESS then
+> 	begin
+> 	  flg:=1;
+> 	  LoggingOutput('Logging message sent by ' + ThreadGetName(ThreadGetCurrent) + 'flg '+ IntToStr(flg) + ' at ' + DateTimeToStr(Now));
+>       LoggingOutput('Logging message sent by ' + ThreadGetName(ThreadGetCurrent) + ' Uart opened successfully at ' + DateTimeToStr(Now));
+>       ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Uart opened successfully'); 
+>       {Setup our starting point}
+>       Count:=0;
+>       Characters:='';
+>     end;
+224,225c256,270
+<      Sleep(1000);
+<      LoggingOutput('Logging message sent by ' + ThreadGetName(ThreadGetCurrent) + ' at ' + DateTimeToStr(Now));
+---
+>      SerialRead(@Character,SizeOf(Character),Count);
+>      if Character = #13 then
+> 			begin
+> 			Characters:=Characters + Chr(13) + Chr(10);
+>             ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Received a line: ' + Characters);
+> 			LoggingOutput(Characters);
+> 			test(Length(Characters),PChar(Characters)); 
+>             Characters:='';
+> 	
+>     end
+>     else
+>     begin
+>        {Add the character to what we have already recevied}
+>        Characters:=Characters + Character;
+>     end
+227d271
+<     
+231c275
+< end;
+---
+>   end;
