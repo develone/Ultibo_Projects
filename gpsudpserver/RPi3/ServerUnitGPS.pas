@@ -12,12 +12,12 @@ unit ServerUnitGPS;
 interface
 
 uses
-  RaspberryPi2,
+  RaspberryPi3,
   Framebuffer,
   SysUtils,
   Serial,
-  BCM2836,
-  BCM2709,
+  BCM2837,
+  BCM2710,
   GlobalConfig, {Include the global configuration unit so we can modify some parameters}
   GlobalConst,
   GlobalTypes,
@@ -40,8 +40,6 @@ uses
   Syscalls,
   GPIO,      {Include the GPIO unit to allow access to the functions}
   Winsock2;  {Include the Winsock2 unit to provide access to the TWinsock2UDPListener class}
-
-
 procedure test(Count:Longword;pchar:Pointer); cdecl; external 'libgps' name 'test'; 
   
 {There are primarily two ways to use the TWinsock2UDPListener class to create a UDP server.
@@ -80,8 +78,6 @@ procedure ServerInit;
 procedure ServerStart;
   
 implementation
-
-
 
 
 {The overridden Create method for our class, here all we want to do is create a 

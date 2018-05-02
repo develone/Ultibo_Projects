@@ -18,11 +18,10 @@ program UDPServerGPS;
 { copy this code into it.                                                      }
 
 uses
-  //RemUpdateunit,
   InitUnitGPS,     {Include InitUnit to allow us to change the startup behaviour}
-
-  RaspberryPi2, {Include RaspberryPi2 to make sure all standard functions are included}
-  Threads, ServerUnitGPS;   {Include ServerUnit which contains the main code for our server}
+  RaspberryPi3, {Include RaspberryPi2 to make sure all standard functions are included}
+  Threads,
+  ServerUnitGPS;   {Include ServerUnit which contains the main code for our server}
 
 begin
  {Like most typical Free Pascal applications, the program file itself doesn't
@@ -38,5 +37,7 @@ begin
  {Halt the thread if we return}
  ThreadHalt(0);
 end.
+
+
 
 
