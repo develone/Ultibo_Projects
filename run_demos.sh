@@ -93,7 +93,7 @@ else
 				cd ../../
 			else
 				if [ $2 = "gps" ]; then
-					cd gps/RPi2
+					cd gpsudpserver/RPi2
 					if [ -e kernel7.img ]; then
 						if [ $1 = "185" ]; then
 							echo "tftping gps kernel7.img"
