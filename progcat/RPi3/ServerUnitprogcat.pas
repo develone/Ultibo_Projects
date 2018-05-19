@@ -111,6 +111,51 @@ begin
  inherited Destroy;
 end;
 
+   function SPISendFile(const Filename: String): Boolean;
+var
+  Count:LongWord = 0;
+  SPIDevice: PSPIDevice;
+  MemoryStream: TMemoryStream;
+begin
+  Result := False;
+
+  //Check the file
+  if not FileExists(Filename) then
+    Exit;
+
+  //Open the file
+  MemoryStream := TMemoryStream.Create;
+  try
+   //Load the file
+   MemoryStream.LoadFromFile(Filename);
+
+   ;
+   //Locate the SPI device (Adjust for boards other than Pi3)
+   SPIDevice := SPIDeviceFindByDescription(BCM2710_SPI0_DESCRIPTION);
+   if SPIDevice = nil then
+     Exit;
+
+   //Configure SPI Chip Select 0
+   if SPIDeviceSetClockRate(SPIDevice ,SPI_CS_0, 1000000) <> ERROR_SUCCESS then
+     Exit;
+
+   //Start the SPI device
+   if SPIDeviceStart(SPIDevice, SPI_MODE_4WIRE, 1000000, SPI_CLOCK_PHASE_LOW, SPI_CLOCK_POLARITY_LOW) <> ERROR_SUCCESS then
+     Exit;
+
+   //Write the data (Note: You can also pass the flag SPI_TRANSFER_DMA to enable DMA transfers)
+   if SPIDeviceWrite(SPIDevice, SPI_CS_0, MemoryStream.Memory, MemoryStream.Size, SPI_TRANSFER_NONE, Count) <> ERROR_SUCCESS then
+     Exit;
+
+   //Close the SPI device
+   SPIDeviceStop(SPIDevice);
+
+   Result := True;
+  finally
+    //Close File
+    MemoryStream.Free;
+  end;
+end;
 
 {The main part of our UDP server example, the overridden DoExecute method will be
  called everytime a request (or message) is received by our server.
@@ -170,7 +215,8 @@ begin
     
     Try it out yourself by setting the address to something valid}
    //SendDataTo('192.168.123.123',8888,PChar(MessageText),Length(MessageText)); 
-   SendDataTo('192.168.1.181',8888,PChar(MessageText),Length(MessageText));
+   //SendDataTo('192.168.1.181',8888,PChar(MessageText),Length(MessageText));
+   SendDataTo('192.168.1.214',8888,PChar(MessageText),Length(MessageText));
   end;
 end;
 
@@ -217,6 +263,7 @@ var
  Count:LongWord;
  Character:Char;
  Characters:String;
+ Fn:String;
  LastValue:LongWord;
  CurrentValue:LongWord;
  HTTPListener:THTTPListener;
@@ -249,12 +296,13 @@ begin
    
    {Set the server to active (Listener)} 
    DemoUDPListener.Active:=True;
+   {
    GPIOPullSelect(GPIO_PIN_18,GPIO_PULL_UP);
    GPIOFunctionSelect(GPIO_PIN_18,GPIO_FUNCTION_IN);
    GPIOPullSelect(GPIO_PIN_16,GPIO_PULL_NONE);
    GPIOFunctionSelect(GPIO_PIN_16,GPIO_FUNCTION_OUT);
    GPIOOutputSet(GPIO_PIN_16,GPIO_LEVEL_HIGH);
-    
+   } 
    {At this point our UDP server has been started independently of our current thread and will
     continue to run by itself even if this thread terminates. For the sake of the example we will
     go into a loop and send logging messages which should be received by our server}
@@ -263,34 +311,10 @@ begin
     HTTPListener.Active:=True;
     WebStatusRegister(HTTPListener,'','',True);
     {here is where the new code will be put}
-    if SerialOpen(9600,SERIAL_DATA_8BIT,SERIAL_STOP_1BIT,SERIAL_PARITY_NONE,SERIAL_FLOW_NONE,0,0) = ERROR_SUCCESS then
-	begin
-	  flg:=1;
-	  LoggingOutput('Logging message sent by ' + ThreadGetName(ThreadGetCurrent) + 'flg '+ IntToStr(flg) + ' at ' + DateTimeToStr(Now));
-      LoggingOutput('Logging message sent by ' + ThreadGetName(ThreadGetCurrent) + ' Uart opened successfully at ' + DateTimeToStr(Now));
-      ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Uart opened successfully'); 
-      {Setup our starting point}
-      Count:=0;
-      Characters:='';
-    end;
-   while True do
-    begin
-     SerialRead(@Character,SizeOf(Character),Count);
-     if Character = #13 then
-			begin
-			Characters:=Characters + Chr(13) + Chr(10);
-            ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Received a line: ' + Characters);
-			LoggingOutput(Characters);
-			//test(Length(Characters),PChar(Characters)); 
-            Characters:='';
-	
-    end
-    else
-    begin
-       {Add the character to what we have already recevied}
-       Characters:=Characters + Character;
-    end
-    end;
+    Fn:='clktest.bin';
+    SPISendFile(Fn);
+
+
    {Destroy the UDP Listener}
    DemoUDPListener.Free;
   end; 
