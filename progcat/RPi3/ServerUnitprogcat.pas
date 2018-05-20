@@ -264,6 +264,7 @@ var
  Character:Char;
  Characters:String;
  Fn:String;
+ flg1:Boolean;
  LastValue:LongWord;
  CurrentValue:LongWord;
  HTTPListener:THTTPListener;
@@ -296,13 +297,16 @@ begin
    
    {Set the server to active (Listener)} 
    DemoUDPListener.Active:=True;
-   {
-   GPIOPullSelect(GPIO_PIN_18,GPIO_PULL_UP);
-   GPIOFunctionSelect(GPIO_PIN_18,GPIO_FUNCTION_IN);
-   GPIOPullSelect(GPIO_PIN_16,GPIO_PULL_NONE);
-   GPIOFunctionSelect(GPIO_PIN_16,GPIO_FUNCTION_OUT);
-   GPIOOutputSet(GPIO_PIN_16,GPIO_LEVEL_HIGH);
-   } 
+   {BCM 17 CDONE}
+   GPIOPullSelect(GPIO_PIN_11,GPIO_PULL_UP);
+   GPIOFunctionSelect(GPIO_PIN_11,GPIO_FUNCTION_IN);
+   {BCM 22 CRESET_B}
+   GPIOPullSelect(GPIO_PIN_15,GPIO_PULL_NONE);
+   GPIOFunctionSelect(GPIO_PIN_15,GPIO_FUNCTION_OUT);
+   {BCM 25 R12 IOB_108_SS}
+   GPIOPullSelect(GPIO_PIN_22,GPIO_PULL_NONE);
+   GPIOOutputSet(GPIO_PIN_22,GPIO_FUNCTION_OUT);
+
    {At this point our UDP server has been started independently of our current thread and will
     continue to run by itself even if this thread terminates. For the sake of the example we will
     go into a loop and send logging messages which should be received by our server}
@@ -311,10 +315,157 @@ begin
     HTTPListener.Active:=True;
     WebStatusRegister(HTTPListener,'','',True);
     {here is where the new code will be put}
-    Fn:='clktest.bin';
-    SPISendFile(Fn);
+    //Fn:='clktest.bin';
+
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'setting low');
+    {BCM 25 R12 IOB_108_SS setting low}
+    GPIOOutputSet(GPIO_PIN_15,GPIO_LEVEL_LOW);
+    {Resetting FPGA}
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Resetting');
+    GPIOOutputSet(GPIO_PIN_15,GPIO_LEVEL_LOW);
+    Sleep(1000);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'setting high');
+    GPIOOutputSet(GPIO_PIN_15,GPIO_LEVEL_HIGH);
+    Fn:='xaa';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xab';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xac';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xad';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xae';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xaf';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xag';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xah';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xai';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xaj';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xak';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
 
 
+    Fn:='xal';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xam';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xan';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xao';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xap';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xaq';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xar';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xas';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xat';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xau';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xav';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xaw';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xax';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xay';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xaz';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xba';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xbb';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xbc';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xbd';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xbe';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xbf';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    Fn:='xbg';
+    flg1:=SPISendFile(Fn);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+
+
+    {BCM 25 R12 IOB_108_SS setting low}
+    GPIOOutputSet(GPIO_PIN_15,GPIO_LEVEL_HIGH);
+    while True do
+     begin
+     end;
    {Destroy the UDP Listener}
    DemoUDPListener.Free;
   end; 
