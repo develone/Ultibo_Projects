@@ -1,7 +1,7 @@
 unit ServerUnitprogcat;
 
 {$mode objfpc}{$H+}
-//{$linklib gps}
+
 { Advanced example - UDP Server                                                }
 {                                                                              }
 { This file contains the main functionality for our UDP server example.        }
@@ -43,7 +43,7 @@ uses
   Winsock2;  {Include the Winsock2 unit to provide access to the TWinsock2UDPListener class}
 
 
-//procedure test(Count:Longword;pchar:Pointer); cdecl; external 'libgps' name 'test'; 
+
   
 {There are primarily two ways to use the TWinsock2UDPListener class to create a UDP server.
 
@@ -165,58 +165,14 @@ begin
 
    //Close the SPI device
    SPIDeviceStop(SPIDevice);
-
+   ConsoleWindowWriteLn(Window,'Setting True in SPISendFile2');
    Result := True;
   finally
     //Close File
     MemoryStream.Free;
   end;
 end;
-   function SPISendFile(const Filename: String): Boolean;
-var
-  Count:LongWord = 0;
-  SPIDevice: PSPIDevice;
-  MemoryStream: TMemoryStream;
-begin
-  Result := False;
 
-  //Check the file
-  if not FileExists(Filename) then
-    Exit;
-
-  //Open the file
-  MemoryStream := TMemoryStream.Create;
-  try
-   //Load the file
-   MemoryStream.LoadFromFile(Filename);
-
-   ;
-   //Locate the SPI device (Adjust for boards other than Pi3)
-   SPIDevice := SPIDeviceFindByDescription(BCM2710_SPI0_DESCRIPTION);
-   if SPIDevice = nil then
-     Exit;
-
-   //Configure SPI Chip Select 0
-   if SPIDeviceSetClockRate(SPIDevice ,SPI_CS_0, 1000000) <> ERROR_SUCCESS then
-     Exit;
-
-   //Start the SPI device
-   if SPIDeviceStart(SPIDevice, SPI_MODE_4WIRE, 1000000, SPI_CLOCK_PHASE_LOW, SPI_CLOCK_POLARITY_LOW) <> ERROR_SUCCESS then
-     Exit;
-
-   //Write the data (Note: You can also pass the flag SPI_TRANSFER_DMA to enable DMA transfers)
-   if SPIDeviceWrite(SPIDevice, SPI_CS_0, MemoryStream.Memory, MemoryStream.Size, SPI_TRANSFER_NONE, Count) <> ERROR_SUCCESS then
-     Exit;
-
-   //Close the SPI device
-   SPIDeviceStop(SPIDevice);
-
-   Result := True;
-  finally
-    //Close File
-    MemoryStream.Free;
-  end;
-end;
 
 {The main part of our UDP server example, the overridden DoExecute method will be
  called everytime a request (or message) is received by our server.
@@ -358,15 +314,25 @@ begin
    
    {Set the server to active (Listener)} 
    DemoUDPListener.Active:=True;
-   {BCM 17 CDONE}
-   GPIOPullSelect(GPIO_PIN_11,GPIO_PULL_UP);
-   GPIOFunctionSelect(GPIO_PIN_11,GPIO_FUNCTION_IN);
-   {BCM 22 CRESET_B}
+
+   {No pullup pins 11.15,and 22}
+   GPIOPullSelect(GPIO_PIN_11,GPIO_PULL_NONE);
    GPIOPullSelect(GPIO_PIN_15,GPIO_PULL_NONE);
-   GPIOFunctionSelect(GPIO_PIN_15,GPIO_FUNCTION_OUT);
-   {BCM 25 R12 IOB_108_SS}
    GPIOPullSelect(GPIO_PIN_22,GPIO_PULL_NONE);
-   GPIOOutputSet(GPIO_PIN_22,GPIO_FUNCTION_OUT);
+
+   {pin 11 set as input}
+   {BCM 17 CDONE}
+
+   GPIOFunctionSelect(GPIO_PIN_11,GPIO_FUNCTION_IN);
+
+   {pins 15 & 22  set as output}
+   {BCM 22 CRESET_B}
+
+   GPIOFunctionSelect(GPIO_PIN_15,GPIO_FUNCTION_OUT);
+
+   {BCM 25 R12 IOB_108_SS}
+
+   GPIOFunctionSelect(GPIO_PIN_22,GPIO_FUNCTION_OUT);
 
    {At this point our UDP server has been started independently of our current thread and will
     continue to run by itself even if this thread terminates. For the sake of the example we will
@@ -376,157 +342,42 @@ begin
     HTTPListener.Active:=True;
     WebStatusRegister(HTTPListener,'','',True);
     {here is where the new code will be put}
-    Fn:='clktest.bin';
 
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'setting low');
     {BCM 25 R12 IOB_108_SS setting low}
-    GPIOOutputSet(GPIO_PIN_15,GPIO_LEVEL_LOW);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'setting IOB_108_SS low');
+    GPIOOutputSet(GPIO_PIN_22,GPIO_LEVEL_LOW);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'IOB_108_SS '+ inttostr(GPIOInputGet(GPIO_PIN_22)));
+
     {Resetting FPGA}
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Resetting');
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Resetting FPGA');
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Setting Reset low');
     GPIOOutputSet(GPIO_PIN_15,GPIO_LEVEL_LOW);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Reset '+ inttostr(GPIOInputGet(GPIO_PIN_15)));
+
     Sleep(1000);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'setting high');
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Setting Reset high');
     GPIOOutputSet(GPIO_PIN_15,GPIO_LEVEL_HIGH);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Reset '+ inttostr(GPIOInputGet(GPIO_PIN_15)));
+
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'CDONE '+ inttostr(GPIOInputGet(GPIO_PIN_11)));
+
+    Fn:='clktest.bin';
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Sending to SPI ' + Fn);
     flg1:=SPISendFile2(Fn,4096,DemoUDPListener.FWindowHandle);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+    if (flg1 )  then ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'True returned from SPI wr '+Fn);
+    //ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
 
-    {Fn:='xaa';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+    Fn:='sixzeros.bin';
+    flg1:=SPISendFile2(Fn,6,DemoUDPListener.FWindowHandle);
+    if (flg1 )  then ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'True returned from SPI wr '+Fn);
+    //ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'CDONE '+ inttostr(GPIOInputGet(GPIO_PIN_11)));
 
-    Fn:='xab';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='xac';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='xad';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='xae';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='xaf';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='xag';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='xah';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='xai';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='xaj';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='xak';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-
-    Fn:='xal';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='xam';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='xan';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='xao';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='xap';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='xaq';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='xar';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='xas';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='xat';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='xau';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='xav';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='xaw';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='xax';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='xay';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='xaz';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='xba';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='xbb';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='xbc';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='xbd';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='xbe';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='xbf';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='xbg';
-    flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));}
-
-
-
-    {BCM 25 R12 IOB_108_SS setting low}
-    GPIOOutputSet(GPIO_PIN_15,GPIO_LEVEL_HIGH);
+    {BCM 25 R12 IOB_108_SS setting high}
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'setting IOB_108_SS high');
+    GPIOOutputSet(GPIO_PIN_22,GPIO_LEVEL_HIGH);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'IOB_108_SS '+ inttostr(GPIOInputGet(GPIO_PIN_22)));
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'CDONE '+ inttostr(GPIOInputGet(GPIO_PIN_11)));
     while True do
      begin
      end;
