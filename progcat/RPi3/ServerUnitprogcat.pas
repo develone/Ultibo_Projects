@@ -110,7 +110,68 @@ begin
  {Call the inherited Destroy}
  inherited Destroy;
 end;
+function SPISendFile2(const Filename: String; BlockSize: LongWord;Window:TWindowHandle): Boolean;
+var
+  Size:LongWord;
+  Remain:LongWord;
+  Offset:PtrUInt;
+  Count:LongWord = 0;
+  SPIDevice: PSPIDevice;
+  MemoryStream: TMemoryStream;
+begin
+  Result := False;
 
+  //Check the file
+  if not FileExists(Filename) then
+    Exit;
+
+  //Open the file
+  MemoryStream := TMemoryStream.Create;
+  try
+   //Load the file
+   MemoryStream.LoadFromFile(Filename);
+
+   //Locate the SPI device (Adjust for boards other than Pi3)
+   SPIDevice := SPIDeviceFindByDescription(BCM2710_SPI0_DESCRIPTION);
+
+   if SPIDevice = nil then
+     Exit;
+
+   //Configure SPI Chip Select 0
+   if SPIDeviceSetClockRate(SPIDevice ,SPI_CS_0, 1000000) <> ERROR_SUCCESS then
+     Exit;
+
+   //Start the SPI device
+   if SPIDeviceStart(SPIDevice, SPI_MODE_4WIRE, 1000000, SPI_CLOCK_PHASE_LOW, SPI_CLOCK_POLARITY_LOW) <> ERROR_SUCCESS then
+     Exit;
+
+   //Send block size pieces to SPI device
+   Remain := MemoryStream.Size;
+   Offset := 0;
+   while Remain > 0 do
+   begin
+     //Determine write size
+     Size := BlockSize;
+     if Size > Remain then Size := Remain;
+
+     //Write the data (Note: You can also pass the flag SPI_TRANSFER_DMA to enable DMA transfers)
+     if SPIDeviceWrite(SPIDevice, SPI_CS_0, Pointer(MemoryStream.Memory + Offset), Size, SPI_TRANSFER_NONE, Count) <> ERROR_SUCCESS then
+       Exit;
+     ConsoleWindowWriteLn(Window,'In SPISendFile2 '+InttoStr(Remain));
+     //Update Remain and Offset
+     Dec(Remain, Size);
+     Inc(Offset, Size);
+   end;
+
+   //Close the SPI device
+   SPIDeviceStop(SPIDevice);
+
+   Result := True;
+  finally
+    //Close File
+    MemoryStream.Free;
+  end;
+end;
    function SPISendFile(const Filename: String): Boolean;
 var
   Count:LongWord = 0;
@@ -315,7 +376,7 @@ begin
     HTTPListener.Active:=True;
     WebStatusRegister(HTTPListener,'','',True);
     {here is where the new code will be put}
-    //Fn:='clktest.bin';
+    Fn:='clktest.bin';
 
     ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'setting low');
     {BCM 25 R12 IOB_108_SS setting low}
@@ -326,7 +387,10 @@ begin
     Sleep(1000);
     ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'setting high');
     GPIOOutputSet(GPIO_PIN_15,GPIO_LEVEL_HIGH);
-    Fn:='xaa';
+    flg1:=SPISendFile2(Fn,4096,DemoUDPListener.FWindowHandle);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+
+    {Fn:='xaa';
     flg1:=SPISendFile(Fn);
     ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
 
@@ -457,7 +521,7 @@ begin
 
     Fn:='xbg';
     flg1:=SPISendFile(Fn);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));}
 
 
 
