@@ -315,24 +315,24 @@ begin
    {Set the server to active (Listener)} 
    DemoUDPListener.Active:=True;
 
-   {No pullup pins 11.15,and 22}
-   GPIOPullSelect(GPIO_PIN_11,GPIO_PULL_NONE);
-   GPIOPullSelect(GPIO_PIN_15,GPIO_PULL_NONE);
+   {No pullup pins 17.22,and 25}
+   GPIOPullSelect(GPIO_PIN_17,GPIO_PULL_NONE);
    GPIOPullSelect(GPIO_PIN_22,GPIO_PULL_NONE);
+   GPIOPullSelect(GPIO_PIN_26,GPIO_PULL_NONE);
 
-   {pin 11 set as input}
+   {pin 17 set as input}
    {BCM 17 CDONE}
 
-   GPIOFunctionSelect(GPIO_PIN_11,GPIO_FUNCTION_IN);
+   GPIOFunctionSelect(GPIO_PIN_17,GPIO_FUNCTION_IN);
 
    {pins 15 & 22  set as output}
    {BCM 22 CRESET_B}
 
-   GPIOFunctionSelect(GPIO_PIN_15,GPIO_FUNCTION_OUT);
+   GPIOFunctionSelect(GPIO_PIN_22,GPIO_FUNCTION_OUT);
 
    {BCM 25 R12 IOB_108_SS}
 
-   GPIOFunctionSelect(GPIO_PIN_22,GPIO_FUNCTION_OUT);
+   GPIOFunctionSelect(GPIO_PIN_25,GPIO_FUNCTION_OUT);
 
    {At this point our UDP server has been started independently of our current thread and will
     continue to run by itself even if this thread terminates. For the sake of the example we will
@@ -345,23 +345,24 @@ begin
 
     {BCM 25 R12 IOB_108_SS setting low}
     ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'setting IOB_108_SS low');
-    GPIOOutputSet(GPIO_PIN_22,GPIO_LEVEL_LOW);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'IOB_108_SS '+ inttostr(GPIOInputGet(GPIO_PIN_22)));
+    GPIOOutputSet(GPIO_PIN_25,GPIO_LEVEL_LOW);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'IOB_108_SS '+ inttostr(GPIOInputGet(GPIO_PIN_25)));
 
     {Resetting FPGA}
     ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Resetting FPGA');
     ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Setting Reset low');
-    GPIOOutputSet(GPIO_PIN_15,GPIO_LEVEL_LOW);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Reset '+ inttostr(GPIOInputGet(GPIO_PIN_15)));
+    GPIOOutputSet(GPIO_PIN_22,GPIO_LEVEL_LOW);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Reset '+ inttostr(GPIOInputGet(GPIO_PIN_22)));
 
     Sleep(1000);
     ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Setting Reset high');
-    GPIOOutputSet(GPIO_PIN_15,GPIO_LEVEL_HIGH);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Reset '+ inttostr(GPIOInputGet(GPIO_PIN_15)));
+    GPIOOutputSet(GPIO_PIN_22,GPIO_LEVEL_HIGH);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Reset '+ inttostr(GPIOInputGet(GPIO_PIN_22)));
 
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'CDONE '+ inttostr(GPIOInputGet(GPIO_PIN_11)));
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'CDONE '+ inttostr(GPIOInputGet(GPIO_PIN_17)));
 
     Fn:='clktest.bin';
+    //Fn:='catboard.bin';
     ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Sending to SPI ' + Fn);
     flg1:=SPISendFile2(Fn,4096,DemoUDPListener.FWindowHandle);
     if (flg1 )  then ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'True returned from SPI wr '+Fn);
@@ -371,13 +372,15 @@ begin
     flg1:=SPISendFile2(Fn,6,DemoUDPListener.FWindowHandle);
     if (flg1 )  then ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'True returned from SPI wr '+Fn);
     //ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'CDONE '+ inttostr(GPIOInputGet(GPIO_PIN_11)));
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'CDONE '+ inttostr(GPIOInputGet(GPIO_PIN_17)));
 
     {BCM 25 R12 IOB_108_SS setting high}
     ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'setting IOB_108_SS high');
-    GPIOOutputSet(GPIO_PIN_22,GPIO_LEVEL_HIGH);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'IOB_108_SS '+ inttostr(GPIOInputGet(GPIO_PIN_22)));
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'CDONE '+ inttostr(GPIOInputGet(GPIO_PIN_11)));
+    GPIOOutputSet(GPIO_PIN_25,GPIO_LEVEL_HIGH);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'IOB_108_SS '+ inttostr(GPIOInputGet(GPIO_PIN_25)));
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'CDONE '+ inttostr(GPIOInputGet(GPIO_PIN_17)));
+
+
     while True do
      begin
      end;
