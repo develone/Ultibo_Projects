@@ -361,8 +361,11 @@ begin
 
     ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'CDONE '+ inttostr(GPIOInputGet(GPIO_PIN_17)));
 
-    Fn:='clktest.bin';
+    //Fn:='clktest.bin';
     //Fn:='catboard.bin';
+    Fn:='speechfifo.bin';
+    //Fn:='speechfifopmod.bin';
+
     ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Sending to SPI ' + Fn);
     flg1:=SPISendFile2(Fn,4096,DemoUDPListener.FWindowHandle);
     if (flg1 )  then ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'True returned from SPI wr '+Fn);
@@ -379,6 +382,34 @@ begin
     GPIOOutputSet(GPIO_PIN_25,GPIO_LEVEL_HIGH);
     ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'IOB_108_SS '+ inttostr(GPIOInputGet(GPIO_PIN_25)));
     ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'CDONE '+ inttostr(GPIOInputGet(GPIO_PIN_17)));
+        if SerialOpen(115200,SERIAL_DATA_8BIT,SERIAL_STOP_1BIT,SERIAL_PARITY_NONE,SERIAL_FLOW_NONE,0,0) = ERROR_SUCCESS then
+	begin
+	  flg:=1;
+	  LoggingOutput('Logging message sent by ' + ThreadGetName(ThreadGetCurrent) + 'flg '+ IntToStr(flg) + ' at ' + DateTimeToStr(Now));
+      LoggingOutput('Logging message sent by ' + ThreadGetName(ThreadGetCurrent) + ' Uart opened successfully at ' + DateTimeToStr(Now));
+      ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Uart opened successfully');
+      {Setup our starting point}
+      Count:=0;
+      Characters:='';
+    end;
+   while True do
+    begin
+     SerialRead(@Character,SizeOf(Character),Count);
+     if Character = #13 then
+			begin
+			Characters:=Characters + Chr(13) + Chr(10);
+            ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Received a line: ' + Characters);
+			LoggingOutput(Characters);
+			//test(Length(Characters),PChar(Characters));
+            Characters:='';
+
+    end
+    else
+    begin
+       {Add the character to what we have already recevied}
+       Characters:=Characters + Character;
+    end
+    end;
 
 
     while True do

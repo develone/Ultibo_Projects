@@ -1,0 +1,321 @@
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009C7 - 0045C9AC:0 - 
+ |===================================================================|
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009C8 - 0045C9AC:0 - 
+|                                                                   |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009C9 - 0045C9AC:0 - 
+| Four score and seven years ago our fathers brought forth on this  |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009CA - 0045C9AC:0 - 
+| continent, a new nation, conceived in Liberty, and dedicated to   |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009CB - 0045C9AC:0 - 
+| the proposition that all men are created equal.                   |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009CC - 0045C9AC:0 - 
+|                                                                   |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009CD - 0045C9AC:0 - 
+| Now we are engaged in a great civil war, testing whether that     |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009CE - 0045C9AC:0 - 
+| nation, or any nation so conceived and so dedicated, can long     |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009CF - 0045C9AC:0 - 
+| endure. We are met on a great battle-field of that war. We have   |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009D0 - 0045C9AC:0 - 
+| come to dedicate a portion of that field, as a final resting      |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009D1 - 0045C9AC:0 - 
+| place for those who here gave their lives that that nation might  |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009D2 - 0045C9AC:0 - 
+| live. It is altogether fitting and proper that we should do this. |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009D3 - 0045C9AC:0 - 
+|                                                                   |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009D4 - 0045C9AC:0 - 
+| But, in a larger sense, we can not dedicate-we can not consecrate-|
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009D5 - 0045C9AC:0 - 
+| we can not hallow-this ground. The brave men, living and dead,    |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009D6 - 0045C9AC:0 - 
+| who struggled here, have consecrated it, far above our poor power |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009D7 - 0045C9AC:0 - 
+| to add or detract. The world will little note, nor long remember  |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009D8 - 0045C9AC:0 - 
+| what we say here, but it can never forget what they did here. It  |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009D9 - 0045C9AC:0 - 
+| is for us the living, rather, to be dedicated here to the         |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009DA - 0045C9AC:0 - 
+| unfinished work which they who fought here have thus far so nobly |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009DB - 0045C9AC:0 - 
+| advanced. It is rather for us to be here dedicated to the great   |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009DC - 0045C9AC:0 - 
+| task remaining before us-that from these honored dead we take     |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009DD - 0045C9AC:0 - 
+| increased devotion to that cause for which they gave the last     |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009DE - 0045C9AC:0 - 
+| full measure of devotion-that we here highly resolve that these   |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009DF - 0045C9AC:0 - 
+| dead shall not have died in vain-that this nation, under God,     |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009E0 - 0045C9AC:0 - 
+| shall have a new birth of freedom-and that government of the      |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009E1 - 0045C9AC:0 - 
+| people, by the people, for the people, shall not perish from the  |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009E2 - 0045C9AC:0 - 
+| earth.                                                            |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009E3 - 0045C9AC:0 - 
+|                                                                   |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009E4 - 0045C9AC:0 - 
+|                                                                   |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009E5 - 0045C9AC:0 - 
+|===================================================================|
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:00 192.168.1.215 000009E6 - 0045C9AC:0 - 
+
+==================================================================|
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:21 192.168.1.215 000009E7 - 0045C9AC:0 - 
+ |===================================================================|
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:21 192.168.1.215 000009E8 - 0045C9AC:0 - 
+|                                                                   |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:22 192.168.1.215 000009E9 - 0045C9AC:0 - 
+| Four score and seven years ago our fathers brought forth on this  |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:22 192.168.1.215 000009EA - 0045C9AC:0 - 
+| continent, a new nation, conceived in Liberty, and dedicated to   |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:22 192.168.1.215 000009EB - 0045C9AC:0 - 
+| the proposition that all men are created equal.                   |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:22 192.168.1.215 000009EC - 0045C9AC:0 - 
+|                                                                   |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:22 192.168.1.215 000009ED - 0045C9AC:0 - 
+| Now we are engaged in a great civil war, testing whether that     |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:22 192.168.1.215 000009EE - 0045C9AC:0 - 
+| nation, or any nation so conceived and so dedicated, can long     |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:22 192.168.1.215 000009EF - 0045C9AC:0 - 
+| endure. We are met on a great battle-field of that war. We have   |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:22 192.168.1.215 000009F0 - 0045C9AC:0 - 
+| come to dedicate a portion of that field, as a final resting      |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:22 192.168.1.215 000009F1 - 0045C9AC:0 - 
+| place for those who here gave their lives that that nation might  |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:22 192.168.1.215 000009F2 - 0045C9AC:0 - 
+| live. It is altogether fitting and proper that we should do this. |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:22 192.168.1.215 000009F3 - 0045C9AC:0 - 
+|                                                                   |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:22 192.168.1.215 000009F4 - 0045C9AC:0 - 
+| But, in a larger sense, we can not dedicate-we can not consecrate-|
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:22 192.168.1.215 000009F5 - 0045C9AC:0 - 
+| we can not hallow-this ground. The brave men, living and dead,    |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:22 192.168.1.215 000009F6 - 0045C9AC:0 - 
+| who struggled here, have consecrated it, far above our poor power |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:22 192.168.1.215 000009F7 - 0045C9AC:0 - 
+| to add or detract. The world will little note, nor long remember  |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:22 192.168.1.215 000009F8 - 0045C9AC:0 - 
+| what we say here, but it can never forget what they did here. It  |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:22 192.168.1.215 000009F9 - 0045C9AC:0 - 
+| is for us the living, rather, to be dedicated here to the         |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:22 192.168.1.215 000009FA - 0045C9AC:0 - 
+| unfinished work which they who fought here have thus far so nobly |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:22 192.168.1.215 000009FB - 0045C9AC:0 - 
+| advanced. It is rather for us to be here dedicated to the great   |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:22 192.168.1.215 000009FC - 0045C9AC:0 - 
+| task remaining before us-that from these honored dead we take     |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:22 192.168.1.215 000009FD - 0045C9AC:0 - 
+| increased devotion to that cause for which they gave the last     |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:22 192.168.1.215 000009FE - 0045C9AC:0 - 
+| full measure of devotion-that we here highly resolve that these   |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:22 192.168.1.215 000009FF - 0045C9AC:0 - 
+| dead shall not have died in vain-that this nation, under God,     |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:22 192.168.1.215 00000A00 - 0045C9AC:0 - 
+| shall have a new birth of freedom-and that government of the      |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:22 192.168.1.215 00000A01 - 0045C9AC:0 - 
+| people, by the people, for the people, shall not perish from the  |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:22 192.168.1.215 00000A02 - 0045C9AC:0 - 
+| earth.                                                            |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:22 192.168.1.215 00000A03 - 0045C9AC:0 - 
+|                                                                   |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:22 192.168.1.215 00000A04 - 0045C9AC:0 - 
+|                                                                   |
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:22 192.168.1.215 00000A05 - 0045C9AC:0 - 
+|===================================================================|
+
+
+Waiting for data...Received packet from 192.168.1.215:49270
+Data: <14>May 22 14:00:22 192.168.1.215 00000A06 - 0045C9AC:0 - 
+
+==================================================================|
+
+
+Waiting for data...
