@@ -278,6 +278,18 @@ const
     CDONE = GPIO_PIN_17;
     CRESET_B = GPIO_PIN_22;
     IOB_108_SS = GPIO_PIN_25;
+    RASPI_DIR = GPIO_PIN_20;
+    RASPI_CLK = GPIO_PIN_8;
+    RASPI_D0 = GPIO_PIN_16;
+    RASPI_D1 = GPIO_PIN_19;
+    RASPI_D2 = GPIO_PIN_17;
+    RASPI_D3 = GPIO_PIN_5;
+    RASPI_D4 = GPIO_PIN_6;
+    RASPI_D5 = GPIO_PIN_23;
+    RASPI_D6 = GPIO_PIN_24;
+    RASPI_D7 = GPIO_PIN_18;
+    RASPI_D8 = GPIO_PIN_7;
+
 var
  WSAData:TWSAData;
  flg:LongWord;
@@ -355,21 +367,21 @@ begin
     {Resetting FPGA}
     ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Resetting FPGA');
     ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Setting Reset low');
-    GPIOOutputSet(GPIO_PIN_22,GPIO_LEVEL_LOW);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Reset '+ inttostr(GPIOInputGet(GPIO_PIN_22)));
+    GPIOOutputSet(CRESET_B,GPIO_LEVEL_LOW);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Reset '+ inttostr(GPIOInputGet(CRESET_B)));
 
     Sleep(1000);
     ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Setting Reset high');
-    GPIOOutputSet(GPIO_PIN_22,GPIO_LEVEL_HIGH);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Reset '+ inttostr(GPIOInputGet(GPIO_PIN_22)));
+    GPIOOutputSet(CRESET_B,GPIO_LEVEL_HIGH);
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Reset '+ inttostr(GPIOInputGet(CRESET_B)));
 
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'CDONE '+ inttostr(GPIOInputGet(GPIO_PIN_17)));
+    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'CDONE '+ inttostr(GPIOInputGet(CDONE)));
 
     //Fn:='clktest.bin';
     //Fn:='catboard.bin';
-    Fn:='speechfifo.bin';
+    //Fn:='speechfifo.bin';
     //Fn:='speechfifopmod.bin';
-
+    Fn:='speechpp.bin';
     ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Sending to SPI ' + Fn);
     flg1:=SPISendFile2(Fn,4096,DemoUDPListener.FWindowHandle);
     if (flg1 )  then ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'True returned from SPI wr '+Fn);
