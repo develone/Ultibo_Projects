@@ -40,6 +40,7 @@ uses
   Syscalls,
   GPIO,      {Include the GPIO unit to allow access to the functions}
   Spi,
+  uFPGA,
   Winsock2;  {Include the Winsock2 unit to provide access to the TWinsock2UDPListener class}
 
 
@@ -109,6 +110,10 @@ begin
  
  {Call the inherited Destroy}
  inherited Destroy;
+end;
+function chr(x: Byte): Char;
+begin
+  Result:=Chr(x);
 end;
 function SPISendFile2(const Filename: String; BlockSize: LongWord;Window:TWindowHandle): Boolean;
 var
@@ -278,17 +283,8 @@ const
     CDONE = GPIO_PIN_17;
     CRESET_B = GPIO_PIN_22;
     IOB_108_SS = GPIO_PIN_25;
-    RASPI_DIR = GPIO_PIN_20;
-    RASPI_CLK = GPIO_PIN_8;
-    RASPI_D0 = GPIO_PIN_16;
-    RASPI_D1 = GPIO_PIN_19;
-    RASPI_D2 = GPIO_PIN_17;
-    RASPI_D3 = GPIO_PIN_5;
-    RASPI_D4 = GPIO_PIN_6;
-    RASPI_D5 = GPIO_PIN_23;
-    RASPI_D6 = GPIO_PIN_24;
-    RASPI_D7 = GPIO_PIN_18;
-    RASPI_D8 = GPIO_PIN_7;
+
+
 
 var
  WSAData:TWSAData;
@@ -301,6 +297,13 @@ var
  LastValue:LongWord;
  CurrentValue:LongWord;
  HTTPListener:THTTPListener;
+ nr:integer;
+ LBytes: PByte;
+
+ datab:byte;
+ Stream: TStream;
+ ff:Boolean;
+
 begin
  flg:=0;
  {Perform the normal Winsock startup process}
@@ -398,39 +401,92 @@ begin
     GPIOOutputSet(IOB_108_SS,GPIO_LEVEL_HIGH);
     ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'IOB_108_SS '+ inttostr(GPIOInputGet(IOB_108_SS)));
     ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'CDONE '+ inttostr(GPIOInputGet(CDONE)));
-        if SerialOpen(115200,SERIAL_DATA_8BIT,SERIAL_STOP_1BIT,SERIAL_PARITY_NONE,SERIAL_FLOW_NONE,0,0) = ERROR_SUCCESS then
-	begin
-	  flg:=1;
-	  LoggingOutput('Logging message sent by ' + ThreadGetName(ThreadGetCurrent) + 'flg '+ IntToStr(flg) + ' at ' + DateTimeToStr(Now));
-      LoggingOutput('Logging message sent by ' + ThreadGetName(ThreadGetCurrent) + ' Uart opened successfully at ' + DateTimeToStr(Now));
-      ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Uart opened successfully');
-      {Setup our starting point}
-      Count:=0;
-      Characters:='';
-    end;
-   while True do
-    begin
-     SerialRead(@Character,SizeOf(Character),Count);
-     if Character = #13 then
-			begin
-			Characters:=Characters + Chr(13) + Chr(10);
-            ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Received a line: ' + Characters);
-			LoggingOutput(Characters);
-			//test(Length(Characters),PChar(Characters));
-            Characters:='';
 
-    end
-    else
-    begin
-       {Add the character to what we have already recevied}
-       Characters:=Characters + Character;
-    end
-    end;
+   flg1:=initfpgagpio();
+   if (flg1 )  then ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'True returned from initfpgagpio');
+   //nr := drclk(nr, LBytes);
+   //ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Number of Bytes '+inttostr(nr));
+
+   Stream := TStream.Create;
+   ff:=True;
+   GPIOPullSelect(RASPI_CLK, GPIO_PULL_NONE);
+   GPIOPullSelect(RASPI_DIR, GPIO_PULL_NONE);
+
+   GPIOFunctionSelect(RASPI_CLK, GPIO_FUNCTION_OUT);
+   GPIOFunctionSelect(RASPI_DIR, GPIO_FUNCTION_OUT);
 
 
-    while True do
+   //ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Setting dir hi clk lo');
+   //GPIOOutputSet(RASPI_DIR, GPIO_LEVEL_HIGH);
+   //GPIOOutputSet(RASPI_CLK, GPIO_LEVEL_LOW);
+
+   GPIOFunctionSelect(RASPI_D0,GPIO_FUNCTION_IN);
+   GPIOFunctionSelect(RASPI_D1,GPIO_FUNCTION_IN);
+   GPIOFunctionSelect(RASPI_D2,GPIO_FUNCTION_IN);
+   GPIOFunctionSelect(RASPI_D3,GPIO_FUNCTION_IN);
+   GPIOFunctionSelect(RASPI_D4,GPIO_FUNCTION_IN);
+   GPIOFunctionSelect(RASPI_D5,GPIO_FUNCTION_IN);
+   GPIOFunctionSelect(RASPI_D6,GPIO_FUNCTION_IN);
+   GPIOFunctionSelect(RASPI_D7,GPIO_FUNCTION_IN);
+   GPIOFunctionSelect(RASPI_D8,GPIO_FUNCTION_IN);
+   nr:=0;
+   while (ff)
+   do
+   begin
+     //ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Setting dir hi clk lo');
+     GPIOOutputSet(RASPI_DIR, GPIO_LEVEL_HIGH);
+     GPIOOutputSet(RASPI_CLK, GPIO_LEVEL_LOW);
+
+     //ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Setting dir lo');
+     GPIOOutputSet(RASPI_DIR,GPIO_LEVEL_LOW);
+     //GPIOOutputSet(RASPI_CLK,GPIO_LEVEL_LOw);
+
+     while( GPIOInputGet(RASPI_D8) <> 0)
+     do
      begin
      end;
+       GPIOOutputSet(RASPI_CLK,GPIO_LEVEL_HIGH);
+       //ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Setting clk hi');
+       //GPIOOutputSet(RASPI_DIR,GPIO_LEVEL_HIGH);
+     //while( GPIOInputGet(RASPI_D8) = 0)
+     //do
+     //begin
+
+       datab := 0;
+       //GPIOFunctionSelect(RASPI_D8,GPIO_FUNCTION_IN);
+       //while( GPIOInputGet(RASPI_D8) = 0)
+       //do
+       datab :=  GPIOInputGet(RASPI_D7) << 7;
+       datab :=  datab + GPIOInputGet(RASPI_D6) << 6;
+       datab :=  datab + GPIOInputGet(RASPI_D5) << 5;
+       datab :=  datab + GPIOInputGet(RASPI_D4) << 4;
+       datab :=  datab + GPIOInputGet(RASPI_D3) << 3;
+       datab :=  datab + GPIOInputGet(RASPI_D2) << 2;
+       datab :=  datab + GPIOInputGet(RASPI_D1) << 1;
+       datab :=  datab + GPIOInputGet(RASPI_D0);
+       //ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'byte '+inttostr(datab));
+       //ConsoleWindowWrite(DemoUDPListener.FWindowHandle,inttostr(datab));
+       //ConsoleWindowWrite(DemoUDPListener.FWindowHandle,chr(datab));
+
+       GPIOOutputSet(RASPI_CLK,GPIO_LEVEL_LOW);
+     //end;
+       //ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Number of Bytes '+inttostr(nr));
+
+       Inc(nr);
+       if (datab = 255) then
+        begin
+         ff:=False;
+         ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Number of Bytes '+inttostr(nr));
+        end;
+       ConsoleWindowWrite(DemoUDPListener.FWindowHandle,inttostr(datab));
+       //Stream.WriteByte(datab);
+
+   end;
+
+
+   while True do
+     begin
+    end;
    {Destroy the UDP Listener}
    DemoUDPListener.Free;
   end; 
