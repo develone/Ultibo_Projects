@@ -111,10 +111,11 @@ begin
  {Call the inherited Destroy}
  inherited Destroy;
 end;
-function chr(x: Byte): Char;
+
+{function chr(x: Byte): Char;
 begin
   Result:=Chr(x);
-end;
+end;}
 function SPISendFile2(const Filename: String; BlockSize: LongWord;Window:TWindowHandle): Boolean;
 var
   Size:LongWord;
@@ -403,10 +404,10 @@ begin
     ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'CDONE '+ inttostr(GPIOInputGet(CDONE)));
 
    flg1:=initfpgagpio();
-   if (flg1 )  then ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'True returned from initfpgagpio');
+   //if (flg1 )  then ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'True returned from initfpgagpio');
    //nr := drclk(nr, LBytes);
    //ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Number of Bytes '+inttostr(nr));
-
+   ConsoleWindowClear(DemoUDPListener.FWindowHandle);
    Stream := TStream.Create;
    ff:=True;
    GPIOPullSelect(RASPI_CLK, GPIO_PULL_NONE);
@@ -478,7 +479,7 @@ begin
          ff:=False;
          ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Number of Bytes '+inttostr(nr));
         end;
-       ConsoleWindowWrite(DemoUDPListener.FWindowHandle,inttostr(datab));
+       ConsoleWindowWrite(DemoUDPListener.FWindowHandle,chr(datab));
        //Stream.WriteByte(datab);
 
    end;
