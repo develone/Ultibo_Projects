@@ -1,0 +1,16 @@
+set_io i_clk     C8			# 100 MHz clock
+set_io o_ledg[0] A9			#icoboard C8 mapped to Catboard used make speechpp to test
+set_io o_ledg[1] B8			#icoboard F7 mapped to Catboard used make speechpp to test
+set_io o_ledr    B7			#icoboard K9 mapped to Catboard used make speechpp to test
+
+set_io  i_pp_dir     R3		#icoboard C9 mapped to Catboard used make speechpp to test
+set_io  i_pp_clk     T8		#icoboard C10 mapped to Catboard used make speechpp to test
+set_io io_pp_data[0] R4		#icoboard D9 mapped to Catboard used make speechpp to test
+set_io io_pp_data[1] T3		#icoboard D7 mapped to Catboard used make speechpp to test  
+set_io io_pp_data[2] T13	#icoboard D4 mapped to Catboard used make speechpp to test
+set_io io_pp_data[3] T6		#icoboard A7 mapped to Catboard used make speechpp to test
+set_io io_pp_data[4] T5		#icoboard A6 mapped to Catboard used make speechpp to test
+set_io io_pp_data[5] P9		#icoboard C7 mapped to Catboard used make speechpp to test
+set_io io_pp_data[6] T9		#icoboard C6 mapped to Catboard used make speechpp to test
+set_io io_pp_data[7] T11	#icoboard D6 mapped to Catboard used make speechpp to test
+set_io o_pp_clkfb    T7		#icoboard D5   # set_io io_pp_data[8] D5 mapped to Catboard used make speechpp to test
