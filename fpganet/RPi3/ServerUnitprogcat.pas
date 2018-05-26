@@ -293,13 +293,14 @@ var
  Count:LongWord;
  Character:Char;
  Characters:String;
+ line:String;
  Fn:String;
  flg1:Boolean;
  LastValue:LongWord;
  CurrentValue:LongWord;
  HTTPListener:THTTPListener;
  nr:integer;
- LBytes: PByte;
+
 
  datab:byte;
  Stream: TStream;
@@ -430,6 +431,8 @@ begin
    GPIOFunctionSelect(RASPI_D6,GPIO_FUNCTION_IN);
    GPIOFunctionSelect(RASPI_D7,GPIO_FUNCTION_IN);
    GPIOFunctionSelect(RASPI_D8,GPIO_FUNCTION_IN);
+   while True do
+     begin
    nr:=0;
    while (ff)
    do
@@ -454,7 +457,7 @@ begin
      //begin
 
        datab := 0;
-       //GPIOFunctionSelect(RASPI_D8,GPIO_FUNCTION_IN);
+
        //while( GPIOInputGet(RASPI_D8) = 0)
        //do
        datab :=  GPIOInputGet(RASPI_D7) << 7;
@@ -465,28 +468,36 @@ begin
        datab :=  datab + GPIOInputGet(RASPI_D2) << 2;
        datab :=  datab + GPIOInputGet(RASPI_D1) << 1;
        datab :=  datab + GPIOInputGet(RASPI_D0);
-       //ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'byte '+inttostr(datab));
-       //ConsoleWindowWrite(DemoUDPListener.FWindowHandle,inttostr(datab));
-       //ConsoleWindowWrite(DemoUDPListener.FWindowHandle,chr(datab));
+
 
        GPIOOutputSet(RASPI_CLK,GPIO_LEVEL_LOW);
-     //end;
-       //ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Number of Bytes '+inttostr(nr));
 
        Inc(nr);
        if (datab = 255) then
         begin
          ff:=False;
-         ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Number of Bytes '+inttostr(nr));
+
+         GPIOOutputSet(RASPI_DIR, GPIO_LEVEL_LOW);
+         GPIOOutputSet(RASPI_CLK, GPIO_LEVEL_HIGH);
         end;
-       ConsoleWindowWrite(DemoUDPListener.FWindowHandle,chr(datab));
+       if(datab<>13) then
+        begin
+         line+=chr(datab);
+        end;
+       //ConsoleWindowWrite(DemoUDPListener.FWindowHandle,chr(datab));
+       if(datab=13) then
+        begin
+         ConsoleWindowWriteln(DemoUDPListener.FWindowHandle,line);
+         LoggingOutput(line);
+         line:='';
+        end;
        //Stream.WriteByte(datab);
+
 
    end;
 
 
-   while True do
-     begin
+
     end;
    {Destroy the UDP Listener}
    DemoUDPListener.Free;
