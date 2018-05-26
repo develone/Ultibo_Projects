@@ -366,9 +366,9 @@ begin
     ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'CDONE '+ inttostr(GPIOInputGet(GPIO_PIN_17)));
 
     //Fn:='clktest.bin';
-    Fn:='catboard.bin';
-    //Fn:='speechfifo.bin';
-    //Fn:='speechfifopmod.bin';
+    //Fn:='leddigits.bin';
+    Fn:='speechfifo.bin';
+
 
     ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Sending to SPI ' + Fn);
     flg1:=SPISendFile2(Fn,4096,DemoUDPListener.FWindowHandle);
