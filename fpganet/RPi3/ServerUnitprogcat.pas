@@ -434,6 +434,8 @@ begin
    while True do
      begin
    nr:=0;
+   ff:=True;
+   line:='';
    while (ff)
    do
    begin
