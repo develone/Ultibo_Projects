@@ -285,7 +285,7 @@ var
 begin
   fIp:=fSock.GetRemoteSinIP;
   fPort:=fSock.GetRemoteSinPort;
-  //ConsoleWindowWriteLn(WindowHandle,'Accepted connection from '+fIp+InttoStr(fPort));
+  WriteLn(format('Accepted connection from %s:%d',[fIp,fPort]));
   while not isDone  do
    begin
     if fSock.WaitingData > 0 then
