@@ -1,0 +1,19 @@
+06/06/18
+https://forum.lazarus.freepascal.org/index.php?topic=21024.0
+
+export PATH=/home/pi/ultibo/core/fpc/bin:$PATH
+fpc -B -Tlinux -Parm @/home/pi/ultibo/core/fpc/bin/fpc.cfg -O2 server.pas
+
+pi@pi3-2:~/socket_tests/AraratSynapse $ ./server 
+Listener has been created
+Socket successfully initialized
+Bind on 5050
+We have 1 client threads!
+Accepted connection from 192.168.1.214:47914
+
+pi@pi3-3:~/socket_tests/AraratSynapse $ telnet pi3-2 5050
+Trying 2600:1700:bc40:b480::49...
+Trying 2600:1700:bc40:b480:4077:e4cb:6d18:81df...
+Trying 192.168.1.181...
+Connected to pi3-2.
+Escape character is '^]'.
