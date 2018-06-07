@@ -17,3 +17,10 @@ Trying 2600:1700:bc40:b480:4077:e4cb:6d18:81df...
 Trying 192.168.1.181...
 Connected to pi3-2.
 Escape character is '^]'.
+
+
+./arm-wbregs -n 192.168.1.185 -p 5050 version
+A1011R Read from Addr A1011R
+
+./arm-wbregs -n 192.168.1.185 -p 5050 gpio 0x00010001
+A1009W10001  This means write to Addr 1009 data 10001
