@@ -303,107 +303,21 @@ begin
     Fn:='speechpp.bin';
     ProgFpga(Fn,DemoUDPListener.FWindowHandle);
 
-
-
-
-
-   flg1:=initfpgagpio();
-   //if (flg1 )  then ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'True returned from initfpgagpio');
-   //nr := drclk(nr, LBytes);
-   //ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Number of Bytes '+inttostr(nr));
-   ConsoleWindowClear(DemoUDPListener.FWindowHandle);
-   Stream := TStream.Create;
-   ff:=True;
-   GPIOPullSelect(RASPI_CLK, GPIO_PULL_NONE);
-   GPIOPullSelect(RASPI_DIR, GPIO_PULL_NONE);
-
-   GPIOFunctionSelect(RASPI_CLK, GPIO_FUNCTION_OUT);
-   GPIOFunctionSelect(RASPI_DIR, GPIO_FUNCTION_OUT);
-
-
-   //ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Setting dir hi clk lo');
-   //GPIOOutputSet(RASPI_DIR, GPIO_LEVEL_HIGH);
-   //GPIOOutputSet(RASPI_CLK, GPIO_LEVEL_LOW);
-
-   GPIOFunctionSelect(RASPI_D0,GPIO_FUNCTION_IN);
-   GPIOFunctionSelect(RASPI_D1,GPIO_FUNCTION_IN);
-   GPIOFunctionSelect(RASPI_D2,GPIO_FUNCTION_IN);
-   GPIOFunctionSelect(RASPI_D3,GPIO_FUNCTION_IN);
-   GPIOFunctionSelect(RASPI_D4,GPIO_FUNCTION_IN);
-   GPIOFunctionSelect(RASPI_D5,GPIO_FUNCTION_IN);
-   GPIOFunctionSelect(RASPI_D6,GPIO_FUNCTION_IN);
-   GPIOFunctionSelect(RASPI_D7,GPIO_FUNCTION_IN);
-   GPIOFunctionSelect(RASPI_D8,GPIO_FUNCTION_IN);
-   while True do
+    while True
+    do
      begin
-   nr:=0;
-   ff:=True;
-   line:='';
-   while (ff)
-   do
-   begin
-     //ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Setting dir hi clk lo');
-     GPIOOutputSet(RASPI_DIR, GPIO_LEVEL_HIGH);
-     GPIOOutputSet(RASPI_CLK, GPIO_LEVEL_LOW);
-
-     //ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Setting dir lo');
-     GPIOOutputSet(RASPI_DIR,GPIO_LEVEL_LOW);
-     //GPIOOutputSet(RASPI_CLK,GPIO_LEVEL_LOw);
-
-     while( GPIOInputGet(RASPI_D8) <> 0)
-     do
-     begin
-     end;
-       GPIOOutputSet(RASPI_CLK,GPIO_LEVEL_HIGH);
-       //ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Setting clk hi');
-       //GPIOOutputSet(RASPI_DIR,GPIO_LEVEL_HIGH);
-     //while( GPIOInputGet(RASPI_D8) = 0)
-     //do
-     //begin
-
-       datab := 0;
-
-       //while( GPIOInputGet(RASPI_D8) = 0)
-       //do
-       datab :=  GPIOInputGet(RASPI_D7) << 7;
-       datab :=  datab + GPIOInputGet(RASPI_D6) << 6;
-       datab :=  datab + GPIOInputGet(RASPI_D5) << 5;
-       datab :=  datab + GPIOInputGet(RASPI_D4) << 4;
-       datab :=  datab + GPIOInputGet(RASPI_D3) << 3;
-       datab :=  datab + GPIOInputGet(RASPI_D2) << 2;
-       datab :=  datab + GPIOInputGet(RASPI_D1) << 1;
-       datab :=  datab + GPIOInputGet(RASPI_D0);
-
-
-       GPIOOutputSet(RASPI_CLK,GPIO_LEVEL_LOW);
-
-       Inc(nr);
-       if (datab = 255) then
-        begin
-         ff:=False;
-
-         GPIOOutputSet(RASPI_DIR, GPIO_LEVEL_LOW);
-         GPIOOutputSet(RASPI_CLK, GPIO_LEVEL_HIGH);
-        end;
-       if(datab<>13) then
-        begin
-         line+=chr(datab);
-        end;
-       //ConsoleWindowWrite(DemoUDPListener.FWindowHandle,chr(datab));
-       if(datab=13) then
-        begin
-         ConsoleWindowWriteln(DemoUDPListener.FWindowHandle,line);
-         LoggingOutput(line);
-         line:='';
-        end;
-       //Stream.WriteByte(datab);
-
-
-   end;
-
-
-
+      nr:=0;
+      //ConsoleWindowWriteln(DemoUDPListener.FWindowHandle,'Calling ReadFpga');
+      nr:=ReadFpga(DemoUDPListener.FWindowHandle);
+      if nr <> 1 then ConsoleWindowWriteln(DemoUDPListener.FWindowHandle,'Back in ServerUnit '+IntToStr(nr));
     end;
+
+
+
+
+
+
+
    {Destroy the UDP Listener}
    DemoUDPListener.Free;
   end; 

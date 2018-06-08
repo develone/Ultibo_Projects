@@ -229,12 +229,14 @@ ClientSock: TSocket;
 ClientThread: TTCPThread;
 WindowHandle:TWindowHandle;
 lclfn:String;
+nr:integer;
 
 ff:Boolean;
  begin
   lclfn:='speechpp.bin';
   WindowHandle:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_FULL,True);
   ProgFpga(lclfn,WindowHandle);
+  nr:=ReadFpga(WindowHandle);
   if (ff )  then ConsoleWindowWriteLn(WindowHandle,'FPGA was program');
    with ListenerSocket do
      begin

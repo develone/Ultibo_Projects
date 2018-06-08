@@ -50,7 +50,7 @@ function initfpgagpio(): Boolean;
 function SPISendFile2(const Filename: String; BlockSize: LongWord;Window:TWindowHandle): Boolean;
 //function drclk(nr:integer; LBytes:PByte): integer;
 function ProgFpga(const Filename: String; ProgWindow:TWindowHandle):Boolean;
-
+function ReadFpga(ProgWindow:TWindowHandle):integer;
 implementation
   function SPISendFile2(const Filename: String; BlockSize: LongWord;Window:TWindowHandle): Boolean;
 var
@@ -209,6 +209,113 @@ begin
 
 end;
 
+ function ReadFpga(ProgWindow:TWindowHandle):integer;
+ var
+   datab:byte;
+   Stream: TStream;
+   ff:Boolean;
+   flg1:Boolean;
+   flgmain:Boolean;
+   nr:integer;
+   line:String;
+
+ begin
+   flg1:=initfpgagpio();
+
+   //ConsoleWindowClear(ProgWindow);
+   Stream := TStream.Create;
+   ff:=True;
+   flgmain:=True;
+   GPIOPullSelect(RASPI_CLK, GPIO_PULL_NONE);
+   GPIOPullSelect(RASPI_DIR, GPIO_PULL_NONE);
+
+   GPIOFunctionSelect(RASPI_CLK, GPIO_FUNCTION_OUT);
+   GPIOFunctionSelect(RASPI_DIR, GPIO_FUNCTION_OUT);
+
+
+
+
+   GPIOFunctionSelect(RASPI_D0,GPIO_FUNCTION_IN);
+   GPIOFunctionSelect(RASPI_D1,GPIO_FUNCTION_IN);
+   GPIOFunctionSelect(RASPI_D2,GPIO_FUNCTION_IN);
+   GPIOFunctionSelect(RASPI_D3,GPIO_FUNCTION_IN);
+   GPIOFunctionSelect(RASPI_D4,GPIO_FUNCTION_IN);
+   GPIOFunctionSelect(RASPI_D5,GPIO_FUNCTION_IN);
+   GPIOFunctionSelect(RASPI_D6,GPIO_FUNCTION_IN);
+   GPIOFunctionSelect(RASPI_D7,GPIO_FUNCTION_IN);
+   GPIOFunctionSelect(RASPI_D8,GPIO_FUNCTION_IN);
+
+   while flgmain do
+     begin
+   nr:=0;
+   ff:=True;
+   line:='';
+   while (ff)
+   do
+   begin
+     //ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Setting dir hi clk lo');
+     GPIOOutputSet(RASPI_DIR, GPIO_LEVEL_HIGH);
+     GPIOOutputSet(RASPI_CLK, GPIO_LEVEL_LOW);
+
+     //ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Setting dir lo');
+     GPIOOutputSet(RASPI_DIR,GPIO_LEVEL_LOW);
+     //GPIOOutputSet(RASPI_CLK,GPIO_LEVEL_LOw);
+
+     while( GPIOInputGet(RASPI_D8) <> 0)
+       do
+         begin
+        end;
+     GPIOOutputSet(RASPI_CLK,GPIO_LEVEL_HIGH);
+       //ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Setting clk hi');
+       //GPIOOutputSet(RASPI_DIR,GPIO_LEVEL_HIGH);
+     //while( GPIOInputGet(RASPI_D8) = 0)
+     //do
+     //begin
+
+     datab := 0;
+
+       //while( GPIOInputGet(RASPI_D8) = 0)
+       //do
+     datab :=  GPIOInputGet(RASPI_D7) << 7;
+     datab :=  datab + GPIOInputGet(RASPI_D6) << 6;
+     datab :=  datab + GPIOInputGet(RASPI_D5) << 5;
+     datab :=  datab + GPIOInputGet(RASPI_D4) << 4;
+     datab :=  datab + GPIOInputGet(RASPI_D3) << 3;
+     datab :=  datab + GPIOInputGet(RASPI_D2) << 2;
+     datab :=  datab + GPIOInputGet(RASPI_D1) << 1;
+     datab :=  datab + GPIOInputGet(RASPI_D0);
+
+
+     GPIOOutputSet(RASPI_CLK,GPIO_LEVEL_LOW);
+
+     Inc(nr);
+       if (datab = 255) then
+         begin
+           ff:=False;
+
+           GPIOOutputSet(RASPI_DIR, GPIO_LEVEL_LOW);
+           GPIOOutputSet(RASPI_CLK, GPIO_LEVEL_HIGH);
+         end;
+       if(datab<>13) then
+        begin
+         line+=chr(datab);
+        end;
+       //ConsoleWindowWrite(DemoUDPListener.FWindowHandle,chr(datab));
+       if(datab=13) then
+        begin
+         ConsoleWindowWriteln(ProgWindow,line);
+         LoggingOutput(line);
+         line:='';
+        end;
+       //Stream.WriteByte(datab);
+
+
+   end;
+   flgmain:=False;
+
+ end;
+   Result:=nr;
+ end;
 end.
 
 
