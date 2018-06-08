@@ -40,6 +40,7 @@ uses
   Syscalls,
   GPIO,      {Include the GPIO unit to allow access to the functions}
   Spi,
+  uFPGA,
   Winsock2;  {Include the Winsock2 unit to provide access to the TWinsock2UDPListener class}
 
 
@@ -109,68 +110,6 @@ begin
  
  {Call the inherited Destroy}
  inherited Destroy;
-end;
-function SPISendFile2(const Filename: String; BlockSize: LongWord;Window:TWindowHandle): Boolean;
-var
-  Size:LongWord;
-  Remain:LongWord;
-  Offset:PtrUInt;
-  Count:LongWord = 0;
-  SPIDevice: PSPIDevice;
-  MemoryStream: TMemoryStream;
-begin
-  Result := False;
-
-  //Check the file
-  if not FileExists(Filename) then
-    Exit;
-
-  //Open the file
-  MemoryStream := TMemoryStream.Create;
-  try
-   //Load the file
-   MemoryStream.LoadFromFile(Filename);
-
-   //Locate the SPI device (Adjust for boards other than Pi3)
-   SPIDevice := SPIDeviceFindByDescription(BCM2710_SPI0_DESCRIPTION);
-
-   if SPIDevice = nil then
-     Exit;
-
-   //Configure SPI Chip Select 0
-   if SPIDeviceSetClockRate(SPIDevice ,SPI_CS_0, 1000000) <> ERROR_SUCCESS then
-     Exit;
-
-   //Start the SPI device
-   if SPIDeviceStart(SPIDevice, SPI_MODE_4WIRE, 1000000, SPI_CLOCK_PHASE_LOW, SPI_CLOCK_POLARITY_LOW) <> ERROR_SUCCESS then
-     Exit;
-
-   //Send block size pieces to SPI device
-   Remain := MemoryStream.Size;
-   Offset := 0;
-   while Remain > 0 do
-   begin
-     //Determine write size
-     Size := BlockSize;
-     if Size > Remain then Size := Remain;
-
-     //Write the data (Note: You can also pass the flag SPI_TRANSFER_DMA to enable DMA transfers)
-     if SPIDeviceWrite(SPIDevice, SPI_CS_0, Pointer(MemoryStream.Memory + Offset), Size, SPI_TRANSFER_NONE, Count) <> ERROR_SUCCESS then
-       Exit;
-     ConsoleWindowWriteLn(Window,'In SPISendFile2 '+InttoStr(Remain));
-     //Update Remain and Offset
-     Dec(Remain, Size);
-     Inc(Offset, Size);
-   end;
-
-   //Close the SPI device
-   SPIDeviceStop(SPIDevice);
-   ConsoleWindowWriteLn(Window,'Setting True in SPISendFile2');
-   Result := True;
-  finally
-    //Close File
-    MemoryStream.Free;
-  end;
 end;
 
 
@@ -274,10 +213,7 @@ end;
 {Here we create the instance of our UDP listener class and set some parameters
  to customize the way it operates.}
 procedure ServerStart;
-const
-    CDONE = GPIO_PIN_17;
-    CRESET_B = GPIO_PIN_22;
-    IOB_108_SS = GPIO_PIN_25;
+
 var
  WSAData:TWSAData;
  flg:LongWord;
@@ -319,24 +255,16 @@ begin
    {Set the server to active (Listener)} 
    DemoUDPListener.Active:=True;
 
-   {No pullup pins 17.22,and 25}
-   GPIOPullSelect(CDONE,GPIO_PULL_NONE);
-   GPIOPullSelect(CRESET_B,GPIO_PULL_NONE);
-   GPIOPullSelect(IOB_108_SS,GPIO_PULL_NONE);
 
-   {pin 17 set as input}
-   {BCM 17 CDONE}
 
-   GPIOFunctionSelect(CDONE,GPIO_FUNCTION_IN);
 
-   {pins 15 & 22  set as output}
-   {BCM 22 CRESET_B}
 
-   GPIOFunctionSelect(CRESET_B,GPIO_FUNCTION_OUT);
 
-   {BCM 25 R12 IOB_108_SS}
 
-   GPIOFunctionSelect(GPIO_PIN_25,GPIO_FUNCTION_OUT);
+
+
+
+
 
    {At this point our UDP server has been started independently of our current thread and will
     continue to run by itself even if this thread terminates. For the sake of the example we will
@@ -347,45 +275,16 @@ begin
     WebStatusRegister(HTTPListener,'','',True);
     {here is where the new code will be put}
 
-    {BCM 25 R12 IOB_108_SS setting low}
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'setting IOB_108_SS low');
-    GPIOOutputSet(IOB_108_SS,GPIO_LEVEL_LOW);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'IOB_108_SS '+ inttostr(GPIOInputGet(IOB_108_SS)));
 
-    {Resetting FPGA}
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Resetting FPGA');
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Setting Reset low');
-    GPIOOutputSet(GPIO_PIN_22,GPIO_LEVEL_LOW);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Reset '+ inttostr(GPIOInputGet(GPIO_PIN_22)));
 
-    Sleep(1000);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Setting Reset high');
-    GPIOOutputSet(GPIO_PIN_22,GPIO_LEVEL_HIGH);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Reset '+ inttostr(GPIOInputGet(GPIO_PIN_22)));
 
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'CDONE '+ inttostr(GPIOInputGet(GPIO_PIN_17)));
 
     //Fn:='clktest.bin';
     //Fn:='leddigits.bin';
     Fn:='speechfifo.bin';
+    ProgFpga(Fn,DemoUDPListener.FWindowHandle);
 
 
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Sending to SPI ' + Fn);
-    flg1:=SPISendFile2(Fn,4096,DemoUDPListener.FWindowHandle);
-    if (flg1 )  then ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'True returned from SPI wr '+Fn);
-    //ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-
-    Fn:='sixzeros.bin';
-    flg1:=SPISendFile2(Fn,6,DemoUDPListener.FWindowHandle);
-    if (flg1 )  then ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'True returned from SPI wr '+Fn);
-    //ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'return '+Fn+' '+BooltoStr(flg1));
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'CDONE '+ inttostr(GPIOInputGet(CDONE)));
-
-    {BCM 25 R12 IOB_108_SS setting high}
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'setting IOB_108_SS high');
-    GPIOOutputSet(IOB_108_SS,GPIO_LEVEL_HIGH);
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'IOB_108_SS '+ inttostr(GPIOInputGet(IOB_108_SS)));
-    ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'CDONE '+ inttostr(GPIOInputGet(CDONE)));
         if SerialOpen(115200,SERIAL_DATA_8BIT,SERIAL_STOP_1BIT,SERIAL_PARITY_NONE,SERIAL_FLOW_NONE,0,0) = ERROR_SUCCESS then
 	begin
 	  flg:=1;
