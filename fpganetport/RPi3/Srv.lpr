@@ -224,19 +224,66 @@ end;
 { TListenerThread }
 
 procedure TListenerThread.Execute;
-var
-ClientSock: TSocket;
-ClientThread: TTCPThread;
-WindowHandle:TWindowHandle;
-lclfn:String;
-nr:integer;
 
-ff:Boolean;
+
+var
+ClientSock : TSocket;
+ClientThread : TTCPThread;
+WindowHandle : TWindowHandle;
+lclfn : String;
+nr : integer;
+datab : Byte;
+bp : ^Byte;
+rdp : ^Byte;
+CmdArray : array [0..11] of Byte;
+RDArray : array [0..11] of Byte;
+ff : Boolean;
+{0xc1 0xb1 0xb0 0xb0 0xb9 0xd7 0xb7 0xb0 0xb0 0xb0 0xb7 0x8a < A1009W70007
+0xc1 0xb1 0xb0 0xb0 0xb9 0xd7 0xb3 0xb0 0xb0 0xb0 0xb3 0x8a < A1009W30003
+0xc1 0xb1 0xb0 0xb0 0xb9 0xd7 0xb1 0xb0 0xb0 0xb0 0xb1 0x8a < A1009W10001
+
+0xc1 0xb1 0xb0 0xb0 0xb9 0xd7 0xb7 0xb0 0xb0 0xb0 0xb0 0x8a < A1009W70000
+0xc1 0xb1 0xb0 0xb0 0xb9 0xd7 0xb3 0xb0 0xb0 0xb0 0xb0 0x8a < A1009W30000
+0xc1 0xb1 0xb0 0xb0 0xb9 0xd7 0xb1 0xb0 0xb0 0xb0 0xb0 0x8a < A1009W10000}
+
+
  begin
-  lclfn:='speechpp.bin';
+
+  bp := @CmdArray;
+  rdp := @RDArray;
+  {0xc1 0xb1 0xb0 0xb0 0xb9 0xd7 0xb7 0xb0 0xb0 0xb0 0xb7 0x8a < A1009W70007}
+  CmdArray[0] := 193; // 0xC1 0x41
+  CmdArray[1] := 177; // 0xB1 0x31
+  CmdArray[2] := 176; // 0xB0 0x30
+  CmdArray[3] := 176; // 0xB0 0x30
+  CmdArray[4] := 185; // 0xB9 0x39
+  CmdArray[5] := 215; // 0xD7 0x57
+  CmdArray[6] := 183; // 0xB7 0x37
+  CmdArray[7] := 176; // 0xB0 0x30
+  CmdArray[8] := 176; // 0xB0 0x30
+  CmdArray[9] := 176; // 0xB0 0x30
+  CmdArray[10] := 183; // 0xB7 0x37
+  CmdArray[11] := 138; // 0x8A 0x0a
+
+  //lclfn:='speechpp.bin';
+  lclfn:='catzip.bin';
   WindowHandle:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_FULL,True);
+   for nr := 0 to nr do
+      begin
+      datab := bp^;
+      inc(bp);
+      ConsoleWindowWriteLn(WindowHandle,'using ptr '+inttostr(nr) + ' '+ chr(datab));
+      //ConsoleWindowWriteLn(WindowHandle,'nr '+inttostr(nr) + ' '+ chr(CmdArrayOn[nr]));
+     end;
   ProgFpga(lclfn,WindowHandle);
-  nr:=ReadFpga(WindowHandle);
+  //nr:=ReadFpga(WindowHandle);
+  nr := 11;
+
+  bp := @CmdArray;
+  WriteFpga(bp,WindowHandle,nr,rdp);
+  Sleep (30000);
+  CmdArray[10] := 176; // 0xB0 0x30
+  //WriteFpga(bp,WindowHandle,nr,rdp);
   if (ff )  then ConsoleWindowWriteLn(WindowHandle,'FPGA was program');
    with ListenerSocket do
      begin
