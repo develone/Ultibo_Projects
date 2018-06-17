@@ -426,7 +426,7 @@ end;
        inc(ptr);
        ConsoleWindowWriteLn(ProgWindow,'write ii '+inttostr(ii) + ' '+ inttostr(datab));
 
-       SetInputs();
+       //SetInputs();
 
        GPIOOutputSet(RASPI_CLK,GPIO_LEVEL_HIGH);
 
@@ -441,7 +441,7 @@ end;
            begin
            Sleep(10);
        end;
-
+       SetInputs();
        GPIOOutputSet(RASPI_DIR,GPIO_LEVEL_LOW);
 
 

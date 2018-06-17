@@ -258,11 +258,11 @@ ff : Boolean;
   CmdArray[3] := 176; // 0xB0 0x30
   CmdArray[4] := 185; // 0xB9 0x39
   CmdArray[5] := 215; // 0xD7 0x57
-  CmdArray[6] := 183; // 0xB7 0x37
+  CmdArray[6] := 177; // 0xB7 0x37 0xB1 0xB3
   CmdArray[7] := 176; // 0xB0 0x30
   CmdArray[8] := 176; // 0xB0 0x30
   CmdArray[9] := 176; // 0xB0 0x30
-  CmdArray[10] := 183; // 0xB7 0x37
+  CmdArray[10] := 177; // 0xB7 0x37 0xB1 0xB3
   CmdArray[11] := 138; // 0x8A 0x0a
 
   //lclfn:='speechpp.bin';
@@ -281,9 +281,25 @@ ff : Boolean;
 
   bp := @CmdArray;
   WriteFpga(bp,WindowHandle,nr,rdp);
-  Sleep (30000);
-  CmdArray[10] := 176; // 0xB0 0x30
-  //WriteFpga(bp,WindowHandle,nr,rdp);
+  Sleep (10000);
+  //A1009W30003
+  CmdArray[6] := 179; //  0xB3  3
+  CmdArray[10] := 179; //  0xB3 3
+  WriteFpga(bp,WindowHandle,nr,rdp);
+  Sleep (10000);
+  //A1009W70007
+  CmdArray[6] := 183; //  0xB7 7
+  CmdArray[10] := 183; //  0xB7 7
+  WriteFpga(bp,WindowHandle,nr,rdp);
+  Sleep (10000);
+  //Read version
+  CmdArray[5] := 210; //  0xD2   R
+  CmdArray[3] := 177; //  0xB7   0-->1
+  CmdArray[4] := 176; //  0xB7   1-->0
+  CmdArray[6] := 138;
+  nr := 11;
+  WriteFpga(bp,WindowHandle,nr,rdp);
+
   if (ff )  then ConsoleWindowWriteLn(WindowHandle,'FPGA was program');
    with ListenerSocket do
      begin
