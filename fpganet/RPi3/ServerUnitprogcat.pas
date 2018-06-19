@@ -301,6 +301,8 @@ begin
     //Fn:='speechfifo.bin';
     //Fn:='speechfifopmod.bin';
     Fn:='speechpp.bin';
+     //Fn:='leddigits.bin';
+     //Fn:='switch_leds.bin';
     ProgFpga(Fn,DemoUDPListener.FWindowHandle);
 
     while True
