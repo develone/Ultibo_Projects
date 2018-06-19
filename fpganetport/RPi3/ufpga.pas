@@ -52,6 +52,8 @@ function SPISendFile2(const Filename: String; BlockSize: LongWord;Window:TWindow
 function ProgFpga(const Filename: String; ProgWindow:TWindowHandle):Boolean;
 function ReadFpga(ProgWindow:TWindowHandle):integer;
 function WriteFpga(bptr:Pointer;ProgWindow:TWindowHandle;num:integer;rdptr:Pointer):integer;
+
+function WriteFpga1(bptr:Pointer; num:integer;rdptr:Pointer):integer;
 procedure SetOutputs();
 procedure SetInputs();
 implementation
@@ -486,6 +488,144 @@ end;
      end;
      Result:=num;
    end;
+
+ function WriteFpga1(bptr:Pointer; num:integer;rdptr:Pointer):integer;
+ var
+  ii : integer;
+  datab : Byte;
+  testbit : Byte;
+  ptr : ^Byte;
+  lrdptr : ^Byte;
+
+ begin
+   ptr := bptr;
+   lrdptr := rdptr;
+
+   //ConsoleWindowWriteLn(ProgWindow,'in write fpga setting D0-D7 output');
+   GPIOPullSelect(RASPI_CLK, GPIO_PULL_NONE);
+   GPIOPullSelect(RASPI_DIR, GPIO_PULL_NONE);
+
+   GPIOFunctionSelect(RASPI_CLK, GPIO_FUNCTION_OUT);
+   GPIOFunctionSelect(RASPI_DIR, GPIO_FUNCTION_OUT);
+   GPIOFunctionSelect(RASPI_D8, GPIO_FUNCTION_IN);
+
+
+   for ii := 0 to num do
+      begin
+
+        datab := ptr^;
+        //ConsoleWindowWriteLn(ProgWindow,'Setting dir hi');
+        GPIOOutputSet(RASPI_DIR,GPIO_LEVEL_HIGH);
+
+        //ConsoleWindowWriteLn(ProgWindow,'Setting clk low');
+        GPIOOutputSet(RASPI_CLK,GPIO_LEVEL_LOW);
+
+        while( GPIOInputGet(RASPI_D8) <> 0)
+        do
+         begin
+          Sleep(10);
+        end;
+
+       SetOutputs();
+
+
+
+       testbit := 128;
+       testbit := (datab and testbit);
+       if ( testbit = 128 ) then GPIOOutputSet(RASPI_D7,GPIO_LEVEL_HIGH);
+       if ( testbit = 0 ) then GPIOOutputSet(RASPI_D7,GPIO_LEVEL_LOW);
+       testbit := 64;
+       testbit := (datab and testbit);
+       if ( testbit = 64 ) then GPIOOutputSet(RASPI_D6,GPIO_LEVEL_HIGH);
+       if ( testbit = 0 ) then GPIOOutputSet(RASPI_D6,GPIO_LEVEL_LOW);
+       testbit := 32;
+       testbit := (datab and testbit);
+       if ( testbit = 32 ) then GPIOOutputSet(RASPI_D5,GPIO_LEVEL_HIGH);
+       if ( testbit = 0 ) then GPIOOutputSet(RASPI_D5,GPIO_LEVEL_LOW);
+       testbit := 16;
+       testbit := (datab and testbit);
+       if ( testbit = 16 ) then GPIOOutputSet(RASPI_D4,GPIO_LEVEL_HIGH);
+       if ( testbit = 0 ) then GPIOOutputSet(RASPI_D4,GPIO_LEVEL_LOW);
+       testbit := 8;
+       testbit := (datab and testbit);
+       if ( testbit = 8 ) then GPIOOutputSet(RASPI_D3,GPIO_LEVEL_HIGH);
+       if ( testbit = 0 ) then GPIOOutputSet(RASPI_D3,GPIO_LEVEL_LOW);
+       testbit := 4;
+       testbit := (datab and testbit);
+       if ( testbit = 4 ) then GPIOOutputSet(RASPI_D2,GPIO_LEVEL_HIGH);
+       if ( testbit = 0 ) then GPIOOutputSet(RASPI_D2,GPIO_LEVEL_LOW);
+       testbit := 2;
+       testbit := (datab and testbit);
+       if ( testbit = 2 ) then GPIOOutputSet(RASPI_D1,GPIO_LEVEL_HIGH);
+       if ( testbit = 0 ) then GPIOOutputSet(RASPI_D1,GPIO_LEVEL_LOW);
+       testbit := 1;
+       testbit := (datab and testbit);
+       if ( testbit = 1 ) then GPIOOutputSet(RASPI_D0,GPIO_LEVEL_HIGH);
+       if ( testbit = 0 ) then GPIOOutputSet(RASPI_D0,GPIO_LEVEL_LOW);
+       inc(ptr);
+       //ConsoleWindowWriteLn(ProgWindow,'write ii '+inttostr(ii) + ' '+ inttostr(datab));
+
+       //SetInputs();
+
+       GPIOOutputSet(RASPI_CLK,GPIO_LEVEL_HIGH);
+
+       while( GPIOInputGet(RASPI_CLK) <> 1)
+         do
+           begin
+           Sleep(10);
+       end;
+
+       while( GPIOInputGet(RASPI_D8) = 0)
+         do
+           begin
+           Sleep(10);
+       end;
+       SetInputs();
+       GPIOOutputSet(RASPI_DIR,GPIO_LEVEL_LOW);
+
+
+       GPIOOutputSet(RASPI_CLK,GPIO_LEVEL_LOW);
+
+
+
+       while( GPIOInputGet(RASPI_D8) <> 0)
+        do
+          begin
+          Sleep(10);
+        end;
+
+       GPIOOutputSet(RASPI_CLK,GPIO_LEVEL_HIGH);
+
+       while( GPIOInputGet(RASPI_D8) <> 1)
+         do
+           begin
+            Sleep(10);
+        end;
+       datab := 0;
+       {if ( GPIOInputGet(RASPI_D7)=1) then datab :=  (datab or 128);
+       if ( GPIOInputGet(RASPI_D6)=1) then datab :=  (datab or 64);
+       if ( GPIOInputGet(RASPI_D5)=1) then datab :=  (datab or 32);
+       if ( GPIOInputGet(RASPI_D4)=1) then datab :=  (datab or 16);
+       if ( GPIOInputGet(RASPI_D3)=1) then datab :=  (datab or 8);
+       if ( GPIOInputGet(RASPI_D2)=1) then datab := (datab or 4);
+       if ( GPIOInputGet(RASPI_D1)=1) then datab := (datab or 2);
+       if ( GPIOInputGet(RASPI_D0)=1) then datab := (datab or 1);}
+       datab :=  GPIOInputGet(RASPI_D7) << 7;
+       datab :=  datab + GPIOInputGet(RASPI_D6) << 6;
+       datab :=  datab + GPIOInputGet(RASPI_D5) << 5;
+       datab :=  datab + GPIOInputGet(RASPI_D4) << 4;
+       datab :=  datab + GPIOInputGet(RASPI_D3) << 3;
+       datab :=  datab + GPIOInputGet(RASPI_D2) << 2;
+       datab :=  datab + GPIOInputGet(RASPI_D1) << 1;
+       datab :=  datab + GPIOInputGet(RASPI_D0);
+
+       GPIOOutputSet(RASPI_DIR,GPIO_LEVEL_LOW);
+       GPIOOutputSet(RASPI_CLK,GPIO_LEVEL_LOW);
+       //ConsoleWindowWriteLn(ProgWindow,'read ii '+inttostr(ii) + ' '+ inttostr(datab));
+     end;
+     Result:=num;
+   end;
+
 end.
 
 
