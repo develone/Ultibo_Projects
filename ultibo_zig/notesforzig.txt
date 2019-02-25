@@ -1,0 +1,356 @@
+02/25/19
+ssh -Y vidal@ws010
+Go to the folder where Mark zigtest code is located.
+cd /home/vidal/testbuilds/API/samples/zigtest
+Add zig binaries to your PATH
+. ../../../Ultibo_Projects/ultibo_zig/zz.sh
+. zz.sh sets the PATH for zig on Ubuntu 16.04.1 LTS (GNU/Linux 4.4.0-142-generic x86_64)
+Contentes of zz.sh
+#!/bin/bash
+#export PATH=~/testbuilds/ultibozig/zig-0.3.0+98869edb/build/bin:$PATH
+export PATH=~/testbuilds/Ultibo_Projects/ultibo_zig/zig-linux-x86_64-0.3.0+e5d4862e:$PATH
+echo $PATH
+which zig
+
+
+This is from the ~/testbuilds/API/samples/zigtest/Makefile from Mark's API repository
+	
+zigmain.o: zigmain.zig
+        zig build-obj --release-safe -isystem ../../include -isystem /usr/lib/gcc/arm-none-eabi/5.4.1/include-missing --target-arch armv7 --target-os freestanding --target-environ gnueabihf zigmain.zig
+Try and compile the zigmain.zig code
+zig build-obj -isystem ../../include/ -isystem /usr/include/x86_64-linux-gnu/ -isystem /usr/lib/arm-none-eabi zigmain.zig
+-rw-rw-r-- 1 vidal vidal 561376 Feb 25 11:31 zigmain.o
+objdump -d zigmain.o > zigmain.txt
+Some of the options cause errors using the x86_64 zig binaries.
+--target-environ gnueabihf
+	Zig is expecting LLVM to understand this target: 'unknown-unknown-unknown-gnueabihf'
+	However LLVM responded with: "No available targets are compatible with this triple."
+	Zig is unable to continue. This is a bug in Zig:
+	https://github.com/ziglang/zig/issues/438
+--target-os freestanding
+	Zig is expecting LLVM to understand this target: 'unknown-unknown-unknown-unknown'
+	However LLVM responded with: "No available targets are compatible with this triple."
+	Zig is unable to continue. This is a bug in Zig:
+	https://github.com/ziglang/zig/issues/438
+--target-arch armv7
+	/home/vidal/testbuilds/API/samples/zigtest/zigmain.zig:3:16: error: C import failed
+	const ultibo = @cImport({
+               ^
+	/usr/include/x86_64-linux-gnu/gnu/stubs.h:7:11: note: 'gnu/stubs-32.h' file not found
+
+# include <gnu/stubs-32.h>
+--target-arch armv8 Andrew Kelly had indicated to use 
+andrewrk> develonepi3, you need --target-arch armv8 and --target-os freestanding
+
+02/24/19
+Trying to get zig working on Ubuntu 16.04.1
+First appoarch of installing from source had issues.
+Downloaded the binaries of zig zig-linux-x86_64-0.3.0+e5d4862e.tar.xz
+
+zigmain.o: zigmain.zig
+        zig build-obj --release-safe -isystem ../../include -isystem /usr/lib/gcc/arm-none-eabi/5.4.1/include-missing --target-arch armv7 --target-os freestanding --target-environ gnueabihf zigmain.zig
+./zig build-obj  -isystem ../../API/include/ultibo/ -isystem /usr/lib/arm-none-eabi --target-arch armv7 --target-os freestanding --target-environ gnueabihf ../../API/samples/zigtest/zigmain.zig
+zig build-obj --release-safe -isystem ../../include -isystem /usr/lib/gcc/arm-none-eabi/5.4.1/include-missing --target-arch armv7 --target-os freestanding --target-environ gnueabihf zigmain.zig
+       
+zig build-obj -isystem ../../include/ zigmain.zig
+
+zig build-obj -isystem ../../include/ -isystem /usr/lib/arm-none-eabi zigmain.zig
+
+zig build-obj -isystem ../../include/ -isystem /usr/lib/arm-none-eabi --target-arch armv7 zigmain.zig
+zig build-obj -isystem ../../include/ -isystem /usr/include/x86_64-linux-gnu/ -isystem /usr/lib/arm-none-eabi --target-arch armv7    zigmain.zig
+zig build-obj -isystem ../../include/ -isystem /usr/include/x86_64-linux-gnu/ -isystem /usr/lib/arm-none-eabi --target-arch armv7  --target-os freestanding  zigmain.zig
+zig build-obj -isystem ../../include/ -isystem /usr/include/x86_64-linux-gnu/ -isystem /usr/lib/arm-none-eabi --target-arch armv8  --target-os freestanding  zigmain.zig
+
+
+sudo apt-get install binutils-arm-none-eabi
+vidal@ws010:~/testbuilds/ultibozig/zig-0.3.0+98869edb$ ls /usr/bin/arm*
+/usr/bin/arm2hpdl                 /usr/bin/arm-none-eabi-nm
+/usr/bin/arm-none-eabi-addr2line  /usr/bin/arm-none-eabi-objcopy
+/usr/bin/arm-none-eabi-ar         /usr/bin/arm-none-eabi-objdump
+/usr/bin/arm-none-eabi-as         /usr/bin/arm-none-eabi-ranlib
+/usr/bin/arm-none-eabi-c++filt    /usr/bin/arm-none-eabi-readelf
+/usr/bin/arm-none-eabi-elfedit    /usr/bin/arm-none-eabi-size
+/usr/bin/arm-none-eabi-gprof      /usr/bin/arm-none-eabi-strings
+/usr/bin/arm-none-eabi-ld         /usr/bin/arm-none-eabi-strip
+/usr/bin/arm-none-eabi-ld.bfd
+
+Downloaded clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-16.04.tar.xz
+xz -d clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-16.04.tar.xz -> clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-16.04.tar --> clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-16.04
+vidal@ws010:~/testbuilds/ultibozig$ ls clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-16.04
+bin  include  lib  libexec  share
+
+zig.sh was needed tp build zig
+#!/bin/bash
+export PATH=~/testbuilds/ultibozig/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-16.04/bin:$PATH
+echo $PATH
+. zig.sh
+cd zig-0.3.0+98869edb
+mkdir build
+cd build
+cmake ..
+vidal@ws010:~/testbuilds/ultibozig/zig-0.3.0+98869edb/build$ cmake ..
+-- The C compiler identification is GNU 5.4.0
+-- The CXX compiler identification is GNU 5.4.0
+-- Check for working C compiler: /usr/bin/cc
+-- Check for working C compiler: /usr/bin/cc -- works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Check for working CXX compiler: /usr/bin/c++
+-- Check for working CXX compiler: /usr/bin/c++ -- works
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+fatal: Not a git repository (or any of the parent directories): .git
+Configuring zig version 0.3.0+
+-- Found LLVM: -lLLVMLTO;-lLLVMPasses;-lLLVMObjCARCOpts;-lLLVMSymbolize;-lLLVMDebugInfoPDB;-lLLVMDebugInfoDWARF;-lLLVMMIRParser;-lLLVMFuzzMutate;-lLLVMCoverage;-lLLVMTableGen;-lLLVMDlltoolDriver;-lLLVMOrcJIT;-lLLVMXCoreDisassembler;-lLLVMXCoreCodeGen;-lLLVMXCoreDesc;-lLLVMXCoreInfo;-lLLVMXCoreAsmPrinter;-lLLVMSystemZDisassembler;-lLLVMSystemZCodeGen;-lLLVMSystemZAsmParser;-lLLVMSystemZDesc;-lLLVMSystemZInfo;-lLLVMSystemZAsmPrinter;-lLLVMSparcDisassembler;-lLLVMSparcCodeGen;-lLLVMSparcAsmParser;-lLLVMSparcDesc;-lLLVMSparcInfo;-lLLVMSparcAsmPrinter;-lLLVMPowerPCDisassembler;-lLLVMPowerPCCodeGen;-lLLVMPowerPCAsmParser;-lLLVMPowerPCDesc;-lLLVMPowerPCInfo;-lLLVMPowerPCAsmPrinter;-lLLVMNVPTXCodeGen;-lLLVMNVPTXDesc;-lLLVMNVPTXInfo;-lLLVMNVPTXAsmPrinter;-lLLVMMSP430CodeGen;-lLLVMMSP430Desc;-lLLVMMSP430Info;-lLLVMMSP430AsmPrinter;-lLLVMMipsDisassembler;-lLLVMMipsCodeGen;-lLLVMMipsAsmParser;-lLLVMMipsDesc;-lLLVMMipsInfo;-lLLVMMipsAsmPrinter;-lLLVMLanaiDisassembler;-lLLVMLanaiCodeGen;-lLLVMLanaiAsmParser;-lLLVMLanaiDesc;-lLLVMLanaiAsmPrinter;-lLLVMLanaiInfo;-lLLVMHexagonDisassembler;-lLLVMHexagonCodeGen;-lLLVMHexagonAsmParser;-lLLVMHexagonDesc;-lLLVMHexagonInfo;-lLLVMBPFDisassembler;-lLLVMBPFCodeGen;-lLLVMBPFAsmParser;-lLLVMBPFDesc;-lLLVMBPFInfo;-lLLVMBPFAsmPrinter;-lLLVMARMDisassembler;-lLLVMARMCodeGen;-lLLVMARMAsmParser;-lLLVMARMDesc;-lLLVMARMInfo;-lLLVMARMAsmPrinter;-lLLVMARMUtils;-lLLVMAMDGPUDisassembler;-lLLVMAMDGPUCodeGen;-lLLVMAMDGPUAsmParser;-lLLVMAMDGPUDesc;-lLLVMAMDGPUInfo;-lLLVMAMDGPUAsmPrinter;-lLLVMAMDGPUUtils;-lLLVMAArch64Disassembler;-lLLVMAArch64CodeGen;-lLLVMAArch64AsmParser;-lLLVMAArch64Desc;-lLLVMAArch64Info;-lLLVMAArch64AsmPrinter;-lLLVMAArch64Utils;-lLLVMObjectYAML;-lLLVMLibDriver;-lLLVMOption;-lLLVMWindowsManifest;-lLLVMX86Disassembler;-lLLVMX86AsmParser;-lLLVMX86CodeGen;-lLLVMGlobalISel;-lLLVMSelectionDAG;-lLLVMAsmPrinter;-lLLVMX86Desc;-lLLVMMCDisassembler;-lLLVMX86Info;-lLLVMX86AsmPrinter;-lLLVMX86Utils;-lLLVMMCJIT;-lLLVMLineEditor;-lLLVMInterpreter;-lLLVMExecutionEngine;-lLLVMRuntimeDyld;-lLLVMCodeGen;-lLLVMTarget;-lLLVMCoroutines;-lLLVMipo;-lLLVMInstrumentation;-lLLVMVectorize;-lLLVMScalarOpts;-lLLVMLinker;-lLLVMIRReader;-lLLVMAsmParser;-lLLVMInstCombine;-lLLVMBitWriter;-lLLVMAggressiveInstCombine;-lLLVMTransformUtils;-lLLVMAnalysis;-lLLVMProfileData;-lLLVMObject;-lLLVMMCParser;-lLLVMMC;-lLLVMDebugInfoCodeView;-lLLVMDebugInfoMSF;-lLLVMBitReader;-lLLVMCore;-lLLVMBinaryFormat;-lLLVMSupport;-lLLVMDemangle;-lrt;-ldl;-lpthread;-lm  
+-- Found CLANG: /home/vidal/testbuilds/ultibozig/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-16.04/lib/libclangFrontend.a;/home/vidal/testbuilds/ultibozig/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-16.04/lib/libclangDriver.a;/home/vidal/testbuilds/ultibozig/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-16.04/lib/libclangSerialization.a;/home/vidal/testbuilds/ultibozig/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-16.04/lib/libclangSema.a;/home/vidal/testbuilds/ultibozig/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-16.04/lib/libclangAnalysis.a;/home/vidal/testbuilds/ultibozig/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-16.04/lib/libclangAST.a;/home/vidal/testbuilds/ultibozig/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-16.04/lib/libclangParse.a;/home/vidal/testbuilds/ultibozig/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-16.04/lib/libclangSema.a;/home/vidal/testbuilds/ultibozig/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-16.04/lib/libclangBasic.a;/home/vidal/testbuilds/ultibozig/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-16.04/lib/libclangEdit.a;/home/vidal/testbuilds/ultibozig/clang+llvm-7.0.1-x86_64-linux-gnu-ubuntu-16.04/lib/libclangLex.a  
+-- Looking for pthread.h
+-- Looking for pthread.h - found
+-- Looking for pthread_create
+-- Looking for pthread_create - not found
+-- Looking for pthread_create in pthreads
+-- Looking for pthread_create in pthreads - not found
+-- Looking for pthread_create in pthread
+-- Looking for pthread_create in pthread - found
+-- Found Threads: TRUE  
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/vidal/testbuilds/ultibozig/zig-0.3.0+98869edb/build
+make
+
+vidal@ws010:~/testbuilds/ultibozig/zig-0.3.0+98869edb/build$ ./zig help
+Usage: ./zig [command] [options]
+
+Commands:
+  build                        build project from build.zig
+  build-exe [source]           create executable from source or object files
+  build-lib [source]           create library from source or object files
+  build-obj [source]           create object from source or assembly
+  builtin                      show the source code of that @import("builtin")
+  fmt                          parse files and render in canonical zig format
+  help                         show this usage information
+  id                           print the base64-encoded compiler id
+  init-exe                     initialize a `zig build` application in the cwd
+  init-lib                     initialize a `zig build` library in the cwd
+  libc [paths_file]            Display native libc paths file or validate one
+  run [source]                 create executable and run immediately
+  translate-c [source]         convert c code to zig code
+  targets                      list available compilation targets
+  test [source]                create and run a test build
+  version                      print version number and exit
+  zen                          print zen of zig and exit
+
+Compile Options:
+  --assembly [source]          add assembly file to build
+  --cache-dir [path]           override the cache directory
+  --cache [auto|off|on]        build in global cache, print out paths to stdout
+  --color [auto|off|on]        enable or disable colored error messages
+  --disable-pic                disable Position Independent Code for libraries
+  --disable-valgrind           omit valgrind client requests in debug builds
+  --enable-valgrind            include valgrind client requests release builds
+  --emit [asm|bin|llvm-ir]     emit a specific file format as compilation output
+  -ftime-report                print timing diagnostics
+  --libc [file]                Provide a file which specifies libc paths
+  --name [name]                override output name
+  --output [file]              override destination path
+  --output-h [file]            generate header file
+  --pkg-begin [name] [path]    make pkg available to import and push current pkg
+  --pkg-end                    pop current pkg
+  --release-fast               build with optimizations on and safety off
+  --release-safe               build with optimizations on and safety on
+  --release-small              build with size optimizations on and safety off
+  --single-threaded            source may assume it is only used single-threaded
+  --static                     output will be statically linked
+  --strip                      exclude debug symbols
+  --target-arch [name]         specify target architecture
+  --target-environ [name]      specify target environment
+  --target-os [name]           specify target operating system
+  --verbose-tokenize           enable compiler debug output for tokenization
+  --verbose-ast                enable compiler debug output for AST parsing
+  --verbose-link               enable compiler debug output for linking
+  --verbose-ir                 enable compiler debug output for Zig IR
+  --verbose-llvm-ir            enable compiler debug output for LLVM IR
+  --verbose-cimport            enable compiler debug output for C imports
+  -dirafter [dir]              same as -isystem but do it last
+  -isystem [dir]               add additional search path for other .h files
+  -mllvm [arg]                 forward an arg to LLVM's option processing
+  --override-std-dir [arg]     use an alternate Zig standard library
+
+Link Options:
+  --dynamic-linker [path]      set the path to ld.so
+  --each-lib-rpath             add rpath for each used dynamic library
+  --library [lib]              link against lib
+  --forbid-library [lib]       make it an error to link against lib
+  --library-path [dir]         add a directory to the library search path
+  --linker-script [path]       use a custom linker script
+  --object [obj]               add object file to build
+  -L[dir]                      alias for --library-path
+  -rdynamic                    add all symbols to the dynamic symbol table
+  -rpath [path]                add directory to the runtime library search path
+  --subsystem [subsystem]      (windows) /SUBSYSTEM:<subsystem> to the linker
+  -framework [name]            (darwin) link against framework
+  -mios-version-min [ver]      (darwin) set iOS deployment target
+  -mmacosx-version-min [ver]   (darwin) set Mac OS X deployment target
+  --ver-major [ver]            dynamic library semver major version
+  --ver-minor [ver]            dynamic library semver minor version
+  --ver-patch [ver]            dynamic library semver patch version
+
+Test Options:
+  --test-filter [text]         skip tests that do not match filter
+  --test-name-prefix [text]    add prefix to all tests
+  --test-cmd [arg]             specify test execution command one arg at a time
+  --test-cmd-bin               appends test binary path to test cmd args
+
+Morgan Wilde A brief Introduction to LLVM
+In computer science, lexical analysis, lexing or tokenization 
+is the process of converting a sequence of characters 
+(such as in a computer program or web page) into a sequence of tokens 
+(strings with an assigned and thus identified meaning). 
+A program that performs lexical analysis may be termed a lexer, 
+tokenizer,[1] or scanner, though scanner is also a term for the first stage 
+of a lexer. A lexer is generally combined with a parser, which together 
+analyze the syntax of programming languages, web pages, and so forth.
+
+source scanner parsing (Intermediate Representation) (IR Optimizer) Symantic Analysis Target code Compiled Code 
+(Intermediate Representation) (IR Optimizer)
+Structure (graph or tree based)
+Flat tuple-based
+Flat stack-based
+LLVM IR
+Low Level programming language, similar to assembly
+Stronly typed RISC instruction set
+Infinite set of temporary registers
+
+(IR Optimizer)
+Source code	(IR Optimizer) Machine Code
+Front End					Backend
+Source				Targets
+C					X86
+Fortran				PowerPC
+ADA					ARM
+LLVM (IR Optimizer) translates to targets
+Java .net run in jvm
+translate to C the use C compilers.
+
+Mark started this discussion 02/18/19
+Ultibo topic
+Discussion>zig (a c replacement) linked with ultibo
+
+cd testbuilds
+mkdir ultibozig
+cd ultibozig
+git clone https://github.com/markfirmware/API.git
+The README.md in API/samples/zigtest had notes to download zig. 
+Install zig and add it to the PATH (must use most recent master
+from https://ziglang.org/download)
+Downloaded zig-0.3.0+98869edb.tar.xz extracted to folder 
+zig-0.3.0+98869edb
+cd zig-0.3.0+98869edb
+mkdir build
+cd build
+cmake ..
+-- The C compiler identification is GNU 6.3.0
+-- The CXX compiler identification is GNU 6.3.0
+-- Check for working C compiler: /usr/bin/cc
+-- Check for working C compiler: /usr/bin/cc -- works
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Check for working CXX compiler: /usr/bin/c++
+-- Check for working CXX compiler: /usr/bin/c++ -- works
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+fatal: Not a git repository (or any of the parent directories): .git
+Configuring zig version 0.3.0+
+CMake Error at cmake/Findllvm.cmake:19 (message):
+  unable to find llvm-config
+Call Stack (most recent call first):
+  CMakeLists.txt:50 (find_package)
+
+
+-- Configuring incomplete, errors occurred!
+See also "/home/pi/testbuilds/ultibozig/zig-0.3.0+98869edb/build/CMakeFiles/CMakeOutput.log".
+sudo apt-get install llvm-dev see installing llvm-dev below
+cmake ..
+fatal: Not a git repository (or any of the parent directories): .git
+Configuring zig version 0.3.0+
+CMake Error at cmake/Findllvm.cmake:28 (message):
+  expected LLVM 7.x but found 3.8.1
+Call Stack (most recent call first):
+  CMakeLists.txt:50 (find_package)
+
+
+-- Configuring incomplete, errors occurred!
+See also "/home/pi/testbuilds/ultibozig/zig-0.3.0+98869edb/build/CMakeFiles/CMakeOutput.log".
+hello: has anyone built zig on Raspberry Pi 3B with RaspBian.  I tried to install version 0.3.0 from zig-0.3.0+98869edb.tar.xz. First unable to find llvm-config. I did sudo apt-get install llvm-dev.  New error expected LLVM 7.x but found 3.8.1
+make
+make install
+
+installing llvm-dev below
+pi@mypi3-1:~/testbuilds/ultibozig/zig-0.3.0+98869edb/build $ sudo apt-get install llvm-dev
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+The following additional packages will be installed:
+  llvm llvm-runtime
+The following NEW packages will be installed:
+  llvm llvm-dev llvm-runtime
+0 upgraded, 3 newly installed, 0 to remove and 180 not upgraded.
+Need to get 18.1 kB of archives.
+After this operation, 108 kB of additional disk space will be used.
+Do you want to continue? [Y/n] y
+Get:1 http://raspbian-us.ngc292.space/raspbian stretch/main armhf llvm-runtime armhf 1:3.8-36 [5,366 B]
+Get:2 http://raspbian-us.ngc292.space/raspbian stretch/main armhf llvm armhf 1:3.8-36 [7,134 B]
+Get:3 http://raspbian.mirror.constant.com/raspbian stretch/main armhf llvm-dev armhf 1:3.8-36 [5,632 B]
+Fetched 18.1 kB in 10s (1,699 B/s)                                             
+Selecting previously unselected package llvm-runtime.
+(Reading database ... 194383 files and directories currently installed.)
+Preparing to unpack .../llvm-runtime_1%3a3.8-36_armhf.deb ...
+Unpacking llvm-runtime (1:3.8-36) ...
+Selecting previously unselected package llvm.
+Preparing to unpack .../llvm_1%3a3.8-36_armhf.deb ...
+Unpacking llvm (1:3.8-36) ...
+Selecting previously unselected package llvm-dev.
+Preparing to unpack .../llvm-dev_1%3a3.8-36_armhf.deb ...
+Unpacking llvm-dev (1:3.8-36) ...
+Setting up llvm-runtime (1:3.8-36) ...
+Processing triggers for man-db (2.7.6.1-2) ...
+Setting up llvm (1:3.8-36) ...
+Setting up llvm-dev (1:3.8-36) ...
+
+sudo apt-get remove llvm-dev
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+The following packages were automatically installed and are no longer required:
+  llvm llvm-runtime
+Use 'sudo apt autoremove' to remove them.
+The following packages will be REMOVED:
+  llvm-dev
+0 upgraded, 0 newly installed, 1 to remove and 180 not upgraded.
+After this operation, 27.6 kB disk space will be freed.
+Do you want to continue? [Y/n] y
+(Reading database ... 194447 files and directories currently installed.)
+Removing llvm-dev (1:3.8-36) ...
+
+ sudo apt autoremove llvm llvm-runtime
+Reading package lists... Done
+Building dependency tree       
+Reading state information... Done
+The following packages will be REMOVED:
+  llvm llvm-runtime
+0 upgraded, 0 newly installed, 2 to remove and 180 not upgraded.
+After this operation, 79.9 kB disk space will be freed.
+Do you want to continue? [Y/n] y
+(Reading database ... 194436 files and directories currently installed.)
+Removing llvm (1:3.8-36) ...
+Removing llvm-runtime (1:3.8-36) ...
+Processing triggers for man-db (2.7.6.1-2) ...
+deb http://apt.llvm.org/stretch/ llvm-toolchain-stretch main
+deb-src http://apt.llvm.org/stretch/ llvm-toolchain-stretch main
