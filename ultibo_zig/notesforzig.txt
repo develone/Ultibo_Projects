@@ -3,16 +3,15 @@ ssh -Y vidal@laptop
 need to create a zigmain.o using zig
 Go to the folder where Mark zigtest code is located.
 
-cd /home/vidal/testbuilds/API/samples/zigtest
+cd /home/vidal/testbuilds/Ultibo_Projects/ultibo_zig
 
 Add zig binaries to your PATH 
-. ~/testbuilds/Ultibo_Projects/ultibo_zig/zz.sh
+. ./zz.sh
 
 The cmd to create zigmain.o using zig.
-zig build-obj -isystem ../../include/ -isystem /usr/lib/arm-none-eabi/include \
--isystem /usr/lib/arm-none-eabi -target armv7-freestanding-gnueabihf  zigmain.zig
 
--rw-rw-r-- 1 vidal vidal  37536 Mar  2 06:15 zigmain.o
+zig build-obj -isystem include/ -isystem /usr/lib/arm-none-eabi/include -isystem /usr/lib/arm-none-eabi -target armv7-freestanding-gnueabihf  zigmain.zig
+-rw-rw-r-- 1 vidal vidal 37540 Mar  2 11:40 zigmain.o
 
 arm-none-eabi-objdump -d zigmain.o > zigmain.txt
 
@@ -21,6 +20,52 @@ Contents of zz.sh
 export PATH=~/testbuilds/Ultibo_Projects/ultibo_zig/zig-linux-x86_64-0.3.0+c4887d7f:$PATH
 echo $PATH
 which zig
+    Started with Mark's zigtestproject.lpr --> ZigTestProject.pas
+    ZigTestProject.lpi
+    
+    Using Lazarus on RPi3B+
+    Building for RPi2B
+    Adding additional units
+    telnet 192.168.1.185
+    dir
+      Directory of C:\
+    
+     7-4-18 00:53:28        <DIR>          old_ultibo
+     13-3-18 20:53:58               52064  bootcode.bin
+     6-4-18 20:57:08              1002763  camera.h264
+     23-2-18 16:44:16                  22  config.txt
+     23-2-18 16:44:16                  22  config.txt.tst
+     26-2-18 23:13:30                  12  config.txt.tst1
+     24-2-18 00:01:28       <DIR>          Media
+     8-2-18 21:30:16                49152  Djenne_128_128.raw
+     13-3-18 20:53:58                9723  fixup_x.dat
+     8-2-18 21:30:34                49152  Gaudi_128_128.raw
+     6-4-18 15:12:16               196730  image1.bmp
+     6-4-18 15:12:16               361202  image4.bmp
+     3-12-18 16:22:04                2680  imagelogging.log
+     2-3-19 17:58:24              2624780  kernel7.img
+     6-4-18 21:10:42               750054  Logo.bmp
+     8-2-18 21:30:48                49152  Lucca_128_128.raw
+     26-2-18 18:51:16            12583034  MyBitmap.bmp
+     13-3-18 20:53:54             2823204  start.elf
+     13-3-18 20:53:52             3910180  start_x.elf
+     6-4-18 21:21:32               635016  teapot.obj.dat
+     8-2-18 21:35:32             27983872  test.h264
+     1-3-19 23:24:32               100660  test.j2k
+     1-1-80                 <DIR>          My Files
+     2-3-19 18:08:33                 2120  ultibologging.log
+     26-2-19 17:44:24                4266  risc-boot.inc
+     2-3-19 18:08:32                 2120  zig.log
+              23 file(s) 53191980 bytes
+              3 dir(s)
+    
+    C:\>
+    copy ultibologging.log zig.log
+    pi@mypi3-1:~/Ultibo_Projects/ultibo_zig $ tftp 192.168.1.185
+    tftp> binary
+    tftp> get zig.log
+    Received 2120 bytes in 0.1 seconds
+    tftp> quit
 
 
 This is from the ~/testbuilds/API/samples/zigtest/Makefile from Mark's API repository
