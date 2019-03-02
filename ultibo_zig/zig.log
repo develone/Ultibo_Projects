@@ -1,26 +1,28 @@
-00000073 - 006635C4:3 - Network: IP: Configuring adapter Loopback with CONFIG_TYPE_LOOPBACK
-00000074 - 006635C4:3 - Network: IP: Configuration completed for adapter Loopback
-00000075 - 006635C4:3 - Network: IP:  Config = CONFIG_TYPE_LOOPBACK
-00000076 - 006635C4:3 - Network: IP:  Address = 127.0.0.1
-00000077 - 006635C4:3 - Network: IP:  Netmask = 255.0.0.0
-00000078 - 006635C4:3 - Network: IP:  Gateway = 0.0.0.0
-00000079 - 006635C4:3 - Network: IP:  Server = 0.0.0.0
-0000007A - 0061F8F4:2 - Device: Sending device notification (Name=Network0 Class=DEVICE_CLASS_NETWORK Notification=DEVICE_NOTIFICATION_OPEN)
-0000007B - 008481C8:2 - Device: Sending device notification (Name=Network0 Class=DEVICE_CLASS_NETWORK Notification=DEVICE_NOTIFICATION_UP)
-0000007C - 007B8684:0 - Network: IP: Configuring adapter Network0 with CONFIG_TYPE_DHCP
-0000007D - 007B8684:0 - Network: IP: Configuration completed for adapter Network0
-0000007E - 007B8684:0 - Network: IP:  Config = CONFIG_TYPE_DHCP
-0000007F - 007B8684:0 - Network: IP:  Address = 192.168.1.185
-00000080 - 007B8684:0 - Network: IP:  Netmask = 255.255.255.0
-00000081 - 007B8684:0 - Network: IP:  Gateway = 192.168.1.254
-00000082 - 007B8684:0 - Network: IP:  Server = 192.168.1.254
-00000083 - 005DAC04:1 - Services: NTP: Setting time to 2-3-19 17:58:33 (from 30-12-99 00:00:06)
-00000084 - 007B8684:0 - Services: NTP: Setting time to 2-3-19 18:08:33 (from 2-3-19 18:08:34)
-F8F4:2 - Services: NTP: Setting time to 2-3-19 17:55:19 (from 2-3-19 17:55:18)
- 28-2-19 16:37:36)
-00000086 - 00812684:0 - Services: NTP: Setting time to 28-2-19 17:17:37 (from 28-2-19 17:17:38)
-00000087 - 00744F64:1 - Services: NTP: Setting time to 28-2-19 17:22:38 (from 28-2-19 17:22:37)
-00000088 - 006798F4:2 - Services: NTP: Setting time to 28-2-19 18:02:38 (from 28-2-19 18:02:39)
-00000089 - 00701294:0 - Services: NTP: Setting time to 28-2-19 18:17:39 (from 28-2-19 18:17:38)
-0000008A - 00701294:0 - Services: NTP: Setting time to 28-2-19 19:02:39 (from 28-2-19 19:02:40)
+00000083 - 02DE2368:2 - [WARN] Network: ARP:  Wait requested on adapter thread
+00000084 - 006675C4:3 - Services: NTP: Setting time to 2-3-19 19:26:46 (from 30-12-99 00:00:06)
+00000085 - 0042D9DC:0 - zig command line argument 1 is kernel7.img
+00000086 - 0042D9DC:0 - zig command line argument 2 is bcm2708_fb.fbwidth=1920
+00000087 - 0042D9DC:0 - zig command line argument 3 is bcm2708_fb.fbheight=1080
+00000088 - 0042D9DC:0 - zig command line argument 4 is bcm2708_fb.fbswap=1
+00000089 - 0042D9DC:0 - zig command line argument 5 is dma.dmachans=0x7f35
+0000008A - 0042D9DC:0 - zig command line argument 6 is bcm2709.boardrev=0xa01041
+0000008B - 0042D9DC:0 - zig command line argument 7 is bcm2709.serial=0x652a4c6
+0000008C - 0042D9DC:0 - zig command line argument 8 is bcm2709.uart_clock=48000000
+0000008D - 0042D9DC:0 - zig command line argument 9 is bcm2709.disk_led_gpio=47
+0000008E - 0042D9DC:0 - zig command line argument 10 is bcm2709.disk_led_active_low=0
+0000008F - 0042D9DC:0 - zig command line argument 11 is smsc95xx.macaddr=B8:27:EB:52:A4:C6
+00000090 - 0042D9DC:0 - zig command line argument 12 is vc_mem.mem_base=0x3ec00000
+00000091 - 0042D9DC:0 - zig command line argument 13 is vc_mem.mem_size=0x40000000
+00000092 - 0042D9DC:0 - zig command line argument 14 is console=ttyAMA0,115200
+00000093 - 0042D9DC:0 - zig command line argument 15 is kgdboc=ttyAMA0,115200
+00000094 - 0042D9DC:0 - zig command line argument 16 is console=tty1
+00000095 - 0042D9DC:0 - zig command line argument 17 is root=/dev/mmcblk0p2
+00000096 - 0042D9DC:0 - zig command line argument 18 is rootfstype=ext4
+00000097 - 0042D9DC:0 - zig command line argument 19 is rootwait
+00000098 - 0042D9DC:0 - zig clock message 1
+00000099 - 0042D9DC:0 - zig clock message 2
+0000009A - 0042D9DC:0 - zig clock message 3
+0000009B - 0042D9DC:0 - zigmain stopped with exit code 1
+0000009C - 006238F4:2 - Services: NTP: Setting time to 2-3-19 19:31:47 (from 2-3-19 19:31:46)
+etting time to 28-2-19 19:02:39 (from 28-2-19 19:02:40)
 0000008B - 00789C8C:2 - Services: NTP: Setting time to 28-2-19 19:17:40 (from 28-2-19 19:17:39)

@@ -63,11 +63,12 @@ function zigmain(argc: int; argv: PPChar): int; cdecl; external name 'zigmain';
 var
  argc:int;
  argv:PPChar;
- //ExitCode:Integer;
+ ExitCode:Integer;
  ff:string;
  Handle:THandle;
  Handle1:THandle;
  IPAddress : string;
+
 function WaitForIPComplete : string;
 
 var
@@ -125,6 +126,9 @@ begin
  //ExitCode := zigmain(argc,argv);
  //LoggingOutput(Format('zigmain stopped with exit code %d',[ExitCode]));
      LoggingDeviceSetTarget(LoggingDeviceFindByType(LOGGING_TYPE_FILE),'c:\ultibologging.log');
+  // wait for IP address and SD Card to be initialised.
+ WaitForSDDrive;
+ IPAddress := WaitForIPComplete;
  LoggingDeviceSetDefault(LoggingDeviceFindByType(LOGGING_TYPE_FILE));
    Handle:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_TOPLEFT,True);
  Handle1:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_TOPRIGHT,True);
@@ -132,7 +136,8 @@ begin
   ConsoleWindowWriteLn (Handle1, 'Local Address ' + IPAddress);
  SetOnMsg (@Msg);
  ConsoleWindowWriteLn(Handle, TimeToStr(Time));
-
+   ExitCode := zigmain(argc,argv);
+ LoggingOutput(Format('zigmain stopped with exit code %d',[ExitCode]));
  {Release the command line}
  ReleaseCommandLine(argv);
 
