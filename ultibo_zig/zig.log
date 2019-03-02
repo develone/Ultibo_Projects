@@ -1,0 +1,26 @@
+00000073 - 006635C4:3 - Network: IP: Configuring adapter Loopback with CONFIG_TYPE_LOOPBACK
+00000074 - 006635C4:3 - Network: IP: Configuration completed for adapter Loopback
+00000075 - 006635C4:3 - Network: IP:  Config = CONFIG_TYPE_LOOPBACK
+00000076 - 006635C4:3 - Network: IP:  Address = 127.0.0.1
+00000077 - 006635C4:3 - Network: IP:  Netmask = 255.0.0.0
+00000078 - 006635C4:3 - Network: IP:  Gateway = 0.0.0.0
+00000079 - 006635C4:3 - Network: IP:  Server = 0.0.0.0
+0000007A - 0061F8F4:2 - Device: Sending device notification (Name=Network0 Class=DEVICE_CLASS_NETWORK Notification=DEVICE_NOTIFICATION_OPEN)
+0000007B - 008481C8:2 - Device: Sending device notification (Name=Network0 Class=DEVICE_CLASS_NETWORK Notification=DEVICE_NOTIFICATION_UP)
+0000007C - 007B8684:0 - Network: IP: Configuring adapter Network0 with CONFIG_TYPE_DHCP
+0000007D - 007B8684:0 - Network: IP: Configuration completed for adapter Network0
+0000007E - 007B8684:0 - Network: IP:  Config = CONFIG_TYPE_DHCP
+0000007F - 007B8684:0 - Network: IP:  Address = 192.168.1.185
+00000080 - 007B8684:0 - Network: IP:  Netmask = 255.255.255.0
+00000081 - 007B8684:0 - Network: IP:  Gateway = 192.168.1.254
+00000082 - 007B8684:0 - Network: IP:  Server = 192.168.1.254
+00000083 - 005DAC04:1 - Services: NTP: Setting time to 2-3-19 17:58:33 (from 30-12-99 00:00:06)
+00000084 - 007B8684:0 - Services: NTP: Setting time to 2-3-19 18:08:33 (from 2-3-19 18:08:34)
+F8F4:2 - Services: NTP: Setting time to 2-3-19 17:55:19 (from 2-3-19 17:55:18)
+ 28-2-19 16:37:36)
+00000086 - 00812684:0 - Services: NTP: Setting time to 28-2-19 17:17:37 (from 28-2-19 17:17:38)
+00000087 - 00744F64:1 - Services: NTP: Setting time to 28-2-19 17:22:38 (from 28-2-19 17:22:37)
+00000088 - 006798F4:2 - Services: NTP: Setting time to 28-2-19 18:02:38 (from 28-2-19 18:02:39)
+00000089 - 00701294:0 - Services: NTP: Setting time to 28-2-19 18:17:39 (from 28-2-19 18:17:38)
+0000008A - 00701294:0 - Services: NTP: Setting time to 28-2-19 19:02:39 (from 28-2-19 19:02:40)
+0000008B - 00789C8C:2 - Services: NTP: Setting time to 28-2-19 19:17:40 (from 28-2-19 19:17:39)
