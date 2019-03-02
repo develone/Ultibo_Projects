@@ -1,14 +1,24 @@
-02/25/19
-ssh -Y vidal@ws010
+03/02/19
+ssh -Y vidal@laptop
+need to create a zigmain.o using zig
 Go to the folder where Mark zigtest code is located.
+
 cd /home/vidal/testbuilds/API/samples/zigtest
-Add zig binaries to your PATH
-. ../../../Ultibo_Projects/ultibo_zig/zz.sh
-. zz.sh sets the PATH for zig on Ubuntu 16.04.1 LTS (GNU/Linux 4.4.0-142-generic x86_64)
-Contentes of zz.sh
+
+Add zig binaries to your PATH 
+. ~/testbuilds/Ultibo_Projects/ultibo_zig/zz.sh
+
+The cmd to create zigmain.o using zig.
+zig build-obj -isystem ../../include/ -isystem /usr/lib/arm-none-eabi/include \
+-isystem /usr/lib/arm-none-eabi -target armv7-freestanding-gnueabihf  zigmain.zig
+
+-rw-rw-r-- 1 vidal vidal  37536 Mar  2 06:15 zigmain.o
+
+arm-none-eabi-objdump -d zigmain.o > zigmain.txt
+
+Contents of zz.sh 
 #!/bin/bash
-#export PATH=~/testbuilds/ultibozig/zig-0.3.0+98869edb/build/bin:$PATH
-export PATH=~/testbuilds/Ultibo_Projects/ultibo_zig/zig-linux-x86_64-0.3.0+e5d4862e:$PATH
+export PATH=~/testbuilds/Ultibo_Projects/ultibo_zig/zig-linux-x86_64-0.3.0+c4887d7f:$PATH
 echo $PATH
 which zig
 
@@ -124,14 +134,16 @@ make
 vidal@ws010:~/testbuilds/ultibozig/zig-0.3.0+98869edb/build$ ./zig help
 Usage: ./zig [command] [options]
 
+Usage: zig [command] [options]
+
 Commands:
   build                        build project from build.zig
   build-exe [source]           create executable from source or object files
   build-lib [source]           create library from source or object files
   build-obj [source]           create object from source or assembly
   builtin                      show the source code of that @import("builtin")
+  cc                           C compiler
   fmt                          parse files and render in canonical zig format
-  help                         show this usage information
   id                           print the base64-encoded compiler id
   init-exe                     initialize a `zig build` application in the cwd
   init-lib                     initialize a `zig build` library in the cwd
@@ -145,6 +157,7 @@ Commands:
 
 Compile Options:
   --assembly [source]          add assembly file to build
+  --c-source [options] [file]  compile C source code
   --cache-dir [path]           override the cache directory
   --cache [auto|off|on]        build in global cache, print out paths to stdout
   --color [auto|off|on]        enable or disable colored error messages
@@ -157,6 +170,7 @@ Compile Options:
   --name [name]                override output name
   --output [file]              override destination path
   --output-h [file]            generate header file
+  --output-lib [file]          override import library path
   --pkg-begin [name] [path]    make pkg available to import and push current pkg
   --pkg-end                    pop current pkg
   --release-fast               build with optimizations on and safety off
@@ -165,15 +179,14 @@ Compile Options:
   --single-threaded            source may assume it is only used single-threaded
   --static                     output will be statically linked
   --strip                      exclude debug symbols
-  --target-arch [name]         specify target architecture
-  --target-environ [name]      specify target environment
-  --target-os [name]           specify target operating system
+  -target [name]               <arch><sub>-<os>-<abi> see the targets command
   --verbose-tokenize           enable compiler debug output for tokenization
   --verbose-ast                enable compiler debug output for AST parsing
   --verbose-link               enable compiler debug output for linking
   --verbose-ir                 enable compiler debug output for Zig IR
   --verbose-llvm-ir            enable compiler debug output for LLVM IR
   --verbose-cimport            enable compiler debug output for C imports
+  --verbose-cc                 enable compiler debug output for C compilation
   -dirafter [dir]              same as -isystem but do it last
   -isystem [dir]               add additional search path for other .h files
   -mllvm [arg]                 forward an arg to LLVM's option processing
@@ -203,6 +216,7 @@ Test Options:
   --test-name-prefix [text]    add prefix to all tests
   --test-cmd [arg]             specify test execution command one arg at a time
   --test-cmd-bin               appends test binary path to test cmd args
+
 
 Morgan Wilde A brief Introduction to LLVM
 In computer science, lexical analysis, lexing or tokenization 
