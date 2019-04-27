@@ -12,11 +12,11 @@ unit ServerUnitGPS;
 interface
 
 uses
-  RaspberryPi2,
+  //RaspberryPi2,  item commented out from hints
   Framebuffer,
   SysUtils,
   Serial,
-  BCM2836,
+  //BCM2836, item commented out from hints
   BCM2709,
   GlobalConfig, {Include the global configuration unit so we can modify some parameters}
   GlobalConst,
@@ -169,7 +169,7 @@ begin
     
     Try it out yourself by setting the address to something valid}
    //SendDataTo('192.168.123.123',8888,PChar(MessageText),Length(MessageText)); 
-   SendDataTo('192.168.1.181',8888,PChar(MessageText),Length(MessageText));
+   SendDataTo('192.168.1.215',8888,PChar(MessageText),Length(MessageText));
   end;
 end;
 
@@ -181,6 +181,7 @@ procedure ServerInit;
 var
  IPAddress:String;
  Winsock2TCPClient:TWinsock2TCPClient;
+
 begin
  {Create a Winsock2TCPClient so that we can get some local information}
  Winsock2TCPClient:=TWinsock2TCPClient.Create;
@@ -207,91 +208,115 @@ begin
 end;
 
 
-{Here we create the instance of our UDP listener class and set some parameters
- to customize the way it operates.}
+{Here we create the instance of our UDP listener class and set 
+some parameters to customize the way it operates.}
 procedure ServerStart;
-var
- WSAData:TWSAData;
- flg:LongWord;
- Count:LongWord;
- Character:Char;
- Characters:String;
- LastValue:LongWord;
- CurrentValue:LongWord;
- HTTPListener:THTTPListener;
-begin
- flg:=0;
- {Perform the normal Winsock startup process}
- FillChar(WSAData,SizeOf(TWSAData),0);
- if WSAStartup(WINSOCK_VERSION,WSAData) = ERROR_SUCCESS then
-  begin
-   {Create our TDemoUDPListener object}
-   DemoUDPListener:=TDemoUDPListener.Create;
-  
-   {Set the minimum and maximum number of threads to service requests. The TWinsock2UDPListener
-    has a pool of threads which can be dynamically expanded to accomodate extra requests and will
-    also shrink when no requests are happening. The Min and Max values determine the number of
-    threads for each case}
-   DemoUDPListener.Threads.Min:=5;
-   DemoUDPListener.Threads.Max:=10;
-  
-   {Set the buffer size to 1024 (The maximum for UDP SysLog). The TWinsock2UDPListener also
-    has a dynamic buffer pool which contains preallocated buffers based on a size you specify.
-    
-    Since UDP is a connectionless protocol, all communication occurs as messages or datagrams.
-    Many common services that use UDP will have a fixed length or well defined message size so
-    buffers can be allocated that suit the required size}
-   DemoUDPListener.BufferSize:=1024;
-   
-   {Set the port to listen on (8888 for SysLog)}
-   DemoUDPListener.BoundPort:=8888;
-   
-   {Set the server to active (Listener)} 
-   DemoUDPListener.Active:=True;
-   GPIOPullSelect(GPIO_PIN_18,GPIO_PULL_UP);
-   GPIOFunctionSelect(GPIO_PIN_18,GPIO_FUNCTION_IN);
-   GPIOPullSelect(GPIO_PIN_16,GPIO_PULL_NONE);
-   GPIOFunctionSelect(GPIO_PIN_16,GPIO_FUNCTION_OUT);
-   GPIOOutputSet(GPIO_PIN_16,GPIO_LEVEL_HIGH);
-    
-   {At this point our UDP server has been started independently of our current thread and will
-    continue to run by itself even if this thread terminates. For the sake of the example we will
-    go into a loop and send logging messages which should be received by our server}
-    LoggingOutput('Logging message sent by ' + ThreadGetName(ThreadGetCurrent) + ' flg '+ IntToStr(flg) + ' at ' + DateTimeToStr(Now));
-    HTTPListener:=THTTPListener.Create;
-    HTTPListener.Active:=True;
-    WebStatusRegister(HTTPListener,'','',True);
-    if SerialOpen(9600,SERIAL_DATA_8BIT,SERIAL_STOP_1BIT,SERIAL_PARITY_NONE,SERIAL_FLOW_NONE,0,0) = ERROR_SUCCESS then
-	begin
-	  flg:=1;
-	  LoggingOutput('Logging message sent by ' + ThreadGetName(ThreadGetCurrent) + 'flg '+ IntToStr(flg) + ' at ' + DateTimeToStr(Now));
-      LoggingOutput('Logging message sent by ' + ThreadGetName(ThreadGetCurrent) + ' Uart opened successfully at ' + DateTimeToStr(Now));
-      ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Uart opened successfully'); 
-      {Setup our starting point}
-      Count:=0;
-      Characters:='';
-    end;
-   while True do
-    begin
-     SerialRead(@Character,SizeOf(Character),Count);
-     if Character = #13 then
-			begin
-			Characters:=Characters + Chr(13) + Chr(10);
-            ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Received a line: ' + Characters);
-			LoggingOutput(Characters);
-			test(Length(Characters),PChar(Characters)); 
-            Characters:='';
+	var
+	WSAData:TWSAData;
+	flg:LongWord;
+	//LastValue:LongWord;  item commented out from hints
+	//CurrentValue:LongWord; item commented out from hints
+	HTTPListener:THTTPListener;
 	
-    end
-    else
-    begin
-       {Add the character to what we have already recevied}
-       Characters:=Characters + Character;
-    end
+	Count:LongWord;
+	Character:Char;
+	Characters:String;
+
+	SerialDev:LongWord;
+	BaudRate:LongWord;
+	begin
+	flg:=0;
+        WSADATA.wVersion := 0;   // prevent not initialsed warning
+	{Perform the normal Winsock startup process}
+	FillChar(WSAData,SizeOf(TWSAData),0);
+	if WSAStartup(WINSOCK_VERSION,WSAData) = ERROR_SUCCESS then
+		begin
+			{Create our TDemoUDPListener object}
+			DemoUDPListener:=TDemoUDPListener.Create;
+  
+			{Set the minimum and maximum number of threads to service requests. The TWinsock2UDPListener
+			has a pool of threads which can be dynamically expanded to accomodate extra requests and will
+			also shrink when no requests are happening. The Min and Max values determine the number of
+			threads for each case}
+			DemoUDPListener.Threads.Min:=5;
+			DemoUDPListener.Threads.Max:=10;
+  
+			{Set the buffer size to 1024 (The maximum for UDP SysLog). The TWinsock2UDPListener also
+			has a dynamic buffer pool which contains preallocated buffers based on a size you specify.
+    
+			Since UDP is a connectionless protocol, all communication occurs as messages or datagrams.
+			Many common services that use UDP will have a fixed length or well defined message size so
+			buffers can be allocated that suit the required size}
+			DemoUDPListener.BufferSize:=1024;
+   
+			{Set the port to listen on (8888 for SysLog)}
+			DemoUDPListener.BoundPort:=8888;
+   
+			{Set the server to active (Listener)} 
+			DemoUDPListener.Active:=True;
+			GPIOPullSelect(GPIO_PIN_18,GPIO_PULL_UP);
+			GPIOFunctionSelect(GPIO_PIN_18,GPIO_FUNCTION_IN);
+			GPIOPullSelect(GPIO_PIN_16,GPIO_PULL_NONE);
+			GPIOFunctionSelect(GPIO_PIN_16,GPIO_FUNCTION_OUT);
+			GPIOOutputSet(GPIO_PIN_16,GPIO_LEVEL_HIGH);
+    
+			{At this point our UDP server has been started independently of our current thread and will
+			continue to run by itself even if this thread terminates. For the sake of the example we will
+			go into a loop and send logging messages which should be received by our server}
+			LoggingOutput('Logging message sent by ' + ThreadGetName(ThreadGetCurrent) + ' flg '+ IntToStr(flg) + ' at ' + DateTimeToStr(Now));
+			HTTPListener:=THTTPListener.Create;
+			HTTPListener.Active:=True;
+			WebStatusRegister(HTTPListener,'','',True);
+			BaudRate:=9600;
+			ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Opening the Serial');
+			ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'BaudRate '+ IntToStr(BaudRate));
+			ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Data Bits '+ IntToStr(SERIAL_DATA_8BIT) + ' Stop '+ IntToStr(SERIAL_STOP_1BIT));
+			ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Parity '+ IntToStr(SERIAL_PARITY_NONE) + ' FLOWCNTL ' + IntToStr(SERIAL_FLOW_NONE));
+			SerialDev := SerialOpen(BaudRate,SERIAL_DATA_8BIT,SERIAL_STOP_1BIT,SERIAL_PARITY_NONE,SERIAL_FLOW_NONE,0,0);
+			ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'SerialDev ' + IntToStr(SerialDev));
+			
+			Sleep(1000);
+			ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Testing ERROR_SUCCESS ' + IntToStr(ERROR_SUCCESS));
+			if SerialDev = ERROR_SUCCESS then
+			begin
+					Count:=0;
+					Characters:='';
+					flg:=1;
+					ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Uart opened successfully');
+					//LoggingOutput('Logging message sent by ' + ThreadGetName(ThreadGetCurrent) + 'flg '+ IntToStr(flg) + ' at ' + DateTimeToStr(Now));
+					//LoggingOutput('Logging message sent by ' + ThreadGetName(ThreadGetCurrent) + ' Uart opened successfully at ' + DateTimeToStr(Now));
+
+					{Setup our starting point}
+					//Count:=0;
+					//Characters:='';
+			end; 
+			{End of if SerialDev}
+				ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Going into Endless loop');
+				while True do
+				begin
+                                     //LoggingOutput('call SerialRead');
+				     SerialRead(@Character,SizeOf(Character),Count);
+                                     //LoggingOutput('back SerialRead ' + Character);
+						//ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,IntToStr(Count) + ' ' + Character );
+						//ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,IntToStr(Count));
+
+				     if Character = #13 then
+					begin
+							Characters:=Characters + Chr(13) + Chr(10);
+							LoggingOutput(Characters);
+							test(Length(Characters),PChar(Characters));
+							ConsoleWindowWriteLn(DemoUDPListener.FWindowHandle,'Received a line: ' + Characters);
+							Characters:='';
+					end
+					else
+					begin
+							{Add the character to what we have already recevied}
+							Characters:=Characters + Character;
+					end {End of while loop}
     end;
-   {Destroy the UDP Listener}
-   DemoUDPListener.Free;
-  end; 
+    {Destroy the UDP Listener}
+    DemoUDPListener.Free;
+    end;
   end;
 
 

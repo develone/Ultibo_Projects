@@ -48,6 +48,6 @@ void write_to_file( unsigned Count,char *cptr)
 void test (unsigned cc,char *cptr)
 {
   
-   //printf ("Hello Ultibo from C!!\n");
+   printf ("Hello Ultibo from C!!\n");
     write_to_file(cc,cptr);
 }
