@@ -28,6 +28,7 @@ uses
   MMC,             {Include the MMC/SD unit for access to the SD card}
   BCM2709,         {And the driver for the Raspberry Pi SD host}
   SysUtils,
+  uTFTP,           {05/02/19 include to transfer files.}
   HTTP,            {Include the HTTP unit for the server classes}
   Winsock2,        {Include the Winsock2 unit so we can get the IP address}
   FileSystem,      {Include the File system so we have some files to serve up}
