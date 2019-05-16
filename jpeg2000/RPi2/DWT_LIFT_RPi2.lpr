@@ -157,7 +157,7 @@ begin
  ConsoleWindowWriteLn(Handle, TimeToStr(Time));
 
  DECOMP:=6;
- ENCODE:=1;
+ ENCODE:=0;
  //should not be set lower than  30 which is compressiong over 1500
  //
  //		38	189.4093899116
@@ -183,9 +183,9 @@ begin
  begin
  da_x0:=0;
  da_y0:=0;
- da_x1:=2048;
- da_y1:=2048;
- ff:='t_2048.j2k';
+ da_x1:=1024;
+ da_y1:=1024;
+ ff:='test.j2k';
  decom_test(da_x0,da_y0,da_x1,da_y1,ff);
  DrawBitmap(Window,'C:\test_wr.bmp',0,0,DECOMP,ENCODE,TCP_DISTORATIO,FILTER, COMPRESSION_RATIO,DIS_CR_FLG);
  end;
