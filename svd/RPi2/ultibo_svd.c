@@ -20,9 +20,11 @@ float w[m],*pw;
 float v[m][n],*pv[m], **ppv;
 float vt[n][m],*pvt[n], **ppvt;
 float a[m][n],*pa[m],**ppa;
+float ds[m][n], *pds[m], **ppds;
 	for(i=0;i<m;i++) {	
 		pa[i]=&a[i][0];
 		pv[i]=&v[i][0];
+		pds[i]=&ds[i][0];
 		//printf("0x%x 0x%x\n",pa[i],pv[i]);
 	}
 	for(i=0;i<n;i++) pvt[i] = &vt[i][0];
@@ -31,6 +33,7 @@ pw=&w;
 ppv=&pv;
 ppa=&pa;
 ppvt=&pvt;
+ppds=&pds;
 /*
 printf("pa 0x%x ppa 0x%x  \n",pa,ppa);
 printf("pv = 0x%x ppv = 0x%x \n",pv,ppv);
@@ -150,7 +153,20 @@ result = dsvd(ppa,m,n,pw,ppv);
 printf("U\n");
 result = disp(ppa,m,n);
 printf("Singular Values\n");
-for(i=0;i<m;i++) printf("%5.2f \n",w[i]);
+for(i=0;i<m;i++) { 
+	for(j=0;j<n;j++) {
+		ds[i][j] = 0;
+	}	
+}	
+
+j=0;
+for(i=0;i<m;i++) { 
+	ds[i][j] = w[i];
+	j++;
+}	
+result = disp(ppds,m,n);	
+//for(i=0;i<m;i++) printf("%5.2f \n",w[i]);
+
 printf("V\n");
 result = disp(ppv,m,n);
 

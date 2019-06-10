@@ -10,7 +10,7 @@ for(i=0;i<m;i++)
 	{
 	for(j=0;j<n;j++)
 	{
-		printf("%5.2f ",a[i][j]);
+		printf("%5.8f ",a[i][j]);
 
 	}
 	printf("\n");
