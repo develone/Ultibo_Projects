@@ -12,28 +12,47 @@ void test_svd() {
  *   v = returns the right orthogonal transformation matrix
  * dsvd(float **a, int m, int n, float *w, float **v)
 */	
-int m,n,i,j,result;
+int m,n,i,j,p,q,result;
 m=9;
 n=8;
-
+p=9;
+q=8;
 float w[m],*pw;
 float v[m][n],*pv[m], **ppv;
 float vt[n][m],*pvt[n], **ppvt;
 float a[m][n],*pa[m],**ppa;
 float ds[m][n], *pds[m], **ppds;
+/*	
+ *  a 9 x 8
+ *  u 9 x 8
+ *  v 9 x 8 
+ *  vt 8 x 9
+ *  us 9 x 8
+ *  usvt 8 X 9
+*/
+float us[m][n], *pus[m], **ppus;
+float usvt[m][n], *pusvt[m], **ppusvt;
+
 	for(i=0;i<m;i++) {	
 		pa[i]=&a[i][0];
 		pv[i]=&v[i][0];
 		pds[i]=&ds[i][0];
+		pus[i]=&us[i][0];
 		//printf("0x%x 0x%x\n",pa[i],pv[i]);
 	}
-	for(i=0;i<n;i++) pvt[i] = &vt[i][0];
+	for(i=0;i<n;i++) {
+		pvt[i] = &vt[i][0];
+		pusvt[i] = &pusvt[i][0];
+	}
  
 pw=&w;
 ppv=&pv;
 ppa=&pa;
 ppvt=&pvt;
 ppds=&pds;
+ppus=&pus;
+ppusvt=&pusvt;
+
 /*
 printf("pa 0x%x ppa 0x%x  \n",pa,ppa);
 printf("pv = 0x%x ppv = 0x%x \n",pv,ppv);
@@ -174,4 +193,11 @@ printf("V'\n");
  
 result = trans(ppv,ppvt,m,n);
 result = disp(ppvt,n,m);
+printf("Call mul_mat \n");
+result = mul(ppa,ppds,ppus,m,n,p,q);
+printf("USD\n");
+result = disp(ppus,m,n);
+//result = mul(ppus,ppvt,ppusvt,m,n,n,m);
+//printf("USDVT\n");
+//result = disp(ppusvt,m,m);
 }
