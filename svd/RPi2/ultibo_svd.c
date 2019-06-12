@@ -12,11 +12,15 @@ void test_svd() {
  *   v = returns the right orthogonal transformation matrix
  * dsvd(float **a, int m, int n, float *w, float **v)
 */	
-int m,n,i,j,p,q,result;
-m=9;
-n=8;
-p=9;
-q=8;
+
+extern int dsvd(float **a, int m, int n, float *w, float **v);
+
+extern int trans(float **a,float **b,int m,int n);
+extern int disp(float **a,int m,int n);
+extern int mul(float **a,float **b,float **c,int m,int n,int p,int q);	
+
+int m=9,n=8,i,j,p=9,q=9,result;
+ 
 float w[m],*pw;
 float v[m][n],*pv[m], **ppv;
 float vt[n][m],*pvt[n], **ppvt;
@@ -26,39 +30,50 @@ float ds[m][n], *pds[m], **ppds;
  *  a 9 x 8
  *  u 9 x 8
  *  v 9 x 8 
+ *  ds 9 x 8 
  *  vt 8 x 9
- *  us 9 x 8
- *  usvt 8 X 9
+ *  uds 9 x 8
+ *  udsvt 9 X 9
 */
-float us[m][n], *pus[m], **ppus;
-float usvt[m][n], *pusvt[m], **ppusvt;
+float uds[m][n], *puds[m], **ppuds;
+float udsvt[p][q], *pudsvt[p], **ppudsvt;
 
 	for(i=0;i<m;i++) {	
 		pa[i]=&a[i][0];
 		pv[i]=&v[i][0];
 		pds[i]=&ds[i][0];
-		pus[i]=&us[i][0];
+		puds[i]=&uds[i][0];
+		//pusdvt[i]=&pusdvt[i][0];
 		//printf("0x%x 0x%x\n",pa[i],pv[i]);
 	}
 	for(i=0;i<n;i++) {
 		pvt[i] = &vt[i][0];
-		pusvt[i] = &pusvt[i][0];
+		
 	}
+	for(i=0;i<p;i++) {
+		pudsvt[i] = &pudsvt[i][0];
+		
+	}
+	
+	
  
-pw=&w;
-ppv=&pv;
-ppa=&pa;
-ppvt=&pvt;
-ppds=&pds;
-ppus=&pus;
-ppusvt=&pusvt;
+pw=(float *)&w;
+ppv=(float **)&pv;
+ppa=(float **)&pa;
+ppvt=(float **)&pvt;
+ppds=(float **)&pds;
+ppuds=(float **)&puds;
+ppudsvt=(float **)&pudsvt;
 
 /*
 printf("pa 0x%x ppa 0x%x  \n",pa,ppa);
 printf("pv = 0x%x ppv = 0x%x \n",pv,ppv);
 printf("pvt = 0x%x ppvt = 0x%x \n",pvt,ppvt);
-printf("v = 0x%x vt = 0x%x \n",&v,&vt);
+printf("pds = 0x%x ppds = 0x%x \n",pds,ppds);
+printf("puds = 0x%x ppuds = 0x%x \n",puds,ppuds);
+printf("pudsvt = 0x%x ppudsvt = 0x%x \n",pudsvt,ppudsvt);
 */
+
 /*
  * a = { {1.0,2.0,1.0.22.0,11.0},{3.0,4.0,2.0,41.0,21.0},{5.0,6.0,3.0,63.0,33.0},{7.0,8.0,4.0,282.0,242.0},{7.0,8.0,4.0,182.0,142.0}};
 */
@@ -194,10 +209,25 @@ printf("V'\n");
 result = trans(ppv,ppvt,m,n);
 result = disp(ppvt,n,m);
 printf("Call mul_mat \n");
-result = mul(ppa,ppds,ppus,m,n,p,q);
-printf("USD\n");
-result = disp(ppus,m,n);
-//result = mul(ppus,ppvt,ppusvt,m,n,n,m);
+result = mul(ppa,ppds,ppuds,m,n,p,q);
+printf("UDS\n");
+result = disp(ppuds,m,n);
+printf("Call mul_mat \n");
+
+//result = mul(ppuds,ppvt,ppudsvt,m,n,q,p);
 //printf("USDVT\n");
-//result = disp(ppusvt,m,m);
+for(i=0;i<m;i++) {
+	for(j=0;j<p;j++) {
+		udsvt[i][j]=0;
+	}
+}
+/*
+for(i=0;i<m;i++) {
+	for(j=0;j<p;j++) {
+		printf("%5.3f ",udsvt[i][j]);
+	}
+	printf("\n");
+}
+*/ 
+//result = disp(ppudsvt,m,m);
 }
