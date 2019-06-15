@@ -13,7 +13,7 @@ void main() {
  * dsvd(float **a, int m, int n, float *w, float **v)
 */	
 FILE *inptr,*outptr;
-int *inbuf;
+int *inbuf, *inbuffr;
 
 extern int dsvd(float **a, int m, int n, float *w, float **v);
 
@@ -23,6 +23,7 @@ extern int mul(float **a,float **b,float **c,int m,int n,int p,int q);
 
 int m=256,n=256,i,j,p=256,q=256,result,len1,len2,len3;
 inbuf = (int *)malloc(sizeof(int)*m*n);
+inbuffr = inbuf;
 inptr = fopen("red.bin","r");
 if (inptr == 0) printf("file not found\n");
 len1 = fread(inbuf,sizeof(int),m*n,inptr);
@@ -42,26 +43,31 @@ float w[m],*pw;
 
 //Several of the arrays use 2 pointers to allocate memory. 
 //9 x 8 arrays
-float *pv, **ppv;
-float *puds, **ppuds;
-float *pa,**ppa;
-float *pds, **ppds;
+float *pv, **ppv, **ppvfr;
+float *puds, **ppuds, **ppudsfr;
+float *pa,**ppa, **ppafr;
+float *pds, **ppds, **ppdsfr;
 //8 x 9 arrays
-float *pvt, **ppvt;
+float *pvt, **ppvt, **ppvtfr;
 //9 x 9 arrays
-float *pudsvt, **ppudsvt;
+float *pudsvt, **ppudsvt, **ppudsvtfr;
 
 len1 = sizeof(float *) * m + sizeof(float) * n * m;
 len2 = sizeof(float *) * n + sizeof(float) * m * n;
 len3 = sizeof(float *) * p + sizeof(float) * p * q;
 printf("len = %d len2 = %d len3 = %d\n",len1, len2,len3);
 ppv = (float **)malloc(len1);
+ppvfr = ppv;
 ppuds = (float **)malloc(len1);
+ppudsfr = ppuds;
 ppa = (float **)malloc(len1);
+ppafr = ppa;
 ppds = (float **)malloc(len1);
+ppdsfr = ppds;
 ppvt = (float **)malloc(len2);
+ppvtfr = ppvt;
 ppudsvt = (float **)malloc(len3);
-
+ppudsvtfr = ppudsvt;
 // pv, puds, pa, pds, pvt, and pudsvt are now pointing to the first elements of 2D arrays 
 pv = (float *)(ppv + m);
 puds = (float *)(ppuds + m);
@@ -169,11 +175,11 @@ printf("USDVT row = %d col = %d \n",p,q);
  
 
 //result = disp(ppudsvt,p,q);
-/*
-free(ppv);
-free(ppuds);
-free(ppa);
-free(ppds);
-free(ppvt);
-*/
+free(inbuffr);
+free(ppvfr);
+free(ppudsfr);
+free(ppafr);
+free(ppdsfr);
+free(ppvtfr);
+free(ppudsvtfr);
 }
