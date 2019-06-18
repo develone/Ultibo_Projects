@@ -1,6 +1,6 @@
 clear
-n = 255;
-p = 0;
+n = 25;
+p = 1;
 
 
 fid = fopen('red.bin','r'); im1 = fread(fid, [256,inf], 'int32');
@@ -30,4 +30,4 @@ for i = 1:n
 end
 figure
 stem(a)
-title "n S values from [U,S,V] = svd(im1)"
+title "n S values from [U,S,V'] = svd(im1)"

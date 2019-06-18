@@ -27,6 +27,7 @@ inbuffr = inbuf;
 inptr = fopen("red.bin","r");
 if (inptr == 0) printf("file not found\n");
 len1 = fread(inbuf,sizeof(int),m*n,inptr);
+fclose(inptr);
 printf("len1 = %d \n",len1);
 
 float w[m],*pw;
@@ -138,6 +139,10 @@ pa=&a;
 
 //printf("pa 0x%x ppa 0x%x  \n",pa,ppa);
 result = dsvd(ppa,m,n,pw,ppv);
+outptr = fopen("S.bin","w");
+if (outptr == 0) printf("can not open file S.bin for writing\n");
+result = fwrite(pw,sizeof(float),m,outptr);
+fclose(outptr);
 printf("U row = %d col = %d \n",m,n);
 //result = disp(ppa,m,n);
 printf("Singular Values\n");
@@ -160,7 +165,7 @@ for(i=0;i<m;i++) printf("%5.8f \n",w[i]);
 printf("V row = %d col = %d \n",m,n);
 //result = disp(ppv,m,n);
 
-printf("V' row = %d col = %d \n",n,m);
+printf("V' row = %d col = %d \n",m,n);
  
 result = trans(ppv,ppvt,m,n);
 //result = disp(ppvt,n,m);
@@ -170,8 +175,21 @@ printf("UDS row = %d col = %d \n",m,n);
 //result = disp(ppuds,m,n);
 printf("Call mul u * ds * vt \n");
 
-result = mul(ppuds,ppvt,ppudsvt,m,n,n,m);
-printf("USDVT row = %d col = %d \n",p,q); 
+result = mul(ppuds,ppvt,ppudsvt,m,n,m,n);
+printf("USDVT row = %d col = %d \n",p,q);
+char s[m][n],*ps;
+ps=&s[0][0];
+int x;
+for(i=0;i<m;i++) {
+	for(j=0;j<n;j++) {
+		x=(int)(ppudsvt[i][j]);
+		s[i][j] = (char)x;
+	}
+}
+outptr = fopen("reconst.bin","w"); 
+if (outptr == 0) printf("can not open file reconst.bin for writing\n");
+result = fwrite(ps,sizeof(char),m*n,outptr);
+fclose(outptr);
  
 
 //result = disp(ppudsvt,p,q);
