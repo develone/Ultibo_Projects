@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#define FLOAT_TO_INT(x) ((x)>=0?(int)((x)+0.5):(int)((x)-0.5))
 
 
 void test_svd() {
@@ -21,7 +22,8 @@ extern int trans(float **a,float **b,int m,int n);
 extern int disp(float **a,int m,int n);
 extern int mul(float **a,float **b,float **c,int m,int n,int p,int q);	
 
-int m=256,n=256,i,j,p=256,q=256,result,len1,len2,len3;
+int m=256,n=256,i,j,p=256,q=256,result,len1,len2,len3,len4;
+
 inbuf = (int *)malloc(sizeof(int)*m*n);
 inbuffr = inbuf;
 inptr = fopen("red.bin","r");
@@ -53,10 +55,13 @@ float *pvt, **ppvt, **ppvtfr;
 //9 x 9 arrays
 float *pudsvt, **ppudsvt, **ppudsvtfr;
 
+int *ps, **pps, **ppsfr;
+
 len1 = sizeof(float *) * m + sizeof(float) * n * m;
 len2 = sizeof(float *) * n + sizeof(float) * m * n;
 len3 = sizeof(float *) * p + sizeof(float) * p * q;
-printf("len = %d len2 = %d len3 = %d\n",len1, len2,len3);
+len4 = sizeof(int *) * n + sizeof(int) * m * n;
+printf("len = %d len2 = %d len3 = %d len4 = %d\n",len1, len2,len3,len4);
 ppv = (float **)malloc(len1);
 ppvfr = ppv;
 ppuds = (float **)malloc(len1);
@@ -67,6 +72,8 @@ ppds = (float **)malloc(len1);
 ppdsfr = ppds;
 ppvt = (float **)malloc(len2);
 ppvtfr = ppvt;
+pps = (int **)malloc(len4);
+ppsfr = ppsfr;
 ppudsvt = (float **)malloc(len3);
 ppudsvtfr = ppudsvt;
 // pv, puds, pa, pds, pvt, and pudsvt are now pointing to the first elements of 2D arrays 
@@ -76,16 +83,23 @@ pa = (float *)(ppa + m);
 pds = (float *)(ppds + m);
 pvt = (float *)(ppvt + n);
 pudsvt = (float *)(ppudsvt + p);
+ps = (int *)(pps + m);
+printf("sizeof(float) %d\n",sizeof(float));
+printf("sizeof(float) %d\n",sizeof(int));
 // for loop to point rows pointer to appropriate location in 2D array 
 for(i = 0; i < m; i++) {
 	ppa[i] = (pa + n * i);
 	ppuds[i] = (puds + n * i);
 	ppv[i] = (pv + n * i);
 	ppds[i] = (pds + n * i);
+	
 
 }	
 
-for(i = 0; i < m; i++) ppvt[i] = (pvt + n * i);
+for(i = 0; i < m; i++) {
+	ppvt[i] = (pvt + n * i);
+	pps[i] = (ps + n * i);
+}
 for(i = 0; i < m; i++) ppudsvt[i] = (pudsvt + q * i); 
  
  
@@ -177,22 +191,27 @@ printf("Call mul u * ds * vt \n");
 
 result = mul(ppuds,ppvt,ppudsvt,m,n,m,n);
 printf("USDVT row = %d col = %d \n",p,q);
-char s[m][n],*ps;
-ps=&s[0][0];
-int x;
+
+
 for(i=0;i<m;i++) {
 	for(j=0;j<n;j++) {
-		x=(int)(ppudsvt[i][j]);
-		s[i][j] = (char)x;
+		//pps[i][j]=(int)ppudsvt[i][j];
+		pps[i][j]=FLOAT_TO_INT(ppudsvt[i][j]);
+		//printf("%d ",pps[i][j]);
+		
 	}
 }
 outptr = fopen("reconst.bin","w"); 
+printf("ps converted from float to int 0x%x \n",outptr);
+
 if (outptr == 0) printf("can not open file reconst.bin for writing\n");
-result = fwrite(ps,sizeof(char),m*n,outptr);
+result = fwrite(ps,sizeof(int),m*n,outptr);
 fclose(outptr);
+printf("# of data written 0x%x \n",result);
  
 
 //result = disp(ppudsvt,p,q);
+free(ppsfr);
 free(inbuffr);
 free(ppvfr);
 free(ppudsfr);
