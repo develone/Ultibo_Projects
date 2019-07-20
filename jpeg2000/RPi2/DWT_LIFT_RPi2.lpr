@@ -157,7 +157,7 @@ begin
  ConsoleWindowWriteLn(Handle, TimeToStr(Time));
 
  DECOMP:=6;
- ENCODE:=0;
+ ENCODE:=1;
  //should not be set lower than  30 which is compressiong over 1500
  //
  //		38	189.4093899116
