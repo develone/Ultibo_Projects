@@ -14,31 +14,43 @@ int main() {
     struct FILEs *files2 = (struct FILEs *)malloc(sizeof(struct FILEs));
     struct FILEs *files3 = (struct FILEs *)malloc(sizeof(struct FILEs));
     
+    /*
     inp1 = "red.bin";
     inp2 = "grn.bin";
     inp3 = "blu.bin";
-    
+    */
+
+    inp1 = "red.pgm";
+    inp2 = "grn.pgm";
+    inp3 = "blu.pgm";
+        
     files1->input_file = inp1;
     files2->input_file = inp2;
     files3->input_file = inp3;
+
+	/*
+    files1->pgm1 = "red.pgm";
+    files2->pgm2 = "grn.pgm";
+    files3->pgm3 = "blu.pgm";
+    */
 
     inp1 = "Sred.bin";
     inp2 = "Sgrn.bin";
     inp3 = "Sblu.bin";    
  
     
-	files1->first_output = inp1;
-	files2->first_output = inp2;
-	files3->first_output = inp3;
+    files1->first_output = inp1;
+    files2->first_output = inp2;
+    files3->first_output = inp3;
 	
-	inp1 = "rcred.bin";
+    inp1 = "rcred.bin";
     inp2 = "rcgrn.bin";
     inp3 = "rcblu.bin";    
  
     
-	files1->second_output = inp1;
-	files2->second_output = inp2;
-	files3->second_output = inp3;
+    files1->second_output = inp1;
+    files2->second_output = inp2;
+    files3->second_output = inp3;
 	
     files1->status = 0;
     files2->status = 0;

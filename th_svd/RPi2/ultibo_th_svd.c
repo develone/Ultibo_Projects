@@ -14,9 +14,9 @@ void test_svd() {
     struct FILEs *files2 = (struct FILEs *)malloc(sizeof(struct FILEs));
     struct FILEs *files3 = (struct FILEs *)malloc(sizeof(struct FILEs));
     
-    inp1 = "red.bin";
-    inp2 = "grn.bin";
-    inp3 = "blu.bin";
+    inp1 = "red.pgm";
+    inp2 = "grn.pgm";
+    inp3 = "blu.pgm";
     
     files1->input_file = inp1;
     files2->input_file = inp2;
