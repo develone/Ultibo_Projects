@@ -37,7 +37,7 @@ uses
 
 procedure decom_test(x0,y0,x1,y1:LongWord;fn:string); cdecl; external 'libdwtlift' name 'decom_test';
 var
-
+ MyPLoggingDevice : ^TLoggingDevice;
  Handle:THandle;
  Handle1:THandle;
  {Handle2:THandle;}
@@ -121,9 +121,11 @@ begin
  LoggingDeviceSetDefault(LoggingDeviceFindByType(LOGGING_TYPE_CONSOLE));
  }
 
- {The following 2 lines are logging to a file}
+ {The following 2 lines are logging to a file
  LoggingDeviceSetTarget(LoggingDeviceFindByType(LOGGING_TYPE_FILE),'c:\ultibologging.log');
  LoggingDeviceSetDefault(LoggingDeviceFindByType(LOGGING_TYPE_FILE));
+ MyPLoggingDevice:=LoggingDeviceGetDefault;
+ LoggingDeviceRedirectOutput(MyPLoggingDevice); }
 
 
  // wait for IP address and SD Card to be initialised.
