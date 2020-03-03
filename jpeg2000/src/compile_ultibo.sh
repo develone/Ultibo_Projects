@@ -18,6 +18,7 @@ arm-none-eabi-gcc  -O3 -mabi=aapcs -marm -march=armv7-a -mfpu=vfpv3-d16 -mfloat-
 arm-none-eabi-gcc  -O3 -mabi=aapcs -marm -march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=hard -c pi.c -o pi.o
 arm-none-eabi-gcc  -O3 -mabi=aapcs -marm -march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=hard -c raw.c -o raw.o
 arm-none-eabi-gcc  -O3 -mabi=aapcs -marm -march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=hard -c t1.c -o t1.o
+arm-none-eabi-gcc  -O3 -mabi=aapcs -marm -march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=hard -c rd-wr-ops.c -o rd-wr-ops.o
  
 arm-none-eabi-gcc  -O3 -mabi=aapcs -marm -march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=hard -c t2.c -o t2.o 
 arm-none-eabi-gcc  -O3 -mabi=aapcs -marm -march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=hard -c tcd.c -o tcd.o
@@ -27,7 +28,7 @@ arm-none-eabi-gcc  -O3 -mabi=aapcs -marm -march=armv7-a -mfpu=vfpv3-d16 -mfloat-
  
 arm-none-eabi-ar rcs libopenjp2.a *.o
 arm-none-eabi-ar t libopenjp2.a > libopenjp2_obj.txt
-echo "The word count here should be 21"
+echo "The word count here should be 22"
 echo "the word count in /home/pi/jpeg-2000-test/bare-metal/openjp"
-echo "when ./libbuild.sh is executed should be 22"
+echo "when ./libbuild.sh is executed should be 23"
 wc libopenjp2_obj.txt 

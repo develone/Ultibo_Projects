@@ -30,13 +30,30 @@ uses
   { needed for telnet }
  uLiftBitmap,
  Logging,
- Syscalls;
+ Syscalls,
+ FileSystem,  {Include the file system core and interfaces}
+ FATFS,       {Include the FAT file system driver}
+ MMC,         {Include the MMC/SD core to access our SD card}
+ BCM2709;
 
 {$linklib dwtlift}
 {$linklib libm}
-
 procedure decom_test(x0,y0,x1,y1:LongWord;fn:string); cdecl; external 'libdwtlift' name 'decom_test';
-var
+procedure  rd_inps(); cdecl; external 'libdwtlift' name 'rd_inps';
+
+
+ var
+ Count:Integer;
+ Filename:String;
+ SearchRec:TSearchRec;
+ StringList:TStringList;
+ FileStream:TFileStream;
+ WindowHandle:TWindowHandle;
+
+
+ enc, xx0, yy0, xx1, yy1:LongWord;
+
+
  MyPLoggingDevice : ^TLoggingDevice;
  Handle:THandle;
  Handle1:THandle;
@@ -58,6 +75,7 @@ var
  Height:LongWord;
  da_x0,da_y0,da_x1,da_y1:LongWord;
  ff:string;
+
 function WaitForIPComplete : string;
 
 var
@@ -160,6 +178,51 @@ begin
 
  DECOMP:=6;
  ENCODE:=1;
+ ConsoleWindowWriteLn(Handle, 'ENCODE: ' + intToStr(ENCODE));
+ ConsoleWindowWriteLn(Handle, 'sizeof ENCODE: ' + intToStr(sizeof(ENCODE)));
+  da_x0:=0;
+ da_y0:=0;
+ da_x1:=2048;
+ da_y1:=2048;
+ ff:='test.j2k';
+ //rd_inps();
+ {starting the procedure to read the file testfile which contains a struct
+ which has the varables for decompression.}
+  try
+  Filename:='C:\testfile';
+  try
+   FileStream:=TFileStream.Create(Filename,fmOpenRead);
+   FileStream.Read(enc,sizeof(enc));
+   ENCODE:=enc;
+   ConsoleWindowWriteLn(Handle, 'xx0 ' + intToStr(xx0));
+
+   FileStream.Read(xx0,sizeof(xx0));
+   da_x0:=xx0;
+   ConsoleWindowWriteLn(Handle, 'xx0 ' + intToStr(xx0));
+   FileStream.Read(yy0,sizeof(yy0));
+   da_y0:=yy0;
+   ConsoleWindowWriteLn(Handle, 'yy0 ' + intToStr(yy0));
+   FileStream.Read(xx1,sizeof(xx1));
+   da_x1:=xx1;
+   ConsoleWindowWriteLn(Handle, 'xx1 ' + intToStr(xx1));
+   FileStream.Read(yy1,sizeof(yy1));
+   da_y1:=yy1;
+   ConsoleWindowWriteLn(Handle, 'yy1 ' + intToStr(yy1));
+
+   {FileStream.Read(decompstr,1);
+   ConsoleWindowWriteLn(Handle, 'decomp file ' + decompstr); }
+
+   FileStream.Free;
+
+  finally
+  end;
+ except
+   on E: Exception do
+   begin
+     ConsoleWindowWriteLn(Handle, 'Error: ' + E.Message);
+    end;
+ end;
+
  //should not be set lower than  30 which is compressiong over 1500
  //
  //		38	189.4093899116
@@ -183,11 +246,7 @@ begin
 
  if(ENCODE = 0) then
  begin
- da_x0:=0;
- da_y0:=0;
- da_x1:=1024;
- da_y1:=1024;
- ff:='test.j2k';
+
  decom_test(da_x0,da_y0,da_x1,da_y1,ff);
  DrawBitmap(Window,'C:\test_wr.bmp',0,0,DECOMP,ENCODE,TCP_DISTORATIO,FILTER, COMPRESSION_RATIO,DIS_CR_FLG);
  end;

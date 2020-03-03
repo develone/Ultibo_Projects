@@ -14,6 +14,7 @@ opj_clock.o
 opj_malloc.o
 pi.o
 raw.o
+rd-wr-ops.o
 t1.o
 t2.o
 tcd.o
