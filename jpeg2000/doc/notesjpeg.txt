@@ -1,0 +1,245 @@
+Updted raspberry pi firmware.
+https://github.com/raspberrypi/firmware
+Commits on Feb 20, 2020
+
+Adding program to compute mse of compressed decompressed 1024x1024
+Previous tests had worked with 2048x2048 which now fails.
+Also having issues transferring the 2048x2048 image.
+Now a single kernel image can compress/decompress.
+testfile is used to contol which is done. 
+
+02bff4e75712094ffb1ab2ec58a8115ca3e52290
+kernel: Bump to 4.19.105 …
+
+@popcornmix
+popcornmix committed 7 days ago
+kernel: ASoC: sgtl5000: add ADC mute control
+See: raspberrypi/linux#3468
+
+kernel: of: overlay: Correct symbol path fixups
+
+kernel: overlays: Add timeout_ms parameter to gpio-poweroff
+
+kernel: defconfigs: enable CONFIG_BPF_LIRC_MODE2
+See: raspberrypi/linux#3461
+
+firmware: Add the ability to export labels from overlays
+
+firmware: loader: 4-byte align initramfs blocks
+See: #1318
+
+firmware: vd3/video_decode: Do not add 16 lines of context when video is 1920 tall
+
+
+devel@mypi3-15:~/Downloads/022720 $ md5sum *
+156a886d5855e42a887f0dd9316fb4e3  bootcode.bin
+5fc4614096c4b753fd940b75b1fa2247  fixup.dat
+fb8e67c4e54427fdca9fab410d41ce2e  fixup_x.dat
+9864d17fa3bcd20738ee9c0c67b2330c  start.elf
+6fa698231abdd267ba84c4cf3c7ab8d2  start_x.elf
+
+config.txt
+start_x=1
+gpu_mem=128
+
+tftp xx.xx.xx.xx.
+
+binary
+
+tftp> rexmt 10
+tftp> status
+Connected to xx.xx.xx.xx.
+Mode: octet Verbose: off Tracing: off
+Rexmt-interval: 10 seconds, Max-timeout: 25 seconds
+tftp> trace
+Packet tracing on.
+tftp> verbose
+Verbose mode on.
+tftp> status
+Connected to 192.168.1.245.
+Mode: octet Verbose: on Tracing: on
+Rexmt-interval: 10 seconds, Max-timeout: 25 seconds
+put lena_rgb_2048.bmp
+
+sent DATA <block=24574, 512 bytes>
+received ACK <block=24574>
+sent DATA <block=24575, 512 bytes>
+received ACK <block=24575>
+sent DATA <block=24576, 512 bytes>
+received ACK <block=24576>
+sent DATA <block=24577, 122 bytes>
+received ACK <block=24577>
+Sent 12583034 bytes in 53.4 seconds [1885099 bits/sec]
+
+Step 1
+devel@mypi3-15:~ $ git clone https://github.com/develone/Ultibo_Projects
+Cloning into 'Ultibo_Projects'...
+remote: Enumerating objects: 34, done.
+remote: Counting objects: 100% (34/34), done.
+remote: Compressing objects: 100% (30/30), done.
+remote: Total 864 (delta 6), reused 24 (delta 4), pack-reused 830
+Receiving objects: 100% (864/864), 76.57 MiB | 7.05 MiB/s, done.
+Resolving deltas: 100% (398/398), done.
+Checking out files: 100% (369/369), done.
+
+
+commit e627bc7e4c9661185074199abcb8198c855916b7 (HEAD -> master, origin/master, origin/HEAD)
+Author: Edward Vidal Jr <develone@sbcglobal.net>
+Date:   Tue Mar 3 06:46:31 2020 -0700
+
+Step 2
+devel@mypi3-15:~ $ cd Ultibo_Projects/jpeg2000/src/
+
+Step 3
+devel@mypi3-15:~/Ultibo_Projects/jpeg2000/src $ ./compile_ultibo.sh 
+The word count here should be 22
+the word count in /home/pi/jpeg-2000-test/bare-metal/openjp
+when ./libbuild.sh is executed should be 23
+ 22  22 173 libopenjp2_obj.txt
+
+Step 4
+devel@mypi3-15:~/Ultibo_Projects/jpeg2000/src $ cd ../RPi2/
+
+Step 5
+devel@mypi3-15:~/Ultibo_Projects/jpeg2000/RPi2 $ ./libbuild.sh 
+dwtlift.c: In function 'decompress':
+dwtlift.c:658:3: warning: implicit declaration of function 'octave_write_byte'; did you mean 'opj_write_tile'? [-Wimplicit-function-declaration]
+   octave_write_byte(r_decompress_fn,r_decompress,da_x1*da_y1);
+   ^~~~~~~~~~~~~~~~~
+   opj_write_tile
+
+
+Step 6
+
+devel@mypi3-15:~/Downloads/022720 $ cd ~/ultibo/core/fpc/source/rtl/ultibo/core/
+
+devel@mypi3-15:~/ultibo/core/fpc/source/rtl/ultibo/core $ less globalconst.pas
+
+{Global constants}
+const
+ {Version constants}
+ ULTIBO_RELEASE_DATE             = '29 September 2019';
+ ULTIBO_RELEASE_NAME             = 'Beetroot';
+ ULTIBO_RELEASE_VERSION          = '2.0.745';
+ ULTIBO_RELEASE_VERSION_MAJOR    = 2;
+ ULTIBO_RELEASE_VERSION_MINOR    = 0;
+ ULTIBO_RELEASE_VERSION_REVISION = 745;
+   
+
+ 
+md5sum kernel7.img 
+94f826d180f88dd1ba7c0b650a743fb3  kernel7.img
+
+A small image 256x256 was in the file MyBitmap.bmp
+ 
+devel@mypi3-15:~/Ultibo_Projects/jpeg2000/RPi2 $ tftp xx.xx.xx.xx < cmdstftp 
+tftp> tftp> Sent 3197924 bytes in 14.7 seconds
+When the Ultibo system rebooted the openjpeg compression was performed.
+ 
+del MyBitmap.bmp
+
+C:\>copy lena_rgb_1024.bmp MyBitmap.bmp
+
+C:\>restart
+
+Modified line 162 DWT_LIFT_RPi2.lpr
+ENCODE:=1; ENCODE:=0; 
+
+Using Lazarus recompiled the kernel7.img
+
+devel@mypi3-15:~/Ultibo_Projects/jpeg2000/RPi2 $ tftp xx.xx.xx.xx < cmdstftp 
+tftp> tftp> Sent 3197924 bytes in 12.5 seconds
+
+When the Ultibo system rebooted the openjpeg decompression was performed.
+
+devel@mypi3-15:/clusterfs/openjpeg/build/bin $ tftp xx.xx.xx.xx
+tftp> binary
+tftp> get test_wr.bmp
+Received 3145850 bytes in 12.9 seconds
+
+sum =  1255558.43096
+ctn =  1048576
+mse =  1.1974
+
+sum =  1753851.17084
+ctn =  1048576
+mse =  1.6726
+
+sum =  1933010.26853
+ctn =  1048576
+mse =  1.8435
+
+256com	--> testfile	lena_rgb_256.bmp --> MyBitmap.bmp
+00000000   01 00 00 00  00 00 00 00  00 00 00 00  00 01 00 00  ................
+00000010   00 01 00 00                                         
+
+256decom --> testfile	lena_rgb_256.bmp --> MyBitmap.bmp
+00000000   00 00 00 00  00 00 00 00  00 00 00 00  00 01 00 00  ................
+00000010   00 01 00 00
+
+1024com --> testfile	lena_rgb_1024.bmp --> MyBitmap.bmp
+00000000   01 00 00 00  00 00 00 00  00 00 00 00  00 04 00 00  ................
+00000010   00 04 00 00
+
+1024decom --> testfile	lena_rgb_1024.bmp --> MyBitmap.bmp
+00000000   00 00 00 00  00 00 00 00  00 00 00 00  00 04 00 00  ................
+00000010   00 04 00 00
+
+2048com --> testfile	lena_rgb_2048.bmp --> MyBitmap.bmp
+00000000   01 00 00 00  00 00 00 00  00 00 00 00  00 08 00 00  ................
+00000010   00 08 00 00
+
+2048decom --> testfile	lena_rgb_2048.bmp --> MyBitmap.bmp
+00000000   00 00 00 00  00 00 00 00  00 00 00 00  00 08 00 00  ................
+00000010   00 08 00 00
+
+devel@mypi3-15:~/Ultibo_Projects/jpeg2000/src $ tftp 192.168.1.245
+tftp> binary
+tftp> put 256decom
+Sent 20 bytes in 0.1 seconds
+tftp> put 256com
+Sent 20 bytes in 0.0 seconds
+tftp> put 1024decom
+Sent 20 bytes in 0.0 seconds
+tftp> put 1024com
+Sent 20 bytes in 0.0 seconds
+tftp> put 2048decom
+Sent 20 bytes in 0.0 seconds
+tftp> quit
+                                   
+                                   
+del MyBitmap.bmp
+copy lena_rgb_256.bmp MyBitmap.bmp
+del testfile
+copy 256com testfile
+restart
+
+del testfile
+copy 256decom testfile
+restart
+
+del MyBitmap.bmp
+copy lena_rgb_512.bmp MyBitmap.bmp
+del testfile
+restart
+
+del MyBitmap.bmp
+copy lena_rgb_1024.bmp MyBitmap.bmp
+del testfile
+copy 1024com testfile
+restart
+
+del testfile
+copy 1024decom testfile
+restart
+
+del MyBitmap.bmp
+copy lena_rgb_2048.bmp MyBitmap.bmp
+del testfile
+copy 2048com testfile
+restart
+
+del testfile
+copy 2048decom testfile
+restart
+
