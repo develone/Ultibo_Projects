@@ -51,7 +51,7 @@ procedure  rd_inps(); cdecl; external 'libdwtlift' name 'rd_inps';
  WindowHandle:TWindowHandle;
 
 
- enc, xx0, yy0, xx1, yy1:LongWord;
+ CR, enc, xx0, yy0, xx1, yy1:LongWord;
 
 
  MyPLoggingDevice : ^TLoggingDevice;
@@ -178,6 +178,11 @@ begin
 
  DECOMP:=6;
  ENCODE:=1;
+  //FILTER 0 5/3 DWT
+ //FILTER 1 9/7 DWT
+ FILTER:= 0;
+ COMPRESSION_RATIO := 125;
+
  ConsoleWindowWriteLn(Handle, 'ENCODE: ' + intToStr(ENCODE));
  ConsoleWindowWriteLn(Handle, 'sizeof ENCODE: ' + intToStr(sizeof(ENCODE)));
   da_x0:=0;
@@ -192,10 +197,12 @@ begin
   Filename:='C:\testfile';
   try
    FileStream:=TFileStream.Create(Filename,fmOpenRead);
+   FileStream.Read(CR,sizeof(CR));
+   COMPRESSION_RATIO:=CR;
+   ConsoleWindowWriteLn(Handle, 'xx0 ' + intToStr(xx0));
    FileStream.Read(enc,sizeof(enc));
    ENCODE:=enc;
    ConsoleWindowWriteLn(Handle, 'xx0 ' + intToStr(xx0));
-
    FileStream.Read(xx0,sizeof(xx0));
    da_x0:=xx0;
    ConsoleWindowWriteLn(Handle, 'xx0 ' + intToStr(xx0));
@@ -233,10 +240,6 @@ begin
  //		60	5.5454244973
 
  TCP_DISTORATIO:=60;
- //FILTER 0 5/3 DWT
- //FILTER 1 9/7 DWT
- FILTER:= 0;
- COMPRESSION_RATIO := 125;
  //DIS_CR_FLG 0 COMPRESSION_RATIO
  //DIS_CR_FLG 1 TCP_DISTORATIO
  DIS_CR_FLG := 0;

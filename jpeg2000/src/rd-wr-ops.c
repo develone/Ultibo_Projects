@@ -4,7 +4,7 @@
 #include "rdwr.h"
 void rd_inps() {
 	
-	int enc,x0,y0,x1,y1;
+	int CR,enc,x0,y0,x1,y1;
 	fn = "testfile";
 		
 	inptr = fopen(fn,"rb");
@@ -13,7 +13,9 @@ void rd_inps() {
 	if (inptr == 0) 
 		printf("could open file for input\n");
 	else
-		num = fread(&x0,sizeof(enc),1,inptr);
+		num = fread(&CR,sizeof(CR),1,inptr);
+		printf("number read %d \n",num);
+		num = fread(&enc,sizeof(enc),1,inptr);
 		printf("number read %d \n",num);
 		num = fread(&x0,sizeof(x0),1,inptr);
 		printf("number read %d \n",num);
@@ -25,6 +27,7 @@ void rd_inps() {
 		printf("number read %d \n",num);
 
 	fclose(inptr);
+	printf("size of 0x%x %x \n",CR,sizeof(CR));
 	printf("size of 0x%x %x \n",enc,sizeof(enc));
 	printf("size of 0x%x %x \n",x0,sizeof(x0));
 	printf("size of 0x%x %x \n",y0,sizeof(y0));
@@ -35,15 +38,17 @@ void rd_inps() {
 	
 }
 void wr_inps() {
-	int enc,x0,y0,x1,y1;
+	int CR,enc,x0,y0,x1,y1;
 	enc = 1; 
 	x0 = 0;
 	y0 = 0;
 	x1 = 2048;
 	y1 = 2048;
+	CR = 25;
  
 
 	fn = "testfile";
+	printf("size of 0x%x %x \n",CR,sizeof(CR));
 	printf("size of 0x%x %x \n",enc,sizeof(enc));
 	printf("size of 0x%x %x \n",x0,sizeof(x0));
 	printf("size of 0x%x %x \n",y0,sizeof(y0));
@@ -59,6 +64,8 @@ void wr_inps() {
 	if (outptr == 0) 
 		printf("could open file for output\n");
 	else
+		num = fwrite(&CR,sizeof(CR),1,outptr);
+		printf("number read %d \n",num);
 		num = fwrite(&enc,sizeof(enc),1,outptr);
 		printf("number read %d \n",num);
 		num = fwrite(&x0,sizeof(x0),1,outptr);

@@ -1,0 +1,48 @@
+
+
+					JPEG2000 OPENJPEG Ultibo Files
+					Source: https://github.com/develone/Ultibo_Projects/tree/master/jpeg2000
+
+Linux Firmware
+  bootcode.bin  
+    fixup.dat  
+      fixup_x.dat  
+        start.elf  
+          start_x.elf
+
+config.txt 
+  start_x=1
+  gpu_mem=128
+*determines GPU Memory and which Linux Firmware
+to use.
+  
+Ultibo
+  kernel7.img
+
+BMP Images
+  lena_rgb_1024.bmp
+    lena_rgb_512.bmp		MyBitmap.bmp		test.j2k		test_wr.bmp
+      lena_rgb_1024.bmp
+        lena_rgb_1024.bmp
+
+Control Files
+  256com
+    256decom
+      512com 
+        512decom			testfile
+          1024com             
+           1024decom			
+             2048com
+               2048decom
+
+*n **1/0 x0 y0 x1 y1
+*Compression ratio 
+512com --> testfile	lena_rgb_512.bmp --> MyBitmap.bmp
+00000000   19 00 00 00  01 00 00 00  00 00 00 00  00 00 00 00  ................
+00000010   00 02 00 00  00 02 00 00
+
+512decom --> testfile	lena_rgb_512.bmp --> MyBitmap.bmp
+00000000   19 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00  ................
+00000010   00 02 00 00  00 02 00 00
+
+*1 Compress 0 Decompress
