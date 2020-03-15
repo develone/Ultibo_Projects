@@ -57,3 +57,39 @@ sudo pppd /dev/ttyUSB0 115200 10.0.5.1:10.0.5.2 noauth local debug dump defaultr
 
 config.txt
 dwc_otg.lpm_enable=0 console=ttyAMA0,115200 kgdboc=ttyAMA0,115200 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait
+
+mypi3-1
+
+pi@mypi3-1:~ $ Ultibo_Projects/slip-ppp/linux/scripts/ppp-3.1.sh
+
+pi@mypi3-1:~ $ ifconfig ppp0
+ppp0: flags=4305<UP,POINTOPOINT,RUNNING,NOARP,MULTICAST>  mtu 1500
+        inet 10.0.5.1  netmask 255.255.255.255  destination 10.0.5.2
+        ppp  txqueuelen 3  (Point-to-Point Protocol)
+        RX packets 4  bytes 62 (62.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 4  bytes 62 (62.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+mypi3-11
+
+devel@mypi3-11:~ $ Ultibo_Projects/slip-ppp/linux/scripts/ppp-3.11.sh
+
+ppp0: flags=4305<UP,POINTOPOINT,RUNNING,NOARP,MULTICAST>  mtu 1500
+        inet 10.0.5.2  netmask 255.255.255.255  destination 10.0.5.1
+        ppp  txqueuelen 3  (Point-to-Point Protocol)
+        RX packets 4  bytes 62 (62.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 4  bytes 62 (62.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+	
+Created a ssh key for mypi3-11
+Copied the key to user pi on mypi3-1
+
+devel@mypi3-11:~ $ time scp lena_rgb_1024.bmp pi@10.0.5.1:~/
+lena_rgb_1024.bmp                             100% 3072KB  10.9KB/s   04:41    
+
+real	4m42.804s
+user	0m0.976s
+sys	0m0.573s
+Tested that the image transferred successful.
