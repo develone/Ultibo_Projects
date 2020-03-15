@@ -95,9 +95,11 @@ sys	0m0.573s
 Tested that the image transferred successful.
 Repeated the test of transferring lena_rgb_1024.bmp 
 time scp lena_rgb_1024.bmp pi@10.0.5.1:~/
-ssh: connect to host 10.0.5.1 port 22: Connection timed out
-lost connection
+ 
+devel@mypi3-11:~ $ time scp lena_rgb_1024.bmp pi@10.0.5.1:~/
+lena_rgb_1024.bmp                             100% 3072KB  21.9KB/s   02:20    
 
-real	0m32.286s
-user	0m0.008s
-sys	0m0.002s
+real	2m22.298s
+user	0m0.989s
+sys	0m0.678s 
+Tested that the image transferred successful.
