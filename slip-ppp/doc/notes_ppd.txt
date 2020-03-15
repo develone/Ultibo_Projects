@@ -1,0 +1,59 @@
+https://www.instructables.com/id/Connect-the-Raspberry-Pi-to-network-using-UART/
+# This will make a LED attached to the TX blink once
+stty -F /dev/ttyUSB0 9600 raw
+dd if=/dev/zero of=/dev/ttyUSB0 bs=1000 count=1
+
+sudo apt-get install ppp
+
+UART Convertor             Raspberry PI GPIO
+GND ---------------------- GND
+TX output pin ------------ RXD pin 10 on GPIO header
+RX input pin ------------- TXD pin 8  on GPIO header
+
+git clone https://salsa.debian.org/debian/ppp.git
+
+stty -F /dev/ttyAMA0 raw
+pppd /dev/ttyAMA0 115200 10.0.5.2:10.0.5.1 noauth local debug dump defaultroute nocrtscts
+-a, --all          print all current settings in human-readable form
+
+
+cooked        same as brkint ignpar istrip icrnl ixon opost isig
+              icanon, eof and eol characters to their default values
+-cooked       same as raw
+
+raw           same as -ignbrk -brkint -ignpar -parmrk -inpck -istrip
+              -inlcr -igncr -icrnl -ixon -ixoff -icanon -opost
+              -isig -iuclc -ixany -imaxbel -xcase min 1 time 0
+-raw          same as cooked
+
+sudo pppd --help
+pppd version 2.4.7
+Usage: pppd [ options ], where options are:
+	<device>	Communicate over the named device
+	<speed>		Set the baud rate to <speed>
+	<loc>:<rem>	Set the local and/or remote interface IP
+			addresses.  Either one may be omitted.
+	asyncmap <n>	Set the desired async map to hex <n>
+	auth		Require authentication from peer
+        connect <p>     Invoke shell command <p> to set up the serial line
+	crtscts		Use hardware RTS/CTS flow control
+	defaultroute	Add default route through interface
+	file <f>	Take options from file <f>
+	modem		Use modem control lines
+	mru <n>		Set MRU value to <n> for negotiation
+See pppd(8) for more options.
+echo "Starting pppd..."
+sudo stty -F /dev/ttyAMA0 raw
+sudo stty -F /dev/ttyAMA0 -a
+sudo pppd /dev/ttyAMA0 115200 10.0.5.2:10.0.5.1 noauth local debug dump defaultroute nocrtscts persist maxfail 0 holdoff 1
+
+sudo stty -F /dev/ttyUSB0 raw
+sudo stty -F /dev/ttyUSB0 -a
+mypi3-11
+sudo pppd /dev/ttyUSB0 115200 10.0.5.2:10.0.5.1 noauth local debug dump defaultroute nocrtscts persist maxfail 0 holdoff 1
+
+mypi3-1
+sudo pppd /dev/ttyUSB0 115200 10.0.5.1:10.0.5.2 noauth local debug dump defaultroute nocrtscts persist maxfail 0 holdoff 1
+
+config.txt
+dwc_otg.lpm_enable=0 console=ttyAMA0,115200 kgdboc=ttyAMA0,115200 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline rootwait
