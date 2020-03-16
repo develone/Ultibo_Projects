@@ -128,4 +128,53 @@ user	0m0.511s
 sys	0m0.223s
 
 wifi is much more faster than ppp.
+devel@mypi3-11:~ $ ifconfig ppp0
+ppp0: flags=4305<UP,POINTOPOINT,RUNNING,NOARP,MULTICAST>  mtu 1500
+        inet 10.0.5.2  netmask 255.255.255.255  destination 10.0.5.1
+        ppp  txqueuelen 3  (Point-to-Point Protocol)
+        RX packets 1134  bytes 62853 (61.3 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 2203  bytes 3267057 (3.1 MiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+devel@mypi3-11:~ $ lsusb
+Bus 001 Device 007: ID 0403:6001 Future Technology Devices International, Ltd FT232 Serial (UART) IC
+
+pi@mypi3-1:~ $ lsusb
+
+Bus 001 Device 003: ID 0403:6001 Future Technology Devices International, Ltd FT232 Serial (UART) IC
+
+
+devel@mypi3-11:~ $ ssh -Y pi@10.0.5.1
+Linux mypi3-1 4.19.97+ #1294 Thu Jan 30 13:10:54 GMT 2020 armv6l
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Mon Mar 16 05:48:21 2020 from 2600:1700:69f0:42c0::48
+
+devel@mypi3-11:~ $ ssh -Y pi@10.0.5.1
+Linux mypi3-1 4.19.97+ #1294 Thu Jan 30 13:10:54 GMT 2020 armv6l
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Mon Mar 16 12:39:14 2020 from 10.0.5.2
+
+Setup Routing and NAT		Need to see where these commands should be executed.
+
+First, enable the traffic forwarding:
+
+sudo sysctl -w net.ipv4.ip_forward=1
+
+Next, enable the NAT masquerade to translate Raspi's internal address to the computer's address. Assuming the 'eth0' is an interface on your computer that you use to connect to the outside world:
+sudo iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE
+
+
 http://read.pudn.com/downloads30/sourcecode/embed/95033/TCPIP%20Lean.pdf
