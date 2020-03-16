@@ -118,4 +118,14 @@ devel@mypi3-11:~ $ md5sum lena_rgb_1024.bmp
 5e987f94322785c2f90e63a82ac5b667  lena_rgb_1024.bmp
 pi@mypi3-1:~ $ md5sum lena_rgb_1024.bmp 
 5e987f94322785c2f90e63a82ac5b667  lena_rgb_1024.bmp
+
+wifi
+devel@mypi3-11:~ $ time scp lena_rgb_1024.bmp pi@mypi3-1:~/
+lena_rgb_1024.bmp                             100% 3072KB   1.8MB/s   00:01    
+
+real	0m3.036s
+user	0m0.511s
+sys	0m0.223s
+
+wifi is much more faster than ppp.
 http://read.pudn.com/downloads30/sourcecode/embed/95033/TCPIP%20Lean.pdf
