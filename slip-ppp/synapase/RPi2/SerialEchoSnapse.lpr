@@ -87,7 +87,7 @@ begin
      ConsoleWindowWriteLn(Handle,'Connected');
      
      {Configure}
-     BlockSerial.Config(9600,8,'N',0,False,False);
+     BlockSerial.Config(1000000,8,'N',0,False,False);
      if BlockSerial.LastError = 0 then
       begin
        ConsoleWindowWriteLn(Handle,'Configured');
