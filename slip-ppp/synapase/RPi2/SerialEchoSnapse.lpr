@@ -51,6 +51,21 @@ uses
   Classes,
   SysUtils,
   Console,
+  {Include HTTP and WebStatus so we can see from a web browser what is happening}
+  HTTP,
+  WebStatus,
+  {Include HTTP and WebStatus so we can see from a web browser what is happening}
+  { needed to use ultibo-tftp  }
+  uTFTP,
+  Winsock2,
+  { needed to use ultibo-tftp  }
+  { needed for telnet }
+      Shell,
+     ShellFilesystem,
+     ShellUpdate,
+     RemoteShell,
+  { needed for telnet }
+ 
   SynaSer;
 
 var
@@ -59,13 +74,77 @@ var
  Characters:String;
  BlockSerial:TBlockSerial;
 
+ { var needed to support webstatus tftp & telnet}
+ TCP : TWinsock2TCPClient;
+ Handle1:THandle;
+ IPAddress : string;
+ HTTPListener:THTTPListener;
+ { var needed to support webstatus tftp & telnet}
+
+{ functions & procedures needed to support tftp & telnet}
+function WaitForIPComplete : string;
 begin
+   TCP := TWinsock2TCPClient.Create;
+
+  Result := TCP.LocalAddress;
+
+  if (Result = '') or (Result = '0.0.0.0') or (Result = '255.255.255.255') then
+
+    begin
+
+      while (Result = '') or (Result = '0.0.0.0') or (Result = '255.255.255.255') do
+
+        begin
+
+          sleep (1500);
+
+          Result := TCP.LocalAddress;
+
+        end;
+
+    end;
+
+  TCP.Free;
+
+end;
+
+procedure Msg (Sender : TObject; s : string);
+
+begin
+
+  ConsoleWindowWriteLn (Handle1, s);
+
+end;
+
+procedure WaitForSDDrive;
+
+begin
+
+  while not DirectoryExists ('C:\') do sleep (500);
+
+end;
+{ functions & procedures needed to webstatus support tftp & telnet}
+
+begin
+ { initialize to support webstatus tftp & telnet}
+
+ WaitForSDDrive;
+ IPAddress := WaitForIPComplete;
+ {Create and start the HTTP Listener for our web status page}
+ HTTPListener:=THTTPListener.Create;
+ HTTPListener.Active:=True;
+ Sleep(5000);
+ {Register the web status page, the "Thread List" page will allow us to see what is happening in the example}
+ WebStatusRegister(HTTPListener,'','',True);
+ Handle1:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_TOPRIGHT,True);
+
+ { initialize to support webstatus tftp & telnet}
  try
   {Create our console window}
-  Handle:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_FULL,True);
+  Handle:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_TOPLEFT,True);
    
   ConsoleWindowWriteLn(Handle,'Starting Synapse Serial Echo Example');
-   
+  ConsoleWindowWriteLn(Handle, 'With support for tftp & telnet: ' + TimeToStr(Time));
   {Wait a couple of seconds for C:\ drive to be ready}
   ConsoleWindowWriteLn(Handle,'Waiting for drive C:\');
   while not DirectoryExists('C:\') do
@@ -139,6 +218,10 @@ begin
    begin
     ConsoleWindowWriteLn(Handle,'An exception happened at address ' + IntToHex(PtrUInt(ExceptAddr),8) + ' the message was ' + E.Message);
    end;
- end; 
+ end;
+ ConsoleWindowWriteLn (Handle1, 'Local Address ' + IPAddress);
+ SetOnMsg (@Msg);
+ ConsoleWindowWriteLn(Handle, TimeToStr(Time));
+ ThreadHalt(0);
 end.
  
