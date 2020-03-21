@@ -69,7 +69,9 @@ uses
   IPUtils,
   PingThread,
   { needed for scan }
-
+  { needed for SNTP }
+  SNTPsend,
+  { needed for SNTP }
   SynaSer;
 
 var
@@ -96,6 +98,10 @@ var
  PingThreads:array of TPingThread;
  ThreadsComplete:Boolean;
  { var needed by scan}
+ { var needed by STNP}
+ SntpClient:TSntpSend;
+ Handle2:THandle;
+ { var needed by STNP}
 { functions & procedures needed to support tftp & telnet}
 function WaitForIPComplete : string;
 begin
@@ -153,6 +159,27 @@ begin
  WebStatusRegister(HTTPListener,'','',True);
  Handle1:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_TOPRIGHT,True);
  ConsoleWindowWriteLn(Handle1,'Starting Synapse Ping Scan Example');
+ Handle2:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_BOTTOMRIGHT,True);
+ ConsoleWindowWriteLn(Handle2,'Starting Synapse STNP Example');
+
+ {Create the SNTP client}
+ SntpClient:=TSntpSend.Create;
+ try
+  SntpClient.TargetHost:='pool.ntp.org';
+  ConsoleWindowWriteLn(Handle,'Requesting SNTP time from ' + SntpClient.TargetHost);
+  ConsoleWindowWriteLn(Handle2,'');
+
+  if SntpClient.GetSNTP then
+   begin
+    ConsoleWindowWriteLn(Handle2,'SNTP time is ' + DateTimeToStr(SntpClient.NTPTime) + ' UTC');
+   end
+  else
+   begin
+    ConsoleWindowWriteLn(Handle2,'Could not contact SNTP server ' + SntpClient.TargetHost);
+   end;
+ finally
+  SntpClient.Free;
+ end;
 
  {Check start and end}
  if IsIPAddress(ScanStart) and IsIPAddress(ScanEnd) then
