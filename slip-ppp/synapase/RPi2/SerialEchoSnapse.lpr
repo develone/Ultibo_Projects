@@ -65,14 +65,12 @@ uses
      ShellUpdate,
      RemoteShell,
   { needed for telnet }
-  { needed for scan }
-  IPUtils,
-  PingThread,
-  { needed for scan }
+
   { needed for SNTP
   SNTPsend,
    needed for SNTP }
   uMySNTP,
+  uMyScan,
   SynaSer;
 
 var
@@ -82,30 +80,17 @@ var
  Character:Char;
  Characters:String;
  BlockSerial:TBlockSerial;
-
+ { var needed by scan}
+ ScanStart:String = '192.168.1.1'; {Change these addresses to suit your network}
+ ScanEnd:String = '192.168.1.254';
+ { var needed by scan}
  { var needed to support webstatus tftp & telnet}
  TCP : TWinsock2TCPClient;
 
  IPAddress : string;
  HTTPListener:THTTPListener;
  { var needed to support webstatus tftp & telnet}
- { var needed by scan Change these addresses to suit your network
- ScanStart:String = '192.168.1.1';
- ScanEnd:String = '192.168.1.254';
 
- i,j:Cardinal;
- PingStart:Cardinal;
- PingEnd:Cardinal;
- PingCount:Cardinal;
- PingResults:array of TPingResult;
- PingThreads:array of TPingThread;
- ThreadsComplete:Boolean;
- var needed by scan}
-
- { var needed by STNP
- SntpClient:TSntpSend;
-
-  var needed by STNP}
 { functions & procedures needed to support tftp & telnet}
 function WaitForIPComplete : string;
 begin
@@ -164,79 +149,8 @@ begin
  Handle1:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_TOPRIGHT,True);
  //ConsoleWindowWriteLn(Handle1,'Starting Synapse Ping Scan Example');
  Handle2:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_BOTTOMLEFT,True);
- MySNTP(Handle2);
-  {
-   //Display addresses
-   ConsoleWindowWriteLn(Handle1,'Start address  ' + ScanStart);
-   ConsoleWindowWriteLn(Handle1,'End address  ' + ScanEnd);
-   ConsoleWindowWriteLn(Handle1,'');
-
-   //Get count
-   PingCount:=(PingEnd - PingStart) + 1;
-
-   //Display count
-   ConsoleWindowWrite(Handle1,'Pinging ' + IntToStr(PingCount) + ' addresses');
-
-   //Initialize arrays
-   SetLength(PingResults,PingCount);
-   SetLength(PingThreads,PingCount);
-   j:=0;
-   for i:=PingStart to PingEnd do
-    begin
-     PingResults[j].IPAddress:=IPToStr(CardinalToIP(i));
-     PingResults[j].Exists:=False;
-     Inc(j);
-    end;
-
-      //Create one thread for each ping
-   for i:=0 to PingCount - 1 do
-    begin
-     PingThreads[i]:=TPingThread.Create(PingResults[i]);
-    end;
-
-   ConsoleWindowWrite(Handle,' ');
-
-   //Wait till all threads are executed
-   repeat
-    ThreadsComplete:=True;
-    ConsoleWindowWrite(Handle,'.');
-    Sleep(1000);
-    for i:=0 to PingCount - 1 do
-     begin
-      if not PingThreads[i].Ready then
-       begin
-        ThreadsComplete:=False;
-        Break;
-       end;
-     end;
-   until ThreadsComplete;
-
-   ConsoleWindowWriteLn(Handle1,'');
-   ConsoleWindowWriteLn(Handle1,'');
-   ConsoleWindowWriteLn(Handle1,'Ping Results');
-
-   //Dislay results
-   for i:=0 to PingCount - 1 do
-    begin
-     if PingThreads[i].PingResult.Exists then
-      begin
-       ConsoleWindowWriteLn(Handle1,IntToStr(i + 1) + '  ' + PingThreads[i].PingResult.IPAddress);
-      end;
-    end;
-
-      //Free threads
-   for i:=0 to PingCount - 1 do
-    begin
-     PingThreads[i].Free;
-    end;
-  end
- else
-  begin
-   ConsoleWindowWriteLn(Handle1,'Invalid start or end address for scan');
-
-
-  end;
-  }
+ //MySNTP(Handle2);
+ //MyScan (handle1, ScanStart, ScanEnd);
 
  { initialize to support webstatus tftp & telnet}
  try
