@@ -21,7 +21,7 @@ program SerialEchoSnyapse;
 { something like PuTTY to create a serial connection to the COM port you are   }
 { using. For this example we'll use these connection settings:                 }
 {                                                                              }
-{ Speed: 9600                                                                  }
+{ Speed: 1M                                                                  }
 { Data Bits: 8                                                                 }
 { Stop Bits: 1                                                                 }
 { Parity: None                                                                 }
