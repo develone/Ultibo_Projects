@@ -117,20 +117,21 @@ begin
 
  Handle2:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_BOTTOMLEFT,True);
 
- {Testing MySlip functions }
- MySlip(Handle2);
+ {Testing MySlip functions B:='ABC1234567890ABC1234567890';}
+
  B:='ABC1234567890ABC1234567890';
  OpenStatus:=0;
  OpenStatus := MySlipOpen(Handle2);
  ConsoleWindowWriteLn(Handle1,'MySlipOpen Status should be 1 if success');
  ConsoleWindowWriteLn(Handle1,'MySlipOpen Status should be 0 if failed to open');
  ConsoleWindowWriteLn(Handle1,'MySlipOpen Status ' + intToStr(OpenStatus));
- B:='ABC1234567890ABC1234567890';
 
  {Setting the Count to N writes N characters of string}
  if OpenStatus = 1 then
+   B:='ABC12345';
+   B:=B +  Chr(13) + Chr(10);
    begin
-    Count:=8;
+    Count:=10;
     BP := @B;
     ConsoleWindowWriteln(Handle2, B + ' '+ intToStr(SizeOf(BP)));
     Count:=MySlipTransmit(Handle2,BP,Count);
@@ -140,6 +141,8 @@ begin
  {Setting the Count to Length(B) writes the entire string}
  if OpenStatus = 1 then
    begin
+     B:='ABC1234567890ABC1234567890';
+   B:=B +  Chr(13) + Chr(10);
    Count:=Length(B);
    BP := @B;
    ConsoleWindowWriteln(Handle2, B + ' '+ intToStr(SizeOf(BP)));
@@ -147,7 +150,7 @@ begin
    ConsoleWindowWriteLn(Handle1,'num wrote ' + intToStr(Count));
    end;
 
-
+ sleep(2000);
  CloseStatus:=0;
  CloseStatus := MySlipClose(Handle2);
  ConsoleWindowWriteLn(Handle1,'MySlipClose Status should be 1 if success');

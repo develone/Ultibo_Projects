@@ -17,7 +17,7 @@ uses
 
 var
  Count:LongWord;
-
+ //Character:Char;
  Characters:String;
 
  MySlip1_ResultOpenStatus:LongWord;
@@ -66,11 +66,11 @@ implementation
      Buffer = String[255];
      BufPtr = ^Buffer;
    var
-
+    B:Buffer;
     BP:BufPtr;
     Characters:String;
    begin
-
+      B:='';
       BP := PassBuffer;
       Characters:=BP^;
       ConsoleWindowWriteLn(PassHandle2, Characters);
