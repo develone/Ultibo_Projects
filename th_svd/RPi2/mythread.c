@@ -2,8 +2,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include<unistd.h>
-#include "master_slave.h"
-#include "pnmio.h"
+#include "include/master_slave.h"
+#include "include/pnmio.h"
+#include "include/klt.h"
 
 void *hello(void *input) {
     printf("name: %s\n", ((struct args*)input)->name);
@@ -61,12 +62,18 @@ void *mysvd(void *strptr) {
 			printf("In mysvd status: %d\n", ((struct FILEs*)strptr)->status);
 			printf("In mysvd num_bytes_rd: %d\n", ((struct FILEs*)strptr)->num_bytes_rd);
 			printf("\n");
+			//Now reading for the input image using pgmReadFile
+			th0.img1 = pgmReadFile(((struct FILEs*)strptr)->input_file, NULL, &th0.ncols, &th0.nrows);
+			printf("ncols=%d nrows=%d \n",th0.ncols,th0.nrows);
+			/*
 			th0.inptr = fopen(((struct FILEs*)strptr)->input_file,"r");
 			if (th0.inptr == 0) printf("file not found\n");
 			//th0.len1 = fread(th0.inbuf,sizeof(int),th0.m*th0.n,th0.inptr);
 			th0.len1 = fread(th0.inbuf,sizeof(char),th0.m*th0.n,th0.inptr);
 			fclose(th0.inptr);
 			((struct FILEs*)strptr)->num_bytes_rd = th0.len1;
+			*/
+			((struct FILEs*)strptr)->num_bytes_rd = th0.ncols*th0.nrows; 
 			((struct FILEs*)strptr)->status = 1;
 			printf("In mysvd status input file read: %d num_bytes_rd %d\n", ((struct FILEs*)strptr)->status,((struct FILEs*)strptr)->num_bytes_rd);
 			printf("red.pgm th0.len1 = %d \n",th0.len1);
@@ -86,7 +93,7 @@ void *mysvd(void *strptr) {
 				th0.ppds = (float **)malloc(th0.len1);
 				th0.ppdsfr = th0.ppds;
 				th0.ppvt = (float **)malloc(th0.len2);
-				th0.ppdsfr = th0.ppvt;
+				th0.ppvtfr = th0.ppvt;				
 				th0.pps = (int **)malloc(th0.len4);
 				th0.ppsfr = th0.pps;
 				th0.ppudsvt = (float **)malloc(th0.len3);
@@ -132,14 +139,14 @@ void *mysvd(void *strptr) {
 			}
 			for(th0.i = 0; th0.i < th0.m; th0.i++) th0.ppudsvt[th0.i] = (th0.pudsvt + th0.q * th0.i); 
 	
-			for(th0.i=0;th0.i<th0.m;th0.i++) {
-				for(th0.j=0;th0.j<th0.n;th0.j++) {
-					th0.ppa[th0.i][th0.j]=(float)*th0.inbuf;
-					*th0.inbufch=(char)*th0.inbuf;
+			for(th0.j=0;th0.j<th0.m;th0.j++) {
+				for(th0.i=0;th0.i<th0.n;th0.i++) {
+					th0.ppa[th0.i][th0.j]=(float)*th0.img1;
+					//*th0.inbufch=(char)*th0.inbuf;
 					//printf("%d %d %5.1f \n",th0.i,th0.j,th0.ppa[th0.i][th0.j]);
 					//printf("%d %d %d \n",th0.i,th0.j,*th0.inbufch);
-					th0.inbuf++;
-					th0.inbufch++;
+					th0.img1++;
+					//th0.inbufch++;
 				}
 			}
 			//pgmWriteFile(((struct FILEs*)strptr)->pgm1,th0.inbufchfr,th0.m,th0.n);
@@ -155,8 +162,8 @@ void *mysvd(void *strptr) {
 			//result = disp(th0.ppa,th0.m,th0.n);
 			printf("Singular Values\n");
 			//clear the S diagonal matrix
-			for(th0.i=0;th0.i<th0.m;th0.i++) { 
-				for(th0.j=0;th0.j<th0.n;th0.j++) {
+			for(th0.j=0;th0.j<th0.m;th0.j++) { 
+				for(th0.i=0;th0.i<th0.n;th0.i++) {
 					th0.ppds[th0.i][th0.j] = 0;
 				}	
 			}	
@@ -182,8 +189,8 @@ void *mysvd(void *strptr) {
 
 			th0.result = mul(th0.ppuds,th0.ppvt,th0.ppudsvt,th0.m,th0.n,th0.m,th0.n);
 			printf("USDVT row = %d col = %d \n",th0.p,th0.q);
-			for(th0.i=0;th0.i<th0.m;th0.i++) {
-				for(th0.j=0;th0.j<th0.n;th0.j++) {
+			for(th0.j=0;th0.j<th0.m;th0.j++) {
+				for(th0.i=0;th0.i<th0.n;th0.i++) {
 					//th0.pps[th0.i][th0.j]=(int)th0.ppudsvt[th0.i][th0.j];
 					th0.pps[th0.i][th0.j]=FLOAT_TO_INT(th0.ppudsvt[th0.i][th0.j]);
 					//printf("%d ",pps[i][j]);
@@ -217,11 +224,18 @@ void *mysvd(void *strptr) {
 			printf("In mysvd status: %d\n", ((struct FILEs*)strptr)->status);
 			printf("In mysvd num_bytes_rd: %d\n", ((struct FILEs*)strptr)->num_bytes_rd);
 			printf("\n");
+			//Now reading for the input image using pgmReadFile
+			th1.img2 = pgmReadFile(((struct FILEs*)strptr)->input_file, NULL, &th1.ncols, &th1.nrows);
+			printf("ncols=%d nrows=%d \n",th1.ncols,th1.nrows);
+			/*
 			th1.inptr = fopen(((struct FILEs*)strptr)->input_file,"r");
 			if (th1.inptr == 0) printf("file not found\n");
-			th1.len1 = fread(th1.inbuf,sizeof(char),th1.m*th1.n,th1.inptr);
-			fclose(th1.inptr);
+			//th1.len1 = fread(th0.inbuf,sizeof(int),th1.m*th1.n,th1.inptr);
+			th0.len1 = fread(th0.inbuf,sizeof(char),th0.m*th1.n,th1.inptr);
+			fclose(th0.inptr);
 			((struct FILEs*)strptr)->num_bytes_rd = th1.len1;
+			*/
+			((struct FILEs*)strptr)->num_bytes_rd = th1.ncols*th1.nrows; 
 			((struct FILEs*)strptr)->status = 1;
 			printf("In mysvd status input file read: %d num_bytes_rd %d\n", ((struct FILEs*)strptr)->status,((struct FILEs*)strptr)->num_bytes_rd);
 			printf("grn.pgm th1.len1 = %d \n",th1.len1);
@@ -288,14 +302,14 @@ void *mysvd(void *strptr) {
 			}
 			for(th1.i = 0; th1.i < th1.m; th1.i++) th1.ppudsvt[th1.i] = (th1.pudsvt + th1.q * th1.i); 
 	
-			for(th1.i=0;th1.i<th1.m;th1.i++) {
-				for(th1.j=0;th1.j<th1.n;th1.j++) {
-					th1.ppa[th1.i][th1.j]=(float)*th1.inbuf;
-					*th1.inbufch = (char)*th1.inbuf;
+			for(th1.j=0;th1.j<th1.m;th1.j++) {
+				for(th1.i=0;th1.i<th1.n;th1.i++) {
+					th1.ppa[th1.i][th1.j]=(float)*th1.img2;
+					//*th0.inbufch=(char)*th0.inbuf;
 					//printf("%d %d %5.1f \n",th1.i,th1.j,th1.ppa[th1.i][th1.j]);
 					//printf("%d %d %d \n",th1.i,th1.j,*th1.inbufch);
-					th1.inbuf++;
-					th1.inbufch++;
+					th1.img2++;
+					//th0.inbufch++;
 				}
 			}
 			//pgmWriteFile(((struct FILEs*)strptr)->pgm2,th1.inbufchfr,th1.m,th1.n);
@@ -311,8 +325,8 @@ void *mysvd(void *strptr) {
 			//result = disp(th1.ppa,th1.m,th1.n);
 			printf("Singular Values\n");
 			//clear the S diagonal matrix
-			for(th1.i=0;th1.i<th1.m;th1.i++) { 
-				for(th1.j=0;th1.j<th1.n;th1.j++) {
+			for(th1.j=0;th1.j<th1.m;th1.j++) { 
+				for(th1.i=0;th1.i<th1.n;th1.i++) {
 					th1.ppds[th1.i][th1.j] = 0;
 				}	
 			}	
@@ -338,8 +352,8 @@ void *mysvd(void *strptr) {
 
 			th1.result = mul(th1.ppuds,th1.ppvt,th1.ppudsvt,th1.m,th1.n,th1.m,th1.n);
 			printf("USDVT row = %d col = %d \n",th1.p,th1.q);
-			for(th1.i=0;th1.i<th1.m;th1.i++) {
-				for(th1.j=0;th1.j<th1.n;th1.j++) {
+			for(th1.j=0;th1.j<th1.m;th1.j++) {
+				for(th1.i=0;th1.i<th1.n;th1.i++) {
 					//th1.pps[th1.i][th1.j]=(int)th1.ppudsvt[th1.i][th1.j];
 					th1.pps[th1.i][th1.j]=FLOAT_TO_INT(th1.ppudsvt[th1.i][th1.j]);
 					//printf("%d ",th1.pps[th1.i][th1.j]);
@@ -373,11 +387,18 @@ void *mysvd(void *strptr) {
 			printf("In mysvd status: %d\n", ((struct FILEs*)strptr)->status);
 			printf("In mysvd num_bytes_rd: %d\n", ((struct FILEs*)strptr)->num_bytes_rd);
 			printf("\n");
+			//Now reading for the input image using pgmReadFile
+			th2.img3 = pgmReadFile(((struct FILEs*)strptr)->input_file, NULL, &th2.ncols, &th2.nrows);
+			printf("ncols=%d nrows=%d \n",th2.ncols,th2.nrows);
+			/*
 			th2.inptr = fopen(((struct FILEs*)strptr)->input_file,"r");
 			if (th2.inptr == 0) printf("file not found\n");
-			th2.len1 = fread(th2.inbuf,sizeof(char),th2.m*th2.n,th2.inptr);
+			//th2.len1 = fread(th2.inbuf,sizeof(int),th0.m*th2.n,th2.inptr);
+			th2.len1 = fread(th0.inbuf,sizeof(char),th2.m*th0.n,th2.inptr);
 			fclose(th2.inptr);
 			((struct FILEs*)strptr)->num_bytes_rd = th2.len1;
+			*/
+			((struct FILEs*)strptr)->num_bytes_rd = th2.ncols*th2.nrows; 
 			((struct FILEs*)strptr)->status = 1;
 			printf("In mysvd status input file read: %d num_bytes_rd %d\n", ((struct FILEs*)strptr)->status,((struct FILEs*)strptr)->num_bytes_rd);
 			printf("blu.pgm th2.len1 = %d \n",th2.len1);
@@ -387,7 +408,7 @@ void *mysvd(void *strptr) {
 			th2.len4 = sizeof(int *) * th2.n + sizeof(int) * th2.m * th2.n;
 			printf("len = %d th2.len2 = %d th2.len3 = %d th2.len4 = %d\n",th2.len1, th2.len2,th2.len3,th2.len4);		
 						if(((struct FILEs*)strptr)->mem_allocated == 0) {
-				printf("len = %d th1.len2 = %d th1.len3 = %d th1.len4 = %d\n",th1.len1, th1.len2,th1.len3,th1.len4);		
+				printf("len = %d th2.len2 = %d th2.len3 = %d th2.len4 = %d\n",th2.len1, th2.len2,th2.len3,th2.len4);		
 				printf("setting up ptrs with malloc\n");
 				th2.ppv = (float **)malloc(th2.len1);
 				th2.ppvfr = th2.ppv;
@@ -444,14 +465,14 @@ void *mysvd(void *strptr) {
 			}
 			for(th2.i = 0; th2.i < th2.m; th2.i++) th2.ppudsvt[th2.i] = (th2.pudsvt + th2.q * th2.i); 
 	
-			for(th2.i=0;th2.i<th2.m;th2.i++) {
-				for(th2.j=0;th2.j<th2.n;th2.j++) {
-					th2.ppa[th2.i][th2.j]=(float)*th2.inbuf;
-					*th2.inbufch = (char)*th2.inbuf;
+			for(th2.j=0;th2.j<th2.m;th2.j++) {
+				for(th2.i=0;th2.i<th2.n;th2.i++) {
+					th2.ppa[th2.i][th2.j]=(float)*th2.img3;
+					//*th3.inbufch=(char)*th2.inbuf;
 					//printf("%d %d %5.1f \n",th2.i,th2.j,th2.ppa[th2.i][th2.j]);
 					//printf("%d %d %d \n",th2.i,th2.j,*th2.inbufch);
-					th2.inbuf++;
-					th2.inbufch++;
+					th2.img3++;
+					//th2.inbufch++;
 				}
 			}
 			//pgmWriteFile(((struct FILEs*)strptr)->pgm3,th2.inbufchfr,th2.m,th2.n);
@@ -467,8 +488,8 @@ void *mysvd(void *strptr) {
 			//result = disp(th2.ppa,th2.m,th2.n);
 			printf("Singular Values\n");
 			//clear the S diagonal matrix
-			for(th2.i=0;th2.i<th2.m;th2.i++) { 
-				for(th2.j=0;th2.j<th2.n;th2.j++) {
+			for(th2.j=0;th2.j<th2.m;th2.j++) {
+				for(th2.i=0;th2.i<th2.n;th2.i++) {
 					th2.ppds[th2.i][th2.j] = 0;
 				}	
 			}	
@@ -494,8 +515,8 @@ void *mysvd(void *strptr) {
 
 			th2.result = mul(th2.ppuds,th2.ppvt,th2.ppudsvt,th2.m,th2.n,th2.m,th2.n);
 			printf("USDVT row = %d col = %d \n",th2.p,th2.q);
-			for(th2.i=0;th2.i<th2.m;th2.i++) {
-				for(th2.j=0;th2.j<th2.n;th2.j++) {
+			for(th2.j=0;th2.j<th2.m;th2.j++) {
+				for(th2.i=0;th2.i<th2.n;th2.i++) {
 					//th2.pps[th2.i][th2.j]=(int)th2.ppudsvt[th2.i][th2.j];
 					th2.pps[th2.i][th2.j]=FLOAT_TO_INT(th2.ppudsvt[th2.i][th2.j]);
 					//printf("%d ",pps[i][j]);
