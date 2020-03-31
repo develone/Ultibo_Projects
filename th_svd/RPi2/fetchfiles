@@ -1,0 +1,10 @@
+binary
+get Sred.bin
+get Sgrn.bin
+get Sblu.bin
+
+get rcred.bin
+get rcgrn.bin
+get rcblu.bin
+
+quit
