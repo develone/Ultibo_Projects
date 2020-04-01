@@ -64,37 +64,37 @@ fid = fopen('rcblu.bin','r'); im3 = fread(fid, [256,inf], 'int32');
 aa(1:n)= red(1:n);
 figure
 stem(aa)
-title("n S values red image from C img_svd")
+title("n S values red image from Ultibo img_svd")
 
 figure;
 imagesc(im1);
 colorbar;
 colormap 'gray';
-title 'rcred svd from C'
+title 'rcred svd from Ultibo'
 
 
 bb(1:n)= grn(1:n);
 figure
 stem(bb)
-title("n S value green image from C img_svd")
+title("n S value green image from Ultibo img_svd")
 
 figure;
 imagesc(im2);
 colorbar;
 colormap 'gray';
-title 'rcgrn svd from C'
+title 'rcgrn svd from Ultibo'
 
 
 cc(1:n)= blu(1:n);
 figure
 stem(cc)
-title("n S values blue image from C img_svd")
+title("n S values blue image from Ultibo img_svd")
 
 figure;
 imagesc(im3);
 colorbar;
 colormap 'gray';
-title 'rcblu svd from C'
+title 'rcblu svd from Ultibo'
 
 
  
