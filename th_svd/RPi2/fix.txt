@@ -1,0 +1,54 @@
+These were what as 04/04/20
+devel@mypi3-15:~/Ultibo_Projects/th_svd/RPi2 $ md5sum *.pgm
+58da8f45dff14af5f1a0c05e96fdd5fc  blu.pgm
+6a9e7cd3c99a7ba2be0af0fd268d68df  grn.pgm
+01ecb41da253008b868e6edd845c640c  red.pgm
+
+commit e502a19927f1fd249c22c8adc2b178c19af029ee (HEAD -> master, origin/master, origin/HEAD)
+Author: Edward Vidal Jr <develone@sbcglobal.net>
+Date:   Wed Apr 1 13:33:18 2020 -0600
+
+    requires repo svd_rgb in
+    devel@mypi3-15:~/Ultibo_Projects/th_svd/RPi2/
+    devel@mypi3-15:~/Ultibo_Projects/th_svd/RPi2/svd_rgb/src $ cp ../../testitC.m .
+    
+octave:1> disp_S
+octave:2> testit
+c = 183
+I =  256
+J =  256
+ans = 0
+ans =  183
+c = 73
+I =  256
+J =  256
+ans = 0
+ans =  73
+c = 78
+I =  256
+J =  256
+ans = 3
+ans =  81
+
+
+testitC was not showing any errors
+devel@mypi3-15:~/Ultibo_Projects/th_svd/RPi2/svd_rgb/src $ md5sum *.pgm
+b637ed76f738712b84670195e0111f00  blu.pgm
+e97921e029126dad187080c7267d52a8  grn.pgm
+ffc1a48f91c873ec27210c5721c47a14  red.pgm
+
+octave:1> disp_S
+octave:2> testitC 
+
+devel@mypi3-15:~/Ultibo_Projects/th_svd/RPi2/ultibopgm $ md5sum *.pgm
+b637ed76f738712b84670195e0111f00  blu.pgm
+e97921e029126dad187080c7267d52a8  grn.pgm
+ffc1a48f91c873ec27210c5721c47a14  red.pgm
+
+devel@mypi3-15:~/Ultibo_Projects/th_svd/RPi2 $ md5sum *.pgm
+b637ed76f738712b84670195e0111f00  blu.pgm
+e97921e029126dad187080c7267d52a8  grn.pgm
+ffc1a48f91c873ec27210c5721c47a14  red.pgm
+
+octave:1> disp_S
+octave:2> testit
