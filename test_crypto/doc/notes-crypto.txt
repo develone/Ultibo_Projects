@@ -1,0 +1,26 @@
+crypto notes 04/25/20
+Starting with TFTP_Template
+procedure CryptoInit;
+
+function HashCreate(Algorithm:LongWord;Key:Pointer;KeySize:LongWord):PHashContext;
+function HashDestroy(Context:PHashContext):Boolean;
+
+function HashCreate(Algorithm:LongWord;Key:Pointer;KeySize:LongWord):PHashContext;
+function HashDestroy(Context:PHashContext):Boolean;
+
+function HashReset(Context:PHashContext):Boolean; overload;
+function HashReset(Context:PHashContext;Algorithm:LongWord;Key:Pointer;KeySize:LongWord):Boolean; overload;
+function HashUpdate(Context:PHashContext;Data:Pointer;Size:LongWord):Boolean;
+function HashFinish(Context:PHashContext;Digest:Pointer;Size:LongWord):Boolean;
+
+{AES Functions}
+function AESEncryptData(Key:Pointer;KeySize:LongWord;Vector,Plain,Crypt:Pointer;Size:LongWord):Boolean;
+function AESDecryptData(Key:Pointer;KeySize:LongWord;Vector,Crypt,Plain:Pointer;Size:LongWord):Boolean;
+
+function AESCTREncryptData(Key:Pointer;KeySize:LongWord;Nonce,Plain,Crypt:Pointer;Size:LongWord):Boolean;
+function AESCTRDecryptData(Key:Pointer;KeySize:LongWord;Nonce,Crypt,Plain:Pointer;Size:LongWord):Boolean; inline;
+
+function AESGCMEncryptData(Key:Pointer;KeySize:LongWord;IV,AAD,Plain,Crypt:Pointer;IVSize,AADSize,Size:LongWord;Tag:Pointer):Boolean;
+function AESGCMDecryptData(Key:Pointer;KeySize:LongWord;IV,AAD,Crypt,Plain:Pointer;IVSize,AADSize,Size:LongWord;const Tag:Pointer):Boolean;
+
+function AESGCMGMAC(Key:Pointer;KeySize:LongWord;IV,AAD:Pointer;IVSize,AADSize:LongWord;Tag:Pointer):Boolean;

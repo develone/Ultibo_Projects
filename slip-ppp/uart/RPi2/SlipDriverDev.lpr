@@ -23,7 +23,8 @@ uses
   ShellUpdate,
   RemoteShell,
   { needed for telnet }
-
+  mydhcp,
+  Slip,
   uMySlip;
 type
   Buffer = String[255];
