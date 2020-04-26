@@ -42,6 +42,12 @@ var
  { needed to use ultibo-tftp  }
  TCP : TWinsock2TCPClient;
  IPAddress : string;
+
+
+ myContext:PHashContext;
+ myAlgorithm:LongWord;
+ myKeySize:LongWord;
+
  function WaitForIPComplete : string;
 
  var
@@ -123,8 +129,19 @@ begin
  SetOnMsg (@Msg);
  {Register the web status page, the "Thread List" page will allow us to see what is happening in the example}
  WebStatusRegister(HTTPListener,'','',True);
+ CryptoInit;
+ {Cipher algorithms
+ CRYPTO_CIPHER_ALG_NONE = 0;
+ CRYPTO_CIPHER_ALG_AES  = 1;
+ CRYPTO_CIPHER_ALG_DES  = 2;
+ CRYPTO_CIPHER_ALG_3DES = 3;
+ CRYPTO_CIPHER_ALG_RC4  = 4;}
 
-
+ myAlgorithm:=1;
+ {Cipher algorithm  CRYPTO_CIPHER_ALG_AES
+ defined in crypto.pas 0 to 4}
+ ConsoleWindowWriteLn (LeftWindow, 'Cipher algorithm  CRYPTO_CIPHER_ALG_AES ' + intToStr(myAlgorithm));
+ //myContext:=
  {Halt this thread}
  ThreadHalt(0);
 end.
