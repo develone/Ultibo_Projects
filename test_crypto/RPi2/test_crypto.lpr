@@ -28,6 +28,7 @@ uses
   uTFTP,
   Winsock2,
   Crypto,
+
   { needed to use ultibo-tftp  }
   { needed for telnet }
       Shell,
@@ -43,10 +44,29 @@ var
  TCP : TWinsock2TCPClient;
  IPAddress : string;
 
-
- myContext:PHashContext;
+ {Pointer to HashContext}
+ myPContext:^PHashContext;
+ myTHashContext : THashContext;
  myAlgorithm:LongWord;
  myKeySize:LongWord;
+
+ {Pointer to TAESKEY record
+ Rounds:LongWord;
+  EncryptKey:array[0..59] of LongWord;
+  DecryptKey:array[0..59] of LongWord;
+  }
+
+ {Pointer to TAESKey}
+ myPAESKey:^TAESKey;
+
+ {Handle to TAESKEY record }
+ myTAESKey:TAESKey;
+
+ {Pointer to  CipherContext}
+ myPCipherContext:PCipherContext;
+
+ {Handle to TCipherContext record }
+ myTCipherContext:TCipherContext;
 
  function WaitForIPComplete : string;
 
@@ -137,11 +157,25 @@ begin
  CRYPTO_CIPHER_ALG_3DES = 3;
  CRYPTO_CIPHER_ALG_RC4  = 4;}
 
+
  myAlgorithm:=1;
  {Cipher algorithm  CRYPTO_CIPHER_ALG_AES
  defined in crypto.pas 0 to 4}
- ConsoleWindowWriteLn (LeftWindow, 'Cipher algorithm  CRYPTO_CIPHER_ALG_AES ' + intToStr(myAlgorithm));
- //myContext:=
+ ConsoleWindowWriteLn (LeftWindow, 'Cipher Algorithm  CRYPTO_CIPHER_ALG_AES ' + intToStr(myAlgorithm));
+
+ myPCipherContext := @myTCipherContext;
+ ConsoleWindowWriteLn (LeftWindow, 'myPCipherContext Pointer ' + HexStr(myPCipherContext));
+ myTCipherContext.Algorithm := myAlgorithm;
+ ConsoleWindowWriteLn (LeftWindow, 'myPCipherContext.Algorithm ' + intToStr(myTCipherContext.Algorithm));
+ myKeySize := 59;
+ ConsoleWindowWriteLn (LeftWindow, 'array 0..59 ' + intToStr(myKeySize));
+
+ myPAESKey := @myTAESKey;
+ ConsoleWindowWriteLn (LeftWindow, 'myPAESKey Pointer ' + HexStr(myPAESKey));
+ myTAESKey.Rounds:=14;
+ ConsoleWindowWriteLn (LeftWindow, 'myTAESKey.Rounds ' + intToStr(myTAESKey.Rounds));
+
+ //myPContext :=  HashCreate(myAlgorithm;myPKEYAES;KeySize:LongWord);
  {Halt this thread}
  ThreadHalt(0);
 end.
