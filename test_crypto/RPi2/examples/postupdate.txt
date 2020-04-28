@@ -1,0 +1,78 @@
+export PATH=/home/devel/ultibo/core/fpc/bin:$PATH
+fpc -B -Tlinux -Parm @/home/devel/ultibo/core/fpc/bin/fpc.cfg -O2 rijndael-test
+fpc -B -Tlinux -Parm @/home/devel/ultibo/core/fpc/bin/fpc.cfg -O2 rijndael-tool
+
+Interactive Tool for Using FreePascal Library RijndaelECB
+
+Plaintext  = 00000000000000000000000000000000
+Key        = 00000000000000000000000000000000
+Ciphertext = 00000000000000000000000000000000
+HexStr index 12345678901234567890123456789012 (mod 10)
+Block index   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 (mod 10)
+P(laintext, K(ey, C(iphertext, E(ncrypt, D(ecrypt, S(wap, Q(uit? P
+Plaintext?   abc4897
+
+Plaintext  = ABC48970000000000000000000000000 <-- updated
+Key        = 00000000000000000000000000000000
+Ciphertext = 66E94BD4EF8A2C3B884CFA59CA342B2E
+HexStr index 12345678901234567890123456789012 (mod 10)
+Block index   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 (mod 10)
+P(laintext, K(ey, C(iphertext, E(ncrypt, D(ecrypt, S(wap, Q(uit? K
+Key?         123abc
+
+Plaintext  = ABC48970000000000000000000000000
+Key        = 123ABC00000000000000000000000000 <-- updated
+Ciphertext = 66E94BD4EF8A2C3B884CFA59CA342B2E
+HexStr index 12345678901234567890123456789012 (mod 10)
+Block index   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 (mod 10)
+P(laintext, K(ey, C(iphertext, E(ncrypt, D(ecrypt, S(wap, Q(uit? E
+Encrypted plaintext with key to ciphertext
+
+Plaintext  = ABC48970000000000000000000000000
+Key        = 123ABC00000000000000000000000000
+Ciphertext = 79BA261234FD7B043B061EEF350F2F77 <-- updated
+HexStr index 12345678901234567890123456789012 (mod 10)
+Block index   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 (mod 10)
+P(laintext, K(ey, C(iphertext, E(ncrypt, D(ecrypt, S(wap, Q(uit? D
+Decrypted ciphertext with key to plaintext
+
+Plaintext  = ABC48970000000000000000000000000 <-- updated
+Key        = 123ABC00000000000000000000000000
+Ciphertext = 79BA261234FD7B043B061EEF350F2F77
+HexStr index 12345678901234567890123456789012 (mod 10)
+Block index   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 (mod 10)
+P(laintext, K(ey, C(iphertext, E(ncrypt, D(ecrypt, S(wap, Q(uit?
+
+P(laintext, K(ey, C(iphertext, E(ncrypt, D(ecrypt, S(wap, Q(uit? P
+Plaintext?   abcdef09876543211234098abc123
+
+Plaintext  = ABCDEF09876543211234098ABC123000 <-- updated
+Key        = 123ABC00000000000000000000000000
+Ciphertext = 79BA261234FD7B043B061EEF350F2F77
+HexStr index 12345678901234567890123456789012 (mod 10)
+Block index   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 (mod 10)
+P(laintext, K(ey, C(iphertext, E(ncrypt, D(ecrypt, S(wap, Q(uit? K
+Key?         987123aaabbbf666666666662512866
+
+Plaintext  = ABCDEF09876543211234098ABC123000
+Key        = 987123AAABBBF6666666666625128660 <-- updated
+Ciphertext = 79BA261234FD7B043B061EEF350F2F77
+HexStr index 12345678901234567890123456789012 (mod 10)
+Block index   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 (mod 10)
+P(laintext, K(ey, C(iphertext, E(ncrypt, D(ecrypt, S(wap, Q(uit? E
+Encrypted plaintext with key to ciphertext
+
+Plaintext  = ABCDEF09876543211234098ABC123000
+Key        = 987123AAABBBF6666666666625128660
+Ciphertext = FBF9AA1DA50191AD50A006B398C00D53 <-- updated
+HexStr index 12345678901234567890123456789012 (mod 10)
+Block index   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 (mod 10)
+P(laintext, K(ey, C(iphertext, E(ncrypt, D(ecrypt, S(wap, Q(uit? D
+Decrypted ciphertext with key to plaintext
+
+Plaintext  = ABCDEF09876543211234098ABC123000 <-- updated
+Key        = 987123AAABBBF6666666666625128660
+Ciphertext = FBF9AA1DA50191AD50A006B398C00D53
+HexStr index 12345678901234567890123456789012 (mod 10)
+Block index   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 (mod 10)
+P(laintext, K(ey, C(iphertext, E(ncrypt, D(ecrypt, S(wap, Q(uit? 
