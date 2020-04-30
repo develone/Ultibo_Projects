@@ -1,0 +1,146 @@
+commit b4240662c6e59834394a680d0a9260acc2d14807 (HEAD -> master, upstream/master, origin/master, origin/HEAD)
+Author: kokke <spam@rowdy.dk>
+Date:   Mon Mar 30 21:53:26 2020 +0200
+
+    Update README.md
+
+AES tests C & Pascal
+tiny-AES128-C
+./test.elf
+Testing AES128
+
+CBC encrypt: SUCCESS!
+CBC decrypt: SUCCESS!
+CTR encrypt: SUCCESS!
+CTR decrypt: SUCCESS!
+ECB decrypt: SUCCESS!
+ECB encrypt: SUCCESS!
+ECB encrypt verbose:
+
+plain text:
+6bc1bee22e409f96e93d7e117393172a
+ae2d8a571e03ac9c9eb76fac45af8e51
+30c81c46a35ce411e5fbc1191a0a52ef
+f69f2445df4f9b17ad2b417be66c3710
+
+key:
+2b7e151628aed2a6abf7158809cf4f3c
+
+ciphertext:
+3ad77bb40d7a3660a89ecaf32466ef97
+f5d3d58503b9699de785895a96fdbaaf
+43b1cd7f598ece23881b00e3ed030688
+7b0c785e27e8ad3f8223207104725dd4
+
+Interactive Tool for Using FreePascal Library RijndaelECB
+
+Plaintext  = 00000000000000000000000000000000
+Key        = 00000000000000000000000000000000
+Ciphertext = 00000000000000000000000000000000
+HexStr index 12345678901234567890123456789012 (mod 10)
+Block index   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 (mod 10)
+P(laintext, K(ey, C(iphertext, E(ncrypt, D(ecrypt, S(wap, Q(uit? P
+Plaintext?   6bc1bee22e409f96e93d7e117393172a
+
+Plaintext  = 6BC1BEE22E409F96E93D7E117393172A <-- updated
+Key        = 00000000000000000000000000000000
+Ciphertext = 00000000000000000000000000000000
+HexStr index 12345678901234567890123456789012 (mod 10)
+Block index   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 (mod 10)
+P(laintext, K(ey, C(iphertext, E(ncrypt, D(ecrypt, S(wap, Q(uit? K
+Key?         2b7e151628aed2a6abf7158809cf4f3c
+
+Plaintext  = 6BC1BEE22E409F96E93D7E117393172A
+Key        = 2B7E151628AED2A6ABF7158809CF4F3C <-- updated
+Ciphertext = 00000000000000000000000000000000
+HexStr index 12345678901234567890123456789012 (mod 10)
+Block index   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 (mod 10)
+P(laintext, K(ey, C(iphertext, E(ncrypt, D(ecrypt, S(wap, Q(uit? E
+Encrypted plaintext with key to ciphertext
+
+Plaintext  = 6BC1BEE22E409F96E93D7E117393172A
+Key        = 2B7E151628AED2A6ABF7158809CF4F3C
+Ciphertext = 3AD77BB40D7A3660A89ECAF32466EF97 <-- updated
+HexStr index 12345678901234567890123456789012 (mod 10)
+Block index   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 (mod 10)
+P(laintext, K(ey, C(iphertext, E(ncrypt, D(ecrypt, S(wap, Q(uit? D
+Decrypted ciphertext with key to plaintext
+
+Plaintext  = 6BC1BEE22E409F96E93D7E117393172A <-- updated
+Key        = 2B7E151628AED2A6ABF7158809CF4F3C
+Ciphertext = 3AD77BB40D7A3660A89ECAF32466EF97
+HexStr index 12345678901234567890123456789012 (mod 10)
+Block index   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 (mod 10)
+P(laintext, K(ey, C(iphertext, E(ncrypt, D(ecrypt, S(wap, Q(uit? P
+Plaintext?   ae2d8a571e03ac9c9eb76fac45af8e51
+
+Plaintext  = AE2D8A571E03AC9C9EB76FAC45AF8E51 <-- updated
+Key        = 2B7E151628AED2A6ABF7158809CF4F3C
+Ciphertext = 3AD77BB40D7A3660A89ECAF32466EF97
+HexStr index 12345678901234567890123456789012 (mod 10)
+Block index   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 (mod 10)
+P(laintext, K(ey, C(iphertext, E(ncrypt, D(ecrypt, S(wap, Q(uit? E
+Encrypted plaintext with key to ciphertext
+
+Plaintext  = AE2D8A571E03AC9C9EB76FAC45AF8E51
+Key        = 2B7E151628AED2A6ABF7158809CF4F3C
+Ciphertext = F5D3D58503B9699DE785895A96FDBAAF <-- updated
+HexStr index 12345678901234567890123456789012 (mod 10)
+Block index   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 (mod 10)
+P(laintext, K(ey, C(iphertext, E(ncrypt, D(ecrypt, S(wap, Q(uit? D
+Decrypted ciphertext with key to plaintext
+
+Plaintext  = AE2D8A571E03AC9C9EB76FAC45AF8E51 <-- updated
+Key        = 2B7E151628AED2A6ABF7158809CF4F3C
+Ciphertext = F5D3D58503B9699DE785895A96FDBAAF
+HexStr index 12345678901234567890123456789012 (mod 10)
+Block index   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 (mod 10)
+P(laintext, K(ey, C(iphertext, E(ncrypt, D(ecrypt, S(wap, Q(uit? P
+Plaintext?   30c81c46a35ce411e5fbc1191a0a52ef
+
+Plaintext  = 30C81C46A35CE411E5FBC1191A0A52EF <-- updated
+Key        = 2B7E151628AED2A6ABF7158809CF4F3C
+Ciphertext = F5D3D58503B9699DE785895A96FDBAAF
+HexStr index 12345678901234567890123456789012 (mod 10)
+Block index   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 (mod 10)
+P(laintext, K(ey, C(iphertext, E(ncrypt, D(ecrypt, S(wap, Q(uit? E
+Encrypted plaintext with key to ciphertext
+
+Plaintext  = 30C81C46A35CE411E5FBC1191A0A52EF
+Key        = 2B7E151628AED2A6ABF7158809CF4F3C
+Ciphertext = 43B1CD7F598ECE23881B00E3ED030688 <-- updated
+HexStr index 12345678901234567890123456789012 (mod 10)
+Block index   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 (mod 10)
+P(laintext, K(ey, C(iphertext, E(ncrypt, D(ecrypt, S(wap, Q(uit? D
+Decrypted ciphertext with key to plaintext
+
+Plaintext  = 30C81C46A35CE411E5FBC1191A0A52EF <-- updated
+Key        = 2B7E151628AED2A6ABF7158809CF4F3C
+Ciphertext = 43B1CD7F598ECE23881B00E3ED030688
+HexStr index 12345678901234567890123456789012 (mod 10)
+Block index   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 (mod 10)
+P(laintext, K(ey, C(iphertext, E(ncrypt, D(ecrypt, S(wap, Q(uit? P
+Plaintext?   f69f2445df4f9b17ad2b417be66c3710
+
+Plaintext  = F69F2445DF4F9B17AD2B417BE66C3710 <-- updated
+Key        = 2B7E151628AED2A6ABF7158809CF4F3C
+Ciphertext = 43B1CD7F598ECE23881B00E3ED030688
+HexStr index 12345678901234567890123456789012 (mod 10)
+Block index   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 (mod 10)
+P(laintext, K(ey, C(iphertext, E(ncrypt, D(ecrypt, S(wap, Q(uit? E
+Encrypted plaintext with key to ciphertext
+
+Plaintext  = F69F2445DF4F9B17AD2B417BE66C3710
+Key        = 2B7E151628AED2A6ABF7158809CF4F3C
+Ciphertext = 7B0C785E27E8AD3F8223207104725DD4 <-- updated
+HexStr index 12345678901234567890123456789012 (mod 10)
+Block index   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 (mod 10)
+P(laintext, K(ey, C(iphertext, E(ncrypt, D(ecrypt, S(wap, Q(uit? D
+Decrypted ciphertext with key to plaintext
+
+Plaintext  = F69F2445DF4F9B17AD2B417BE66C3710 <-- updated
+Key        = 2B7E151628AED2A6ABF7158809CF4F3C
+Ciphertext = 7B0C785E27E8AD3F8223207104725DD4
+HexStr index 12345678901234567890123456789012 (mod 10)
+Block index   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 (mod 10)
+P(laintext, K(ey, C(iphertext, E(ncrypt, D(ecrypt, S(wap, Q(uit? 

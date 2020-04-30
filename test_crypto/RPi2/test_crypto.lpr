@@ -28,6 +28,7 @@ uses
   uTFTP,
   Winsock2,
   Crypto,
+  APICrypto,
 
   { needed to use ultibo-tftp  }
   { needed for telnet }
@@ -45,16 +46,22 @@ var
  IPAddress : string;
 
  {Pointer to HashContext}
- myPContext:^PHashContext;
+ myPHashContext:^PHashContext;
  myTHashContext : THashContext;
- myAlgorithm:LongWord;
- myKeySize:LongWord;
+ //myAlgorithm:LongWord;
+ //myKeySize:LongWord;
 
  {Pointer to TAESKEY record
  Rounds:LongWord;
   EncryptKey:array[0..59] of LongWord;
   DecryptKey:array[0..59] of LongWord;
   }
+
+ {Pointer to TAESContext}
+ myPAESContext:^TAESContext;
+
+ {Handle to TAESContext record }
+ myTAESContext:TAESContext;
 
  {Pointer to TAESKey}
  myPAESKey:^TAESKey;
@@ -138,7 +145,7 @@ begin
  LeftWindow:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_LEFT,True);
 
  {Display a startup message on the console}
- ConsoleWindowWriteLn(LeftWindow,'Starting TFTP_Template example');
+ ConsoleWindowWriteLn(LeftWindow,'Starting TFTP_test_crypto example');
   // wait for IP address and SD Card to be initialised.
  WaitForSDDrive;
  IPAddress := WaitForIPComplete;
@@ -149,6 +156,9 @@ begin
  SetOnMsg (@Msg);
  {Register the web status page, the "Thread List" page will allow us to see what is happening in the example}
  WebStatusRegister(HTTPListener,'','',True);
+
+ HTTPListener.RegisterDocument('',TWebStatusAPICrypto.Create);
+
  CryptoInit;
  {Cipher algorithms
  CRYPTO_CIPHER_ALG_NONE = 0;
@@ -158,24 +168,29 @@ begin
  CRYPTO_CIPHER_ALG_RC4  = 4;}
 
 
- myAlgorithm:=1;
+ //myAlgorithm:=1;
  {Cipher algorithm  CRYPTO_CIPHER_ALG_AES
  defined in crypto.pas 0 to 4}
- ConsoleWindowWriteLn (LeftWindow, 'Cipher Algorithm  CRYPTO_CIPHER_ALG_AES ' + intToStr(myAlgorithm));
+ //ConsoleWindowWriteLn (LeftWindow, 'Cipher Algorithm  CRYPTO_CIPHER_ALG_AES ' + intToStr(myAlgorithm));
 
  myPCipherContext := @myTCipherContext;
  ConsoleWindowWriteLn (LeftWindow, 'myPCipherContext Pointer ' + HexStr(myPCipherContext));
- myTCipherContext.Algorithm := myAlgorithm;
+ myTCipherContext.Algorithm := 1;
  ConsoleWindowWriteLn (LeftWindow, 'myPCipherContext.Algorithm ' + intToStr(myTCipherContext.Algorithm));
- myKeySize := 59;
- ConsoleWindowWriteLn (LeftWindow, 'array 0..59 ' + intToStr(myKeySize));
+ //myKeySize := 59;
+
+ //ConsoleWindowWriteLn (LeftWindow, 'array 0..59 ' + intToStr(myTCipherContext.KeySize));
 
  myPAESKey := @myTAESKey;
  ConsoleWindowWriteLn (LeftWindow, 'myPAESKey Pointer ' + HexStr(myPAESKey));
  myTAESKey.Rounds:=14;
  ConsoleWindowWriteLn (LeftWindow, 'myTAESKey.Rounds ' + intToStr(myTAESKey.Rounds));
 
- //myPContext :=  HashCreate(myAlgorithm;myPKEYAES;KeySize:LongWord);
+ //function HashCreate(Algorithm:LongWord;Key:Pointer;KeySize:LongWord):PHashContext;
+ //myPHashContext:=HashCreate(myTCipherContext.Algorithm;myPAESKey;2);
+
+  myPAESContext := @myTAESContext;
+  ConsoleWindowWriteLn (LeftWindow, 'myPAESContext Pointer ' + HexStr(myPAESContext));
  {Halt this thread}
  ThreadHalt(0);
 end.
