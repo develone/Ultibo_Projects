@@ -27,6 +27,7 @@ uses
   Logging,
   uTFTP,
   Winsock2,
+  Platform,
   Crypto,
   APICrypto,
 
@@ -45,35 +46,21 @@ var
  TCP : TWinsock2TCPClient;
  IPAddress : string;
 
- {Pointer to HashContext}
- myPHashContext:^PHashContext;
- myTHashContext : THashContext;
- //myAlgorithm:LongWord;
- //myKeySize:LongWord;
+ AESECBKey:PByte;
+ AESECBData:PByte;
+ AESECBAESKey:TAESKey;
 
- {Pointer to TAESKEY record
- Rounds:LongWord;
-  EncryptKey:array[0..59] of LongWord;
-  DecryptKey:array[0..59] of LongWord;
-  }
+ AESCBCKey:PByte;
+ AESCBCData:PByte;
+ AESCBCVector:PByte;
+ //Context:PBigIntContext;
+ Cipher:PCipherContext;
 
- {Pointer to TAESContext}
- myPAESContext:^TAESContext;
-
- {Handle to TAESContext record }
- myTAESContext:TAESContext;
-
- {Pointer to TAESKey}
- myPAESKey:^TAESKey;
-
- {Handle to TAESKEY record }
- myTAESKey:TAESKey;
-
- {Pointer to  CipherContext}
- myPCipherContext:PCipherContext;
-
- {Handle to TCipherContext record }
- myTCipherContext:TCipherContext;
+ key:String;
+ Data:String;
+ Actual:String;
+ PData:PString;
+ Datalen:LongWord;
 
  function WaitForIPComplete : string;
 
@@ -159,39 +146,57 @@ begin
 
  HTTPListener.RegisterDocument('',TWebStatusAPICrypto.Create);
 
- CryptoInit;
- {Cipher algorithms
- CRYPTO_CIPHER_ALG_NONE = 0;
- CRYPTO_CIPHER_ALG_AES  = 1;
- CRYPTO_CIPHER_ALG_DES  = 2;
- CRYPTO_CIPHER_ALG_3DES = 3;
- CRYPTO_CIPHER_ALG_RC4  = 4;}
+ ConsoleWindowWriteLn (LeftWindow, '');
+ ConsoleWindowWriteLn (LeftWindow, 'AESEncryptBlock (128bit)');
+ ConsoleWindowWriteLn (LeftWindow, 'Electronic Codebook (ECB)');
+ AESECBKey:=AllocMem(AES_KEY_SIZE128);
+ StringToBytes('2b7e151628aed2a6abf7158809cf4f3c',PByte(AESECBKey),AES_KEY_SIZE128);
+ AESECBData:=AllocMem(AES_BLOCK_SIZE);
+ StringToBytes('6bc1bee22e409f96e93d7e117393172a',PByte(AESECBData),AES_BLOCK_SIZE);
+ AESKeySetup(AESECBKey,AES_KEY_SIZE128,@AESECBAESKey);
+ AESEncryptBlock(AESECBData,AESECBData,@AESECBAESKey);
+ Actual:=BytesToString(PByte(AESECBData),AES_BLOCK_SIZE);
+ ConsoleWindowWriteLn (LeftWindow, 'Key:    ' +'2b7e151628aed2a6abf7158809cf4f3c');
+ ConsoleWindowWriteLn (LeftWindow, 'Data:   ' +'6bc1bee22e409f96e93d7e117393172a');
+ ConsoleWindowWriteLn (LeftWindow, 'Actual: ' + Actual);
+ FreeMem(AESECBKey);
+ FreeMem(AESECBData);
+
+ ConsoleWindowWriteLn (LeftWindow, '');
+ ConsoleWindowWriteLn (LeftWindow, 'AESEncryptBlock (192bit)');
+ ConsoleWindowWriteLn (LeftWindow, 'Electronic Codebook (ECB)');
+ AESECBKey:=AllocMem(AES_KEY_SIZE192);
+ StringToBytes('8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b',PByte(AESECBKey),AES_KEY_SIZE192);
+ AESECBData:=AllocMem(AES_BLOCK_SIZE);
+ StringToBytes('6bc1bee22e409f96e93d7e117393172a',PByte(AESECBData),AES_BLOCK_SIZE);
+ AESKeySetup(AESECBKey,AES_KEY_SIZE192,@AESECBAESKey);
+ AESEncryptBlock(AESECBData,AESECBData,@AESECBAESKey);
+ Actual:=BytesToString(PByte(AESECBData),AES_BLOCK_SIZE);
+ ConsoleWindowWriteLn (LeftWindow, 'Key:    ' +'8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b');
+ ConsoleWindowWriteLn (LeftWindow, 'Data:   ' +'6bc1bee22e409f96e93d7e117393172a');
+ ConsoleWindowWriteLn (LeftWindow, 'Actual: ' + Actual);
+ FreeMem(AESECBKey);
+ FreeMem(AESECBData);
+
+ ConsoleWindowWriteLn (LeftWindow, '');
+ ConsoleWindowWriteLn (LeftWindow, 'AESEncryptBlock (256bit)');
+ ConsoleWindowWriteLn (LeftWindow, 'Electronic Codebook (ECB)');
+ AESECBKey:=AllocMem(AES_KEY_SIZE256);
+ StringToBytes('603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4',PByte(AESECBKey),AES_KEY_SIZE256);
+ AESECBData:=AllocMem(AES_BLOCK_SIZE);
+ StringToBytes('6bc1bee22e409f96e93d7e117393172a',PByte(AESECBData),AES_BLOCK_SIZE);
+ AESKeySetup(AESECBKey,AES_KEY_SIZE256,@AESECBAESKey);
+ AESEncryptBlock(AESECBData,AESECBData,@AESECBAESKey);
+ Actual:=BytesToString(PByte(AESECBData),AES_BLOCK_SIZE);
+ ConsoleWindowWriteLn (LeftWindow, 'Key:    ' +'603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4');
+ ConsoleWindowWriteLn (LeftWindow, 'Data:   ' +'6bc1bee22e409f96e93d7e117393172a');
+ ConsoleWindowWriteLn (LeftWindow, 'Actual: ' + Actual);
+ FreeMem(AESECBKey);
+ FreeMem(AESECBData);
 
 
- //myAlgorithm:=1;
- {Cipher algorithm  CRYPTO_CIPHER_ALG_AES
- defined in crypto.pas 0 to 4}
- //ConsoleWindowWriteLn (LeftWindow, 'Cipher Algorithm  CRYPTO_CIPHER_ALG_AES ' + intToStr(myAlgorithm));
-
- myPCipherContext := @myTCipherContext;
- ConsoleWindowWriteLn (LeftWindow, 'myPCipherContext Pointer ' + HexStr(myPCipherContext));
- myTCipherContext.Algorithm := 1;
- ConsoleWindowWriteLn (LeftWindow, 'myPCipherContext.Algorithm ' + intToStr(myTCipherContext.Algorithm));
- //myKeySize := 59;
-
- //ConsoleWindowWriteLn (LeftWindow, 'array 0..59 ' + intToStr(myTCipherContext.KeySize));
-
- myPAESKey := @myTAESKey;
- ConsoleWindowWriteLn (LeftWindow, 'myPAESKey Pointer ' + HexStr(myPAESKey));
- myTAESKey.Rounds:=14;
- ConsoleWindowWriteLn (LeftWindow, 'myTAESKey.Rounds ' + intToStr(myTAESKey.Rounds));
-
- //function HashCreate(Algorithm:LongWord;Key:Pointer;KeySize:LongWord):PHashContext;
- //myPHashContext:=HashCreate(myTCipherContext.Algorithm;myPAESKey;2);
-
-  myPAESContext := @myTAESContext;
-  ConsoleWindowWriteLn (LeftWindow, 'myPAESContext Pointer ' + HexStr(myPAESContext));
  {Halt this thread}
+
  ThreadHalt(0);
 end.
 
