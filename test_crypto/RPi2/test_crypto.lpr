@@ -194,7 +194,95 @@ begin
  FreeMem(AESECBKey);
  FreeMem(AESECBData);
 
+ ConsoleWindowWriteLn (LeftWindow, '');
+ ConsoleWindowWriteLn (LeftWindow, 'AESDencryptBlock (128bit)');
+ ConsoleWindowWriteLn (LeftWindow, 'Electronic Codebook (ECB)');
+ AESECBKey:=AllocMem(AES_KEY_SIZE128);
+ StringToBytes('2b7e151628aed2a6abf7158809cf4f3c',PByte(AESECBKey),AES_KEY_SIZE128);
+ AESECBData:=AllocMem(AES_BLOCK_SIZE);
+ StringToBytes('3ad77bb40d7a3660a89ecaf32466ef97',PByte(AESECBData),AES_BLOCK_SIZE);
+ AESKeySetup(AESECBKey,AES_KEY_SIZE128,@AESECBAESKey);
+ AESDecryptBlock(AESECBData,AESECBData,@AESECBAESKey);
+ Actual:=BytesToString(PByte(AESECBData),AES_BLOCK_SIZE);
+ ConsoleWindowWriteLn (LeftWindow, 'Key:    ' +'2b7e151628aed2a6abf7158809cf4f3c');
+ ConsoleWindowWriteLn (LeftWindow, 'Data:   ' +'3ad77bb40d7a3660a89ecaf32466ef97');
+ ConsoleWindowWriteLn (LeftWindow, 'Actual: ' + Actual);
+ FreeMem(AESECBKey);
+ FreeMem(AESECBData);
 
+ ConsoleWindowWriteLn (LeftWindow, '');
+ ConsoleWindowWriteLn (LeftWindow, 'AESDencryptBlock (192bit)');
+ ConsoleWindowWriteLn (LeftWindow, 'Electronic Codebook (ECB)');
+ AESECBKey:=AllocMem(AES_KEY_SIZE192);
+ StringToBytes('8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b',PByte(AESECBKey),AES_KEY_SIZE192);
+ AESECBData:=AllocMem(AES_BLOCK_SIZE);
+ StringToBytes('bd334f1d6e45f25ff712a214571fa5cc',PByte(AESECBData),AES_BLOCK_SIZE);
+ AESKeySetup(AESECBKey,AES_KEY_SIZE192,@AESECBAESKey);
+ AESDecryptBlock(AESECBData,AESECBData,@AESECBAESKey);
+ Actual:=BytesToString(PByte(AESECBData),AES_BLOCK_SIZE);
+ ConsoleWindowWriteLn (LeftWindow, 'Key:    ' +'8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b');
+ ConsoleWindowWriteLn (LeftWindow, 'Data:   ' +'bd334f1d6e45f25ff712a214571fa5cc');
+ ConsoleWindowWriteLn (LeftWindow, 'Actual: ' + Actual);
+ FreeMem(AESECBKey);
+ FreeMem(AESECBData);
+
+ ConsoleWindowWriteLn (LeftWindow, '');
+ ConsoleWindowWriteLn (LeftWindow, 'AESDencryptBlock (256bit)');
+ ConsoleWindowWriteLn (LeftWindow, 'Electronic Codebook (ECB)');
+ AESECBKey:=AllocMem(AES_KEY_SIZE256);
+ StringToBytes('603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4',PByte(AESECBKey),AES_KEY_SIZE256);
+ AESECBData:=AllocMem(AES_BLOCK_SIZE);
+ StringToBytes('f3eed1bdb5d2a03c064b5a7e3db181f8',PByte(AESECBData),AES_BLOCK_SIZE);
+ AESKeySetup(AESECBKey,AES_KEY_SIZE256,@AESECBAESKey);
+ AESDecryptBlock(AESECBData,AESECBData,@AESECBAESKey);
+ Actual:=BytesToString(PByte(AESECBData),AES_BLOCK_SIZE);
+ ConsoleWindowWriteLn (LeftWindow, 'Key:    ' +'603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4');
+ ConsoleWindowWriteLn (LeftWindow, 'Data:   ' +'f3eed1bdb5d2a03c064b5a7e3db181f8');
+ ConsoleWindowWriteLn (LeftWindow, 'Actual: ' + Actual);
+ FreeMem(AESECBKey);
+ FreeMem(AESECBData);
+ {
+ ConsoleWindowWriteLn (LeftWindow, '');
+ ConsoleWindowWriteLn (LeftWindow, 'AESEncryptBlock (128bit)');
+ ConsoleWindowWriteLn (LeftWindow, 'Cipher Block Chaining (CBC)');
+ AESECBKey:=AllocMem(AES_KEY_SIZE128);
+ StringToBytes('2b7e151628aed2a6abf7158809cf4f3c',PByte(AESECBKey),AES_KEY_SIZE128);
+ AESCBCVector:=AllocMem(AES_BLOCK_SIZE);
+ StringToBytes('000102030405060708090A0B0C0D0E0F',PByte(AESCBCVector),AES_BLOCK_SIZE);
+ AESECBData:=AllocMem(AES_BLOCK_SIZE);
+ StringToBytes('6bc1bee22e409f96e93d7e117393172a',PByte(AESECBData),AES_BLOCK_SIZE);
+ AESKeySetup(AESECBKey,AES_KEY_SIZE128,@AESECBAESKey);
+ AESEncryptBlock(AESECBData,AESECBData,@AESECBAESKey);
+ Actual:=BytesToString(PByte(AESECBData),AES_BLOCK_SIZE);
+ Cipher:=CipherCreate(CRYPTO_CIPHER_ALG_AES,PChar(AESCBCVector),PChar(AESCBCKey),AES_KEY_SIZE128);
+ if Cipher <> nil then
+  begin
+    ConsoleWindowWriteLn (LeftWindow, 'then');
+    if CipherEncrypt(Cipher,AESCBCData,AESCBCData,AES_BLOCK_SIZE) then
+      begin
+        Actual:=BytesToString(AESCBCData,AES_BLOCK_SIZE);
+        ConsoleWindowWriteLn (LeftWindow, 'Actual: ' + Actual);
+      end
+    else
+      begin
+        ConsoleWindowWriteLn (LeftWindow, 'first else');
+      end;
+    end
+  end.
+ else
+    begin
+      ConsoleWindowWriteLn (LeftWindow, 'else');
+    end;
+ CipherDestroy(Cipher);
+ end
+ ConsoleWindowWriteLn (LeftWindow, 'Key:    ' +'2b7e151628aed2a6abf7158809cf4f3c');
+ ConsoleWindowWriteLn (LeftWindow, 'Vector: ' +'000102030405060708090A0B0C0D0E0F');
+ ConsoleWindowWriteLn (LeftWindow, 'Data:   ' +'6bc1bee22e409f96e93d7e117393172a');
+ ConsoleWindowWriteLn (LeftWindow, 'Actual: ' + Actual);
+ FreeMem(AESECBKey);
+ FreeMem(AESCBCVector);
+ FreeMem(AESECBData);
+ }
  {Halt this thread}
 
  ThreadHalt(0);
