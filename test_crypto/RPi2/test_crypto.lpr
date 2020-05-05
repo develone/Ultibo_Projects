@@ -303,6 +303,7 @@ begin
  ConsoleWindowWriteLn (RightWindow, '');
  ConsoleWindowWriteLn (RightWindow, 'AESEncryptBlock (128bit)');
  ConsoleWindowWriteLn (RightWindow, 'Cipher Block Chaining (CBC)');
+ 
  AESCBCKey:=AllocMem(AES_KEY_SIZE128);
  StringToBytes('2b7e151628aed2a6abf7158809cf4f3c',PByte(AESCBCKey),AES_KEY_SIZE128);
 
@@ -312,24 +313,26 @@ begin
  AESCBCData:=AllocMem(AES_BLOCK_SIZE);
  StringToBytes('6bc1bee22e409f96e93d7e117393172a',PByte(AESCBCData),AES_BLOCK_SIZE);
 
-
- Cipher:=CipherCreate(CRYPTO_CIPHER_ALG_AES,PChar(AESCBCVector),PChar(AESCBCKey),AES_KEY_SIZE128);
-
- ConsoleWindowWriteLn (RightWindow, 'Cipher ' + HexStr(Cipher));
-  if Cipher = nil then
+  Cipher:=CipherCreate(CRYPTO_CIPHER_ALG_AES,PChar(AESCBCVector),PChar(AESCBCKey),AES_KEY_SIZE128);
+ if Cipher <> nil then
   begin
-    ConsoleWindowWriteLn (RightWindow, 'Cipher  =  nil');
-    if CipherEncrypt(Cipher,AESCBCData,AESCBCData,AES_BLOCK_SIZE) then
+   if CipherEncrypt(Cipher,AESCBCData,AESCBCData,AES_BLOCK_SIZE) then
     begin
-         Actual:=BytesToString(AESCBCData,AES_BLOCK_SIZE);
-    ConsoleWindowWriteLn (RightWindow, 'Actual: ' + Actual);
+     Actual:=BytesToString(AESCBCData,AES_BLOCK_SIZE);
+     ConsoleWindowWriteLn (RightWindow, 'Key:    ' + '2b7e151628aed2a6abf7158809cf4f3c');
+     ConsoleWindowWriteLn (RightWindow, 'IVector:' + '000102030405060708090A0B0C0D0E0F' );
+     ConsoleWindowWriteLn (RightWindow, 'Mode:   ' +'Cipher Block Chaining (CBC)');
+     ConsoleWindowWriteLn (RightWindow, 'Data:   ' + '6bc1bee22e409f96e93d7e117393172a');
+     ConsoleWindowWriteLn (RightWindow, 'Actual: ' + Actual);
     end;
-
-  end
-  else
-    begin
-    ConsoleWindowWriteLn (RightWindow, 'Cipher not eq nil');
+   
+   CipherDestroy(Cipher);
   end;
+
+
+
+
+
 
 
  {Halt this thread}
