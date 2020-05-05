@@ -297,9 +297,6 @@ begin
   {Create a console window to show what is happening}
   RightWindow:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_RIGHT,True);
 
-
-
-
  ConsoleWindowWriteLn (RightWindow, '');
  ConsoleWindowWriteLn (RightWindow, 'AESEncryptBlock (128bit)');
  ConsoleWindowWriteLn (RightWindow, 'Cipher Block Chaining (CBC)');
@@ -329,8 +326,150 @@ begin
    CipherDestroy(Cipher);
   end;
 
+ ConsoleWindowWriteLn (RightWindow, '');
+ ConsoleWindowWriteLn (RightWindow, 'AESDecryptBlock (128bit)');
+ ConsoleWindowWriteLn (RightWindow, 'Cipher Block Chaining (CBC)');
 
+ AESCBCKey:=AllocMem(AES_KEY_SIZE128);
+ StringToBytes('2b7e151628aed2a6abf7158809cf4f3c',PByte(AESCBCKey),AES_KEY_SIZE128);
 
+ AESCBCVector:=AllocMem(AES_BLOCK_SIZE);
+ StringToBytes('000102030405060708090A0B0C0D0E0F',PByte(AESCBCVector),AES_BLOCK_SIZE);
+
+ AESCBCData:=AllocMem(AES_BLOCK_SIZE);
+ StringToBytes('7649abac8119b246cee98e9b12e9197d',PByte(AESCBCData),AES_BLOCK_SIZE);
+
+  Cipher:=CipherCreate(CRYPTO_CIPHER_ALG_AES,PChar(AESCBCVector),PChar(AESCBCKey),AES_KEY_SIZE128);
+ if Cipher <> nil then
+  begin
+   if CipherDecrypt(Cipher,AESCBCData,AESCBCData,AES_BLOCK_SIZE) then
+    begin
+     Actual:=BytesToString(AESCBCData,AES_BLOCK_SIZE);
+     ConsoleWindowWriteLn (RightWindow, 'Key:    ' + '2b7e151628aed2a6abf7158809cf4f3c');
+     ConsoleWindowWriteLn (RightWindow, 'IVector:' + '000102030405060708090A0B0C0D0E0F' );
+     ConsoleWindowWriteLn (RightWindow, 'Mode:   ' +'Cipher Block Chaining (CBC)');
+     ConsoleWindowWriteLn (RightWindow, 'Data:   ' + '7649abac8119b246cee98e9b12e9197d');
+     ConsoleWindowWriteLn (RightWindow, 'Actual: ' + Actual);
+    end;
+
+   CipherDestroy(Cipher);
+  end;
+
+ ConsoleWindowWriteLn (RightWindow, '');
+ ConsoleWindowWriteLn (RightWindow, 'AESEncryptBlock (192bit)');
+ ConsoleWindowWriteLn (RightWindow, 'Cipher Block Chaining (CBC)');
+
+ AESCBCKey:=AllocMem(AES_KEY_SIZE192);
+ StringToBytes('8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b',PByte(AESCBCKey),AES_KEY_SIZE192);
+
+ AESCBCVector:=AllocMem(AES_BLOCK_SIZE);
+ StringToBytes('000102030405060708090A0B0C0D0E0F',PByte(AESCBCVector),AES_BLOCK_SIZE);
+
+ AESCBCData:=AllocMem(AES_BLOCK_SIZE);
+ StringToBytes('6bc1bee22e409f96e93d7e117393172a',PByte(AESCBCData),AES_BLOCK_SIZE);
+
+  Cipher:=CipherCreate(CRYPTO_CIPHER_ALG_AES,PChar(AESCBCVector),PChar(AESCBCKey),AES_KEY_SIZE192);
+ if Cipher <> nil then
+  begin
+   if CipherEncrypt(Cipher,AESCBCData,AESCBCData,AES_BLOCK_SIZE) then
+    begin
+     Actual:=BytesToString(AESCBCData,AES_BLOCK_SIZE);
+     ConsoleWindowWriteLn (RightWindow, 'Key:    ' + '8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b');
+     ConsoleWindowWriteLn (RightWindow, 'IVector:' + '000102030405060708090A0B0C0D0E0F' );
+     ConsoleWindowWriteLn (RightWindow, 'Mode:   ' +'Cipher Block Chaining (CBC)');
+     ConsoleWindowWriteLn (RightWindow, 'Data:   ' + '6bc1bee22e409f96e93d7e117393172a');
+     ConsoleWindowWriteLn (RightWindow, 'Actual: ' + Actual);
+    end;
+
+   CipherDestroy(Cipher);
+  end;
+
+ ConsoleWindowWriteLn (RightWindow, '');
+ ConsoleWindowWriteLn (RightWindow, 'AESDecryptBlock (192bit)');
+ ConsoleWindowWriteLn (RightWindow, 'Cipher Block Chaining (CBC)');
+
+ AESCBCKey:=AllocMem(AES_KEY_SIZE192);
+ StringToBytes('8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b',PByte(AESCBCKey),AES_KEY_SIZE192);
+
+ AESCBCVector:=AllocMem(AES_BLOCK_SIZE);
+ StringToBytes('000102030405060708090A0B0C0D0E0F',PByte(AESCBCVector),AES_BLOCK_SIZE);
+
+ AESCBCData:=AllocMem(AES_BLOCK_SIZE);
+ StringToBytes('4f021db243bc633d7178183a9fa071e8',PByte(AESCBCData),AES_BLOCK_SIZE);
+
+  Cipher:=CipherCreate(CRYPTO_CIPHER_ALG_AES,PChar(AESCBCVector),PChar(AESCBCKey),AES_KEY_SIZE192);
+ if Cipher <> nil then
+  begin
+   if CipherDecrypt(Cipher,AESCBCData,AESCBCData,AES_BLOCK_SIZE) then
+    begin
+     Actual:=BytesToString(AESCBCData,AES_BLOCK_SIZE);
+     ConsoleWindowWriteLn (RightWindow, 'Key:    ' + '8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b');
+     ConsoleWindowWriteLn (RightWindow, 'IVector:' + '000102030405060708090A0B0C0D0E0F' );
+     ConsoleWindowWriteLn (RightWindow, 'Mode:   ' +'Cipher Block Chaining (CBC)');
+     ConsoleWindowWriteLn (RightWindow, 'Data:   ' + '4f021db243bc633d7178183a9fa071e8');
+     ConsoleWindowWriteLn (RightWindow, 'Actual: ' + Actual);
+    end;
+
+   CipherDestroy(Cipher);
+  end;
+
+ ConsoleWindowWriteLn (RightWindow, '');
+ ConsoleWindowWriteLn (RightWindow, 'AESEncryptBlock (256bit)');
+ ConsoleWindowWriteLn (RightWindow, 'Cipher Block Chaining (CBC)');
+
+ AESCBCKey:=AllocMem(AES_KEY_SIZE256);
+ StringToBytes('603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4',PByte(AESCBCKey),AES_KEY_SIZE256);
+
+ AESCBCVector:=AllocMem(AES_BLOCK_SIZE);
+ StringToBytes('000102030405060708090A0B0C0D0E0F',PByte(AESCBCVector),AES_BLOCK_SIZE);
+
+ AESCBCData:=AllocMem(AES_BLOCK_SIZE);
+ StringToBytes(Actual,PByte(AESCBCData),AES_BLOCK_SIZE);
+
+  Cipher:=CipherCreate(CRYPTO_CIPHER_ALG_AES,PChar(AESCBCVector),PChar(AESCBCKey),AES_KEY_SIZE256);
+ if Cipher <> nil then
+  begin
+   if CipherEncrypt(Cipher,AESCBCData,AESCBCData,AES_BLOCK_SIZE) then
+    begin
+     Actual:=BytesToString(AESCBCData,AES_BLOCK_SIZE);
+     ConsoleWindowWriteLn (RightWindow, 'Key:    ' + '603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4');
+     ConsoleWindowWriteLn (RightWindow, 'IVector:' + '000102030405060708090A0B0C0D0E0F' );
+     ConsoleWindowWriteLn (RightWindow, 'Mode:   ' +'Cipher Block Chaining (CBC)');
+     ConsoleWindowWriteLn (RightWindow, 'Data:   ' + '6bc1bee22e409f96e93d7e117393172a');
+     ConsoleWindowWriteLn (RightWindow, 'Actual: ' + Actual);
+    end;
+
+   CipherDestroy(Cipher);
+  end;
+
+ ConsoleWindowWriteLn (RightWindow, '');
+ ConsoleWindowWriteLn (RightWindow, 'AESDecryptBlock (256bit)');
+ ConsoleWindowWriteLn (RightWindow, 'Cipher Block Chaining (CBC)');
+
+ AESCBCKey:=AllocMem(AES_KEY_SIZE256);
+ StringToBytes('603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4',PByte(AESCBCKey),AES_KEY_SIZE256);
+
+ AESCBCVector:=AllocMem(AES_BLOCK_SIZE);
+ StringToBytes('000102030405060708090A0B0C0D0E0F',PByte(AESCBCVector),AES_BLOCK_SIZE);
+
+ AESCBCData:=AllocMem(AES_BLOCK_SIZE);
+ StringToBytes('f58c4c04d6e5f1ba779eabfb5f7bfbd6',PByte(AESCBCData),AES_BLOCK_SIZE);
+
+  Cipher:=CipherCreate(CRYPTO_CIPHER_ALG_AES,PChar(AESCBCVector),PChar(AESCBCKey),AES_KEY_SIZE256);
+ if Cipher <> nil then
+  begin
+   if CipherDecrypt(Cipher,AESCBCData,AESCBCData,AES_BLOCK_SIZE) then
+    begin
+     Actual:=BytesToString(AESCBCData,AES_BLOCK_SIZE);
+     ConsoleWindowWriteLn (RightWindow, 'Key:    ' + '603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4');
+     ConsoleWindowWriteLn (RightWindow, 'IVector:' + '000102030405060708090A0B0C0D0E0F' );
+     ConsoleWindowWriteLn (RightWindow, 'Mode:   ' +'Cipher Block Chaining (CBC)');
+     ConsoleWindowWriteLn (RightWindow, 'Data:   ' + 'f58c4c04d6e5f1ba779eabfb5f7bfbd6');
+     ConsoleWindowWriteLn (RightWindow, 'Actual: ' + Actual);
+    end;
+
+   CipherDestroy(Cipher);
+  end;
 
 
 
