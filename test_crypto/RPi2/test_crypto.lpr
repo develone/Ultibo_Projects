@@ -68,6 +68,11 @@ var
  InDataStr:String;
  InIVStr:String;
  EncryptDecrypt:LongWord;
+ {These should be in Arrays Since there will many needed }
+ S1,S2,S3,S4:String;
+ PS1,PS2,PS3,PS4:PByte;
+ NewIV:String;
+ PNewIV:PByte;
   function ecbencryption(InKeyStr,InDataStr:String;InKey,EncryptDecrypt:LongWord):String;
   var
   AESECBKey:PByte;
@@ -263,7 +268,7 @@ begin
  LoggingDeviceSetDefault(LoggingDeviceFindByType(LOGGING_TYPE_CONSOLE));
  }
 
- {The following 2 lines are logging to a file
+ {The following 2 lines are logging to a file 
  LoggingDeviceSetTarget(LoggingDeviceFindByType(LOGGING_TYPE_FILE),'c:\ultibologging.log');
  LoggingDeviceSetDefault(LoggingDeviceFindByType(LOGGING_TYPE_FILE)); }
 
@@ -379,89 +384,11 @@ begin
   {Create a console window to show what is happening}
   RightWindow:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_RIGHT,True);
 
-  {***********************************************************************}
- ConsoleWindowWriteLn (RightWindow, '');
- ConsoleWindowWriteLn (RightWindow, 'AESEncryptBlock (128bit)');
- ConsoleWindowWriteLn (RightWindow, 'Cipher Block Chaining (CBC)');
-
- InKey:=0;
- EncryptDecrypt:=1;
- InKeyStr:='2b7e151628aed2a6abf7158809cf4f3c';
- InIVStr:='000102030405060708090A0B0C0D0E0F';
- InDataStr:='6bc1bee22e409f96e93d7e117393172a';
-
- Actual:= cbcencryption(InKeyStr,InDataStr,InIVStr,InKey,EncryptDecrypt);
 
 
-     ConsoleWindowWriteLn (RightWindow, 'Key:    ' + '2b7e151628aed2a6abf7158809cf4f3c');
-     ConsoleWindowWriteLn (RightWindow, 'IVector:' + '000102030405060708090A0B0C0D0E0F' );
-     ConsoleWindowWriteLn (RightWindow, 'Mode:   ' +'Cipher Block Chaining (CBC)');
-     ConsoleWindowWriteLn (RightWindow, 'Data:   ' + '6bc1bee22e409f96e93d7e117393172a');
-     ConsoleWindowWriteLn (RightWindow, 'Actual: ' + Actual);
-  {***********************************************************************}
-
-  {***********************************************************************}
- ConsoleWindowWriteLn (RightWindow, '');
- ConsoleWindowWriteLn (RightWindow, 'AESDecryptBlock (128bit)');
- ConsoleWindowWriteLn (RightWindow, 'Cipher Block Chaining (CBC)');
-
- InKey:=0;
- EncryptDecrypt:=0;
- InKeyStr:='2b7e151628aed2a6abf7158809cf4f3c';
- InDataStr:='7649abac8119b246cee98e9b12e9197d';
- InIVStr:='000102030405060708090A0B0C0D0E0F';
-
- Actual:= cbcencryption(InKeyStr,InDataStr,InIVStr,InKey,EncryptDecrypt);
-
-     ConsoleWindowWriteLn (RightWindow, 'Key:    ' + '2b7e151628aed2a6abf7158809cf4f3c');
-     ConsoleWindowWriteLn (RightWindow, 'IVector:' + '000102030405060708090A0B0C0D0E0F' );
-     ConsoleWindowWriteLn (RightWindow, 'Mode:   ' +'Cipher Block Chaining (CBC)');
-     ConsoleWindowWriteLn (RightWindow, 'Data:   ' + '7649abac8119b246cee98e9b12e9197d');
-     ConsoleWindowWriteLn (RightWindow, 'Actual: ' + Actual);
-  {***********************************************************************}
-
-  {***********************************************************************}
- ConsoleWindowWriteLn (RightWindow, '');
- ConsoleWindowWriteLn (RightWindow, 'AESEncryptBlock (192bit)');
- ConsoleWindowWriteLn (RightWindow, 'Cipher Block Chaining (CBC)');
-
- InKey:=1;
- EncryptDecrypt:=1;
- InKeyStr:='8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b';
- InIVStr:='000102030405060708090A0B0C0D0E0F';
- InDataStr:='6bc1bee22e409f96e93d7e117393172a';
-
- Actual:= cbcencryption(InKeyStr,InDataStr,InIVStr,InKey,EncryptDecrypt);
-
-
-     ConsoleWindowWriteLn (RightWindow, 'Key:    ' + '8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b');
-     ConsoleWindowWriteLn (RightWindow, 'IVector:' + '000102030405060708090A0B0C0D0E0F' );
-     ConsoleWindowWriteLn (RightWindow, 'Mode:   ' +'Cipher Block Chaining (CBC)');
-     ConsoleWindowWriteLn (RightWindow, 'Data:   ' + '6bc1bee22e409f96e93d7e117393172a');
-     ConsoleWindowWriteLn (RightWindow, 'Actual: ' + Actual);
-  {***********************************************************************}
-
-  {***********************************************************************}
- ConsoleWindowWriteLn (RightWindow, '');
- ConsoleWindowWriteLn (RightWindow, 'AESDecryptBlock (192bit)');
- ConsoleWindowWriteLn (RightWindow, 'Cipher Block Chaining (CBC)');
-
- InKey:=1;
- EncryptDecrypt:=0;
- InKeyStr:='8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b';
- InDataStr:='4f021db243bc633d7178183a9fa071e8';
- InIVStr:='000102030405060708090A0B0C0D0E0F';
-
- Actual:= cbcencryption(InKeyStr,InDataStr,InIVStr,InKey,EncryptDecrypt);
- ConsoleWindowWriteLn (RightWindow, 'Result: ' + Actual);
-     ConsoleWindowWriteLn (RightWindow, 'Key:    ' + '8e73b0f7da0e6452c810f32b809079e562f8ead2522c6b7b');
-     ConsoleWindowWriteLn (RightWindow, 'IVector:' + '000102030405060708090A0B0C0D0E0F' );
-     ConsoleWindowWriteLn (RightWindow, 'Mode:   ' +'Cipher Block Chaining (CBC)');
-     ConsoleWindowWriteLn (RightWindow, 'Data:   ' + '4f021db243bc633d7178183a9fa071e8');
-     ConsoleWindowWriteLn (RightWindow, 'Actual: ' + Actual);
-  {***********************************************************************}
-
- {***********************************************************************}
+ {**************************Starting Point**************************}
+ ConsoleWindowWriteLn (RightWindow, 'first block Ascii ' + 'come to dedicte ');
+ ConsoleWindowWriteLn (RightWindow, 'hex of above text ' + '636f6d6520746f206465646963746520');
  ConsoleWindowWriteLn (RightWindow, '');
  ConsoleWindowWriteLn (RightWindow, 'AESEncryptBlock (256bit)');
  ConsoleWindowWriteLn (RightWindow, 'Cipher Block Chaining (CBC)');
@@ -470,15 +397,18 @@ begin
  EncryptDecrypt:=1;
  InKeyStr:='603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4';
  InIVStr:='000102030405060708090A0B0C0D0E0F';
- InDataStr:='6bc1bee22e409f96e93d7e117393172a';
+ InDataStr:='636f6d6520746f206465646963746520';
 
  Actual:= cbcencryption(InKeyStr,InDataStr,InIVStr,InKey,EncryptDecrypt);
+ ConsoleWindowWriteLn (RightWindow, '');
 
+ NewIV:=Actual;
+ ConsoleWindowWriteLn (RightWindow, 'NewIV will be used as IV of 2nd block ' + NewIV);
 
      ConsoleWindowWriteLn (RightWindow, 'Key:    ' + '603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4');
      ConsoleWindowWriteLn (RightWindow, 'IVector:' + '000102030405060708090A0B0C0D0E0F' );
      ConsoleWindowWriteLn (RightWindow, 'Mode:   ' +'Cipher Block Chaining (CBC)');
-     ConsoleWindowWriteLn (RightWindow, 'Data:   ' + '6bc1bee22e409f96e93d7e117393172a');
+     ConsoleWindowWriteLn (RightWindow, 'Data:   ' + '636f6d6520746f206465646963746520');
      ConsoleWindowWriteLn (RightWindow, 'Actual: ' + Actual);
   {***********************************************************************}
 
@@ -490,7 +420,7 @@ begin
  InKey:=2;
  EncryptDecrypt:=0;
  InKeyStr:='603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4';
- InDataStr:='f58c4c04d6e5f1ba779eabfb5f7bfbd6';
+ InDataStr:=Actual;
  InIVStr:='000102030405060708090A0B0C0D0E0F';
 
  Actual:= cbcencryption(InKeyStr,InDataStr,InIVStr,InKey,EncryptDecrypt);
@@ -498,10 +428,64 @@ begin
      ConsoleWindowWriteLn (RightWindow, 'Key:    ' + '603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4');
      ConsoleWindowWriteLn (RightWindow, 'IVector:' + '000102030405060708090A0B0C0D0E0F' );
      ConsoleWindowWriteLn (RightWindow, 'Mode:   ' +'Cipher Block Chaining (CBC)');
-     ConsoleWindowWriteLn (RightWindow, 'Data:   ' + 'f58c4c04d6e5f1ba779eabfb5f7bfbd6');
+     ConsoleWindowWriteLn (RightWindow, 'Data:   ' + NewIV);
      ConsoleWindowWriteLn (RightWindow, 'Actual: ' + Actual);
   {***********************************************************************}
 
+{***********************************************************************}
+
+
+//ConsoleWindowWriteLn (RightWindow, '');
+ ConsoleWindowWriteLn (RightWindow, 'NewIV ' +  NewIV);
+ PNewIV:=@NewIV;
+ StringToBytes(NewIV,PByte(PNewIV),AES_BLOCK_SIZE);
+ S1:=BytesToString(PNewIV,16);
+ ConsoleWindowWriteLn (RightWindow, 'S1 ' + S1);
+
+//ConsoleWindowWriteLn (RightWindow, '');
+ConsoleWindowWriteLn (RightWindow, '2nd  block Ascii ' + 'a portion of the');
+ ConsoleWindowWriteLn (RightWindow, 'hex of above text ' + '6120704f7274696f6e206f6620746865');
+//ConsoleWindowWriteLn (RightWindow, '');
+ ConsoleWindowWriteLn (RightWindow, 'AESEncryptBlock (256bit)');
+ ConsoleWindowWriteLn (RightWindow, 'Cipher Block Chaining (CBC)');
+
+ InKey:=2;
+ EncryptDecrypt:=1;
+ InKeyStr:='603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4';
+ InIVStr:=S1;
+ InDataStr:='6120704f7274696f6e206f6620746865';
+
+ Actual:= cbcencryption(InKeyStr,InDataStr,InIVStr,InKey,EncryptDecrypt);
+
+
+     ConsoleWindowWriteLn (RightWindow, 'Key:    ' + '603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4');
+     ConsoleWindowWriteLn (RightWindow, 'IVector:' + S1 );
+     ConsoleWindowWriteLn (RightWindow, 'Mode:   ' +'Cipher Block Chaining (CBC)');
+     ConsoleWindowWriteLn (RightWindow, 'Data:   ' + '6120704f7274696f6e206f6620746865');
+     ConsoleWindowWriteLn (RightWindow, 'Actual: ' + Actual);
+  {***********************************************************************}
+
+  {***********************************************************************}
+  S2:=Actual;
+ ConsoleWindowWriteLn (RightWindow, 'S2 ' + S2);
+ //ConsoleWindowWriteLn (RightWindow, '');
+ ConsoleWindowWriteLn (RightWindow, 'AESDecryptBlock (256bit)');
+ ConsoleWindowWriteLn (RightWindow, 'Cipher Block Chaining (CBC)');
+
+ InKey:=2;
+ EncryptDecrypt:=0;
+ InKeyStr:='603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4';
+ InDataStr:=S2;
+ InIVStr:=S1;
+
+ Actual:= cbcencryption(InKeyStr,InDataStr,InIVStr,InKey,EncryptDecrypt);
+
+     ConsoleWindowWriteLn (RightWindow, 'Key:    ' + '603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4');
+     ConsoleWindowWriteLn (RightWindow, 'IVector:' + S1 );
+     ConsoleWindowWriteLn (RightWindow, 'Mode:   ' +'Cipher Block Chaining (CBC)');
+     ConsoleWindowWriteLn (RightWindow, 'Data:   ' + S2);
+     ConsoleWindowWriteLn (RightWindow, 'Actual: ' + Actual);
+  {***********************************************************************}
 
 
  {Halt this thread}
