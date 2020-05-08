@@ -1,0 +1,5 @@
+. ~/fpc.sh
+#echo $PATH
+#export PATH=/home/devel/ultibo/core/fpc/bin:$PATH
+#echo $PATH
+fpc -vi -B -Tultibo -Parm -CpARMV7A -WpRPI2B @/home/devel/ultibo/core/fpc/bin/RPI2.CFG -O2 test_crypto.lpr
