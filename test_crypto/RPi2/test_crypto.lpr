@@ -33,21 +33,51 @@ uses
 
   { needed to use ultibo-tftp  }
   { needed for telnet }
+       Classes,     {Include the common classes}
       Shell,
      ShellFilesystem,
      ShellUpdate,
-     RemoteShell;
+     RemoteShell,
   { needed for telnet }
+  BCM2836,
+     FileSystem,  {Include the file system core and interfaces}
+  FATFS,       {Include the FAT file system driver}
+  MMC,         {Include the MMC/SD core to access our SD card}
+  BCM2709;     {And also include the MMC/SD driver for the Raspberry Pi}
+
+{
+function BytesToString(Data:PByte;Size:LongWord):String;
+function StringToBytes(const Value:String;Data:PByte;Size:LongWord):Boolean;
+}
+type
+
+TWKGDATA = record
+  {0123456789abcdef0123456789abcdef}
+  StrKeyAsc:String[32];
+  {0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
+  StrKeyHex:String[80];
+  {0123456789abcdef}
+  Strplaintext:array [1..1024] of String[16];
+  StrIV:array [1..1024] of String[32];
+  StrEnc:array [1..1024] of String[32];
+  StrDec:array [1..1024] of String[32];
+end;
 
 var
- LeftWindow:TWindowHandle;
- RightWindow:TWindowHandle;
- HTTPListener:THTTPListener;
- { needed to use ultibo-tftp  }
- TCP : TWinsock2TCPClient;
- IPAddress : string;
+  PWKGDATA:^TWKGDATA;
 
+  TWKGDATA1:TWKGDATA;
+
+  //PStrKey:^String;
+  LeftWindow:TWindowHandle;
+  RightWindow:TWindowHandle;
+  HTTPListener:THTTPListener;
+  { needed to use ultibo-tftp  }
+  TCP : TWinsock2TCPClient;
+  IPAddress : string;
+  //LP:LongWord;
  AESECBKey:PByte;
+
  AESECBData:PByte;
  AESECBAESKey:TAESKey;
 
@@ -57,22 +87,26 @@ var
 
  Cipher:PCipherContext;
 
- key:String;
- Data:String;
+ //key:String;
+ //Data:String;
  Actual:String;
- PData:PString;
- Datalen:LongWord;
+ //PData:PString;
+ //Datalen:LongWord;
 
  InKey:LongWord;
  InKeyStr:String;
  InDataStr:String;
  InIVStr:String;
  EncryptDecrypt:LongWord;
+ start,stop,lftrht:LongWord;
  {These should be in Arrays Since there will many needed }
- S1,S2,S3,S4:String;
- PS1,PS2,PS3,PS4:PByte;
- NewIV:String;
- PNewIV:PByte;
+ S1,S2:String;
+ //PS1,PS2,PS3,PS4:PByte;
+ //NewIV:String;
+ //PNewIV:PByte;
+ Filename:String;
+ StringList:TStringList;
+ FileStream:TFileStream;
   function ecbencryption(InKeyStr,InDataStr:String;InKey,EncryptDecrypt:LongWord):String;
   var
   AESECBKey:PByte;
@@ -206,7 +240,77 @@ function cbcencryption(InKeyStr,InDataStr,InIVStr:String;InKey,EncryptDecrypt:Lo
   CipherDestroy(Cipher);
   end;
 {End of function cbcencryption}
+function encrecord(start,stop:LongWord):boolean;
+var
+ LP:LongWord;
+begin
 
+ for LP:=start to stop do
+ begin
+ InKey:=2;
+ EncryptDecrypt:=1;
+ InKeyStr:=TWKGDATA1.StrKeyHex;
+ InIVStr:=TWKGDATA1.StrIV[LP];
+ S1:=TWKGDATA1.Strplaintext[LP];
+ S2:=BytesToString(PByte(S1),Length(S1) * SizeOf(Char));
+ InDataStr:=S2;
+
+ TWKGDATA1.StrEnc[LP]:= cbcencryption(InKeyStr,InDataStr,InIVStr,InKey,EncryptDecrypt);
+ {Encrypted of previous blk bec IVector of next blk}
+ TWKGDATA1.StrIV[LP+1]:=TWKGDATA1.StrEnc[LP];
+
+ end;
+ 
+ 
+ 
+for LP:=start to stop do
+ begin
+ InKey:=2;
+ EncryptDecrypt:=0;
+ InKeyStr:=TWKGDATA1.StrKeyHex;
+ InIVStr:=TWKGDATA1.StrIV[LP];
+
+ InDataStr:=TWKGDATA1.StrEnc[LP];
+
+ TWKGDATA1.StrDec[LP]:= cbcencryption(InKeyStr,InDataStr,InIVStr,InKey,EncryptDecrypt);
+
+ end;
+ Result:=True;
+ end;
+{End of function encrecord}
+function disresults(start,stop,lfrht:longWord):boolean;
+var
+ LP:LongWord;
+begin
+
+
+
+
+ for LP:=start to stop do
+ begin
+
+ if(lftrht=0) then
+ begin
+ ConsoleWindowWriteLn (LeftWindow, '');
+ ConsoleWindowWriteLn (LeftWindow, 'Key:    ' + TWKGDATA1.StrKeyHex);
+ ConsoleWindowWriteLn (LeftWindow, 'IVector:' + TWKGDATA1.StrIV[LP] );
+ ConsoleWindowWriteLn (LeftWindow, 'Mode:   ' +'Cipher Block Chaining (CBC)');
+ ConsoleWindowWriteLn (LeftWindow, 'Data:   ' + TWKGDATA1.StrEnc[LP]);
+ ConsoleWindowWriteLn (LeftWindow, 'Actual: ' + TWKGDATA1.StrDec[LP]);
+ end;
+ if(lftrht=1) then
+ begin
+ ConsoleWindowWriteLn (RightWindow, '');
+ ConsoleWindowWriteLn (RightWindow, 'Key:    ' + TWKGDATA1.StrKeyHex);
+ ConsoleWindowWriteLn (RightWindow, 'IVector:' + TWKGDATA1.StrIV[LP] );
+ ConsoleWindowWriteLn (RightWindow, 'Mode:   ' +'Cipher Block Chaining (CBC)');
+ ConsoleWindowWriteLn (RightWindow, 'Data:   ' + TWKGDATA1.StrEnc[LP]);
+ ConsoleWindowWriteLn (RightWindow, 'Actual: ' + TWKGDATA1.StrDec[LP]);
+ end;
+  Result:=True;
+ end;
+ end;
+ {End of function disresults}
  function WaitForIPComplete : string;
 
  var
@@ -262,6 +366,7 @@ function cbcencryption(InKeyStr,InDataStr,InIVStr:String;InKey,EncryptDecrypt:Lo
 
 
 begin
+ Filename:='C:\Record Data File Handling.txt';
  {The following 3 lines are logging to the console
  CONSOLE_REGISTER_LOGGING:=True;
  LoggingConsoleDeviceAdd(ConsoleDeviceGetDefault);
@@ -295,216 +400,149 @@ begin
   {Create a console window to show what is happening}
   RightWindow:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_RIGHT,True);
 
+{**************************Start Init**************************}
+  {Create the record}
+  PWKGDATA:=@TWKGDATA1;
+  TWKGDATA1.StrIV[0]:='000102030405060708090A0B0C0D0E0F';
+                       {0123456789abcdef0123456789abcdef}
+  TWKGDATA1.StrKeyAsc:='Now we are engaged in a great ci';
+  S1:=TWKGDATA1.StrKeyAsc;
+  S2:=BytesToString(PByte(S1),Length(S1) * SizeOf(Char));
+  TWKGDATA1.StrKeyHex:=S2;
+  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.StrKeyAsc ' + TWKGDATA1.StrKeyAsc);
+  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.StrKeyHex ' + TWKGDATA1.StrKeyHex);
 
- {**************************Starting Point**************************}
- ConsoleWindowWriteLn (LeftWindow, 'first block Ascii ' + 'come to dedicte ');
- ConsoleWindowWriteLn (LeftWindow, 'hex of above text ' + '636f6d6520746f206465646963746520');
+  TWKGDATA1.Strplaintext[0]:='Four score and s';
+
+  TWKGDATA1.Strplaintext[1]:='even years ago o';
+
+  TWKGDATA1.Strplaintext[2]:='ur fathers broug';
+
+  TWKGDATA1.Strplaintext[3]:='ht forth on this';
+
+  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[0] ' + TWKGDATA1.Strplaintext[0]);
+  S1:=TWKGDATA1.Strplaintext[0];
+  S2:=BytesToString(PByte(S1),Length(S1) * SizeOf(Char));
+  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[0] ' + S2);
+
+  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[1] ' + TWKGDATA1.Strplaintext[1]);
+  S1:=TWKGDATA1.Strplaintext[1];
+  S2:=BytesToString(PByte(S1),Length(S1) * SizeOf(Char));
+  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[1] ' + S2);
+
+  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[2] ' + TWKGDATA1.Strplaintext[2]);
+  S1:=TWKGDATA1.Strplaintext[2];
+  S2:=BytesToString(PByte(S1),Length(S1) * SizeOf(Char));
+  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[2] ' + S2);
+
+  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[3] ' + TWKGDATA1.Strplaintext[3]);
+  S1:=TWKGDATA1.Strplaintext[3];
+  S2:=BytesToString(PByte(S1),Length(S1) * SizeOf(Char));
+  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[3] ' + S2);
+{**************************End Init**************************}
+
+
+ start:=0;
+ stop:=3;
+ encrecord(start,stop);
+ lftrht:=0;
+ disresults(start,stop,lftrht);
+
+
+ {**************************Start Init4 to 7**************************}
  ConsoleWindowWriteLn (LeftWindow, '');
- ConsoleWindowWriteLn (LeftWindow, 'AESEncryptBlock (256bit)');
- ConsoleWindowWriteLn (LeftWindow, 'Cipher Block Chaining (CBC)');
+ TWKGDATA1.Strplaintext[4]:=' continent, a ne';
 
- InKey:=2;
- EncryptDecrypt:=1;
- InKeyStr:='603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4';
- InIVStr:='000102030405060708090A0B0C0D0E0F';
- InDataStr:='636f6d6520746f206465646963746520';
+  TWKGDATA1.Strplaintext[5]:='w nation, concei';
 
- Actual:= cbcencryption(InKeyStr,InDataStr,InIVStr,InKey,EncryptDecrypt);
- ConsoleWindowWriteLn (LeftWindow, '');
+  TWKGDATA1.Strplaintext[6]:='ved in Liberty, ';
 
- NewIV:=Actual;
- ConsoleWindowWriteLn (LeftWindow, 'NewIV will be used as IV of 2nd block ' + NewIV);
+  TWKGDATA1.Strplaintext[7]:='and dedicated to';
 
-     ConsoleWindowWriteLn (LeftWindow, 'Key:    ' + '603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4');
-     ConsoleWindowWriteLn (LeftWindow, 'IVector:' + '000102030405060708090A0B0C0D0E0F' );
-     ConsoleWindowWriteLn (LeftWindow, 'Mode:   ' +'Cipher Block Chaining (CBC)');
-     ConsoleWindowWriteLn (LeftWindow, 'Data:   ' + '636f6d6520746f206465646963746520');
-     ConsoleWindowWriteLn (LeftWindow, 'Actual: ' + Actual);
-  {***********************************************************************}
+  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[4] ' + TWKGDATA1.Strplaintext[4]);
+ S1:=TWKGDATA1.Strplaintext[4];
+  S2:=BytesToString(PByte(S1),Length(S1) * SizeOf(Char));
+  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[4] ' + S2);
+  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[5] ' + TWKGDATA1.Strplaintext[5]);
+  S1:=TWKGDATA1.Strplaintext[5];
+  S2:=BytesToString(PByte(S1),Length(S1) * SizeOf(Char));
+  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[5] ' + S2);
+  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[6] ' + TWKGDATA1.Strplaintext[6]);
+  S1:=TWKGDATA1.Strplaintext[6];
+  S2:=BytesToString(PByte(S1),Length(S1) * SizeOf(Char));
+  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[6] ' + S2);
+  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[7] ' + TWKGDATA1.Strplaintext[7]);
+  S1:=TWKGDATA1.Strplaintext[7];
+  S2:=BytesToString(PByte(S1),Length(S1) * SizeOf(Char));
+  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[7] ' + S2);
 
-  {***********************************************************************}
- ConsoleWindowWriteLn (LeftWindow, '');
- ConsoleWindowWriteLn (LeftWindow, 'AESDecryptBlock (256bit)');
- ConsoleWindowWriteLn (LeftWindow, 'Cipher Block Chaining (CBC)');
+  start:=4;
+ stop:=7;
+ encrecord(start,stop);
+ lftrht:=1;
+ disresults(start,stop,lftrht);
+ ConsoleWindowWriteLn(RightWindow,'Length ' + IntToStr(length(TWKGDATA1.StrKeyHex)));
+ ConsoleWindowWriteLn(RightWindow,'PWKGDATA ' + HexStr(PWKGDATA));
+ ConsoleWindowWriteLn(RightWindow,'Creating a new file ' + Filename);
+  {TFileStream will raise an exception if creating the file fails}
+ {
+ try
+  FileStream:=TFileStream.Create(Filename,fmCreate);
 
- InKey:=2;
- EncryptDecrypt:=0;
- InKeyStr:='603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4';
- InDataStr:=Actual;
- InIVStr:='000102030405060708090A0B0C0D0E0F';
+  {We've created the file, now we need to write some content to it, we can use
+   a TStringList for that but there are many other ways as well.}
+  StringList:=TStringList.Create;
 
- Actual:= cbcencryption(InKeyStr,InDataStr,InIVStr,InKey,EncryptDecrypt);
- ConsoleWindowWriteLn (LeftWindow, 'Result: ' + Actual);
-     ConsoleWindowWriteLn (LeftWindow, 'Key:    ' + '603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4');
-     ConsoleWindowWriteLn (LeftWindow, 'IVector:' + '000102030405060708090A0B0C0D0E0F' );
-     ConsoleWindowWriteLn (LeftWindow, 'Mode:   ' +'Cipher Block Chaining (CBC)');
-     ConsoleWindowWriteLn (LeftWindow, 'Data:   ' + NewIV);
-     ConsoleWindowWriteLn (LeftWindow, 'Actual: ' + Actual);
-  {***********************************************************************}
+  {Add some text to our string list}
+  StringList.Add(TWKGDATA1.StrKeyAsc);
+  StringList.Add(TWKGDATA1.StrKeyHex);
+  StringList.Add(TWKGDATA1.Strplaintext[0]);
+  StringList.Add(TWKGDATA1.Strplaintext[1]);
+  StringList.Add(TWKGDATA1.Strplaintext[2]);
+  StringList.Add(TWKGDATA1.Strplaintext[3]);
+  StringList.Add(TWKGDATA1.Strplaintext[4]);
+  StringList.Add(TWKGDATA1.Strplaintext[5]);
+  StringList.Add(TWKGDATA1.Strplaintext[6]);
+  StringList.Add(TWKGDATA1.Strplaintext[7]);
+  StringList.Add(TWKGDATA1.StrIV[0]);
+  StringList.Add(TWKGDATA1.StrIV[1]);
+  StringList.Add(TWKGDATA1.StrIV[2]);
+  StringList.Add(TWKGDATA1.StrIV[3]);
+  StringList.Add(TWKGDATA1.StrIV[4]);
+  StringList.Add(TWKGDATA1.StrIV[5]);
+  StringList.Add(TWKGDATA1.StrIV[6]);
+  StringList.Add(TWKGDATA1.StrIV[7]);
 
-{***********************************************************************}
+  StringList.Add(TWKGDATA1.StrEnc[0]);
+  StringList.Add(TWKGDATA1.StrEnc[1]);
+  StringList.Add(TWKGDATA1.StrEnc[2]);
+  StringList.Add(TWKGDATA1.StrEnc[3]);
+  StringList.Add(TWKGDATA1.StrEnc[4]);
+  StringList.Add(TWKGDATA1.StrEnc[5]);
+  StringList.Add(TWKGDATA1.StrEnc[6]);
+  StringList.Add(TWKGDATA1.StrEnc[7]);
 
-
-//ConsoleWindowWriteLn (LeftWindow, '');
- ConsoleWindowWriteLn (LeftWindow, 'NewIV ' +  NewIV);
- PNewIV:=@NewIV;
- StringToBytes(NewIV,PByte(PNewIV),AES_BLOCK_SIZE);
- S1:=BytesToString(PNewIV,16);
- ConsoleWindowWriteLn (LeftWindow, 'S1 ' + S1);
-
-ConsoleWindowWriteLn (LeftWindow, '');
-ConsoleWindowWriteLn (LeftWindow, '2nd  block Ascii ' + 'a portion of the');
- ConsoleWindowWriteLn (LeftWindow, 'hex of above text ' + '6120704f7274696f6e206f6620746865');
-ConsoleWindowWriteLn (LeftWindow, '');
- ConsoleWindowWriteLn (LeftWindow, 'AESEncryptBlock (256bit)');
- ConsoleWindowWriteLn (LeftWindow, 'Cipher Block Chaining (CBC)');
-
- InKey:=2;
- EncryptDecrypt:=1;
- InKeyStr:='603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4';
- InIVStr:=S1;
- InDataStr:='6120704f7274696f6e206f6620746865';
-
- Actual:= cbcencryption(InKeyStr,InDataStr,InIVStr,InKey,EncryptDecrypt);
-
-     ConsoleWindowWriteLn (LeftWindow, 'Key:    ' + '603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4');
-     ConsoleWindowWriteLn (LeftWindow, 'IVector:' + S1 );
-     ConsoleWindowWriteLn (LeftWindow, 'Mode:   ' +'Cipher Block Chaining (CBC)');
-     ConsoleWindowWriteLn (LeftWindow, 'Data:   ' + '6120704f7274696f6e206f6620746865');
-     ConsoleWindowWriteLn (LeftWindow, 'Actual: ' + Actual);
-  {***********************************************************************}
-
-  {***********************************************************************}
-  S2:=Actual;
- ConsoleWindowWriteLn (LeftWindow, 'S2 ' + S2);
- ConsoleWindowWriteLn (LeftWindow, '');
- ConsoleWindowWriteLn (LeftWindow, 'AESDecryptBlock (256bit)');
- ConsoleWindowWriteLn (LeftWindow, 'Cipher Block Chaining (CBC)');
-
- InKey:=2;
- EncryptDecrypt:=0;
- InKeyStr:='603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4';
- InDataStr:=S2;
- InIVStr:=S1;
-
- Actual:= cbcencryption(InKeyStr,InDataStr,InIVStr,InKey,EncryptDecrypt);
-
-     ConsoleWindowWriteLn (LeftWindow, 'Key:    ' + '603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4');
-     ConsoleWindowWriteLn (LeftWindow, 'IVector:' + S1 );
-     ConsoleWindowWriteLn (LeftWindow, 'Mode:   ' +'Cipher Block Chaining (CBC)');
-     ConsoleWindowWriteLn (LeftWindow, 'Data:   ' + S2);
-     ConsoleWindowWriteLn (LeftWindow, 'Actual: ' + Actual);
-
- {**************************Starting Point**************************}
- //ConsoleWindowWriteLn (RightWindow, 'third block Ascii ' + 'come to dedicte ');
- {**************************Reversed the block**************************}
- ConsoleWindowWriteLn (RightWindow, 'third block Ascii ' + ' etcided ot emoc' );
- //ConsoleWindowWriteLn (RightWindow, 'hex of above text ' + '636f6d6520746f206465646963746520');
-{**************************Reversed the block**************************}
- ConsoleWindowWriteLn (RightWindow, 'hex of above text ' + '2065746369646564206f7420656d6f63');
- ConsoleWindowWriteLn (RightWindow, '');
- ConsoleWindowWriteLn (RightWindow, 'AESEncryptBlock (256bit)');
- ConsoleWindowWriteLn (RightWindow, 'Cipher Block Chaining (CBC)');
-
- InKey:=2;
- EncryptDecrypt:=1;
- InKeyStr:='603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4';
- InIVStr:=S2;
- InDataStr:='2065746369646564206f7420656d6f63';
-
- Actual:= cbcencryption(InKeyStr,InDataStr,InIVStr,InKey,EncryptDecrypt);
- ConsoleWindowWriteLn (RightWindow, '');
-
- NewIV:=Actual;
- ConsoleWindowWriteLn (RightWindow, 'S2 will be used as IV of 3rd block ' + S2);
-
-     ConsoleWindowWriteLn (RightWindow, 'Key:    ' + '603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4');
-     ConsoleWindowWriteLn (RightWindow, 'IVector:' + S2 );
-     ConsoleWindowWriteLn (RightWindow, 'Mode:   ' +'Cipher Block Chaining (CBC)');
-     ConsoleWindowWriteLn (RightWindow, 'Data:   ' + '2065746369646564206f7420656d6f63');
-     ConsoleWindowWriteLn (RightWindow, 'Actual: ' + Actual);
-  {***********************************************************************}
-
-  {***********************************************************************}
- ConsoleWindowWriteLn (RightWindow, '');
- ConsoleWindowWriteLn (RightWindow, 'AESDecryptBlock (256bit)');
- ConsoleWindowWriteLn (RightWindow, 'Cipher Block Chaining (CBC)');
-
- InKey:=2;
- EncryptDecrypt:=0;
- InKeyStr:='603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4';
- InDataStr:=Actual;
- InIVStr:=S2;
-
- Actual:= cbcencryption(InKeyStr,InDataStr,InIVStr,InKey,EncryptDecrypt);
- ConsoleWindowWriteLn (RightWindow, 'Result: ' + Actual);
-     ConsoleWindowWriteLn (RightWindow, 'Key:    ' + '603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4');
-     ConsoleWindowWriteLn (RightWindow, 'IVector:' + S2 );
-     ConsoleWindowWriteLn (RightWindow, 'Mode:   ' +'Cipher Block Chaining (CBC)');
-     ConsoleWindowWriteLn (RightWindow, 'Data:   ' + NewIV);
-     ConsoleWindowWriteLn (RightWindow, 'Actual: ' + Actual);
-  {***********************************************************************}
-
-{***********************************************************************}
+  StringList.Add(TWKGDATA1.StrDec[0]);
+  StringList.Add(TWKGDATA1.StrDec[1]);
+  StringList.Add(TWKGDATA1.StrDec[2]);
+  StringList.Add(TWKGDATA1.StrDec[3]);
+  StringList.Add(TWKGDATA1.StrDec[4]);
+  StringList.Add(TWKGDATA1.StrDec[5]);
+  StringList.Add(TWKGDATA1.StrDec[6]);
+  StringList.Add(TWKGDATA1.StrDec[7]);
 
 
-ConsoleWindowWriteLn (RightWindow, '');
- ConsoleWindowWriteLn (RightWindow, 'NewIV ' +  NewIV);
- PNewIV:=@NewIV;
- StringToBytes(NewIV,PByte(PNewIV),AES_BLOCK_SIZE);
- S1:=BytesToString(PNewIV,16);
- ConsoleWindowWriteLn (RightWindow, 'S1 ' + S1);
+  {Since TStringList has a SaveToStream method, we can just call that to write
+   all the strings to our new file.}
+  ConsoleWindowWriteLn(RightWindow,'Saving the TStringList to the file');
+  StringList.SaveToStream(FileStream);
 
-ConsoleWindowWriteLn (RightWindow, '');
-//ConsoleWindowWriteLn (RightWindow, '4th  block Ascii ' + 'a portion of the');
-{**************************Reversed the block**************************}
- ConsoleWindowWriteLn (RightWindow, '4th  block Ascii ' + 'eht fo noitrop a');
- //ConsoleWindowWriteLn (RightWindow, 'hex of above text ' + '6120704f7274696f6e206f6620746865');
-{**************************Reversed the block**************************}
- ConsoleWindowWriteLn (RightWindow, 'hex of above text ' + '65687420666f206e6f6974724f702061');
-ConsoleWindowWriteLn (RightWindow, '');
- ConsoleWindowWriteLn (RightWindow, 'AESEncryptBlock (256bit)');
- ConsoleWindowWriteLn (RightWindow, 'Cipher Block Chaining (CBC)');
-
- InKey:=2;
- EncryptDecrypt:=1;
- InKeyStr:='603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4';
- InIVStr:=S1;
- InDataStr:='65687420666f206e6f6974724f702061';
-
- Actual:= cbcencryption(InKeyStr,InDataStr,InIVStr,InKey,EncryptDecrypt);
-
-
-     ConsoleWindowWriteLn (RightWindow, 'Key:    ' + '603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4');
-     ConsoleWindowWriteLn (RightWindow, 'IVector:' + S1 );
-     ConsoleWindowWriteLn (RightWindow, 'Mode:   ' +'Cipher Block Chaining (CBC)');
-     ConsoleWindowWriteLn (RightWindow, 'Data:   ' + '65687420666f206e6f6974724f702061');
-     ConsoleWindowWriteLn (RightWindow, 'Actual: ' + Actual);
-  {***********************************************************************}
-
-  {***********************************************************************}
-  S2:=Actual;
- ConsoleWindowWriteLn (RightWindow, 'S2 ' + S2);
- ConsoleWindowWriteLn (RightWindow, '');
- ConsoleWindowWriteLn (RightWindow, 'AESDecryptBlock (256bit)');
- ConsoleWindowWriteLn (RightWindow, 'Cipher Block Chaining (CBC)');
-
- InKey:=2;
- EncryptDecrypt:=0;
- InKeyStr:='603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4';
- InDataStr:=S2;
- InIVStr:=S1;
-
- Actual:= cbcencryption(InKeyStr,InDataStr,InIVStr,InKey,EncryptDecrypt);
-
-     ConsoleWindowWriteLn (RightWindow, 'Key:    ' + '603deb1015ca71be2b73aef0857d77811f352c073b6108d72d9810a30914dff4');
-     ConsoleWindowWriteLn (RightWindow, 'IVector:' + S1 );
-     ConsoleWindowWriteLn (RightWindow, 'Mode:   ' +'Cipher Block Chaining (CBC)');
-     ConsoleWindowWriteLn (RightWindow, 'Data:   ' + S2);
-     ConsoleWindowWriteLn (RightWindow, 'Actual: ' + Actual);
-  {***********************************************************************}
-
-
+  {With that done we can close the file and free the string list}
+  ConsoleWindowWriteLn(RightWindow,'Closing the file');
+  ConsoleWindowWriteLn(RightWindow,'');
+  FileStream.Free;
+  StringList.Free;
+   }
  {Halt this thread}
   end.
 
