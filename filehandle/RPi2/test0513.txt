@@ -1,0 +1,3 @@
+Example 08 File Handling
+This is a test file created by the example
+Here is a another line of text as well.
