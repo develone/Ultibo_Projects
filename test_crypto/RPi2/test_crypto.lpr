@@ -68,14 +68,14 @@ var
 
   TWKGDATA1:TWKGDATA;
 
-  //PStrKey:^String;
+
   LeftWindow:TWindowHandle;
   RightWindow:TWindowHandle;
   HTTPListener:THTTPListener;
   { needed to use ultibo-tftp  }
   TCP : TWinsock2TCPClient;
   IPAddress : string;
-  //LP:LongWord;
+
  AESECBKey:PByte;
 
  AESECBData:PByte;
@@ -87,11 +87,9 @@ var
 
  Cipher:PCipherContext;
 
- //key:String;
- //Data:String;
+
  Actual:String;
- //PData:PString;
- //Datalen:LongWord;
+
 
  InKey:LongWord;
  InKeyStr:String;
@@ -101,9 +99,8 @@ var
  start,stop,lftrht:LongWord;
  {These should be in Arrays Since there will many needed }
  S1,S2:String;
- //PS1,PS2,PS3,PS4:PByte;
- //NewIV:String;
- //PNewIV:PByte;
+
+ Count:Integer;
  Filename:String;
  StringList:TStringList;
  FileStream:TFileStream;
@@ -137,7 +134,7 @@ var
        AESKeySetup(AESECBKey,AES_KEY_SIZE256,@AESECBAESKey);
      end;
 
- //AESECBData:=AllocMem(AES_BLOCK_SIZE);
+
 
  if(EncryptDecrypt=1) then
      begin
@@ -481,21 +478,43 @@ begin
  encrecord(start,stop);
  lftrht:=1;
  disresults(start,stop,lftrht);
- ConsoleWindowWriteLn(RightWindow,'Length ' + IntToStr(length(TWKGDATA1.StrKeyHex)));
+ {ConsoleWindowWriteLn(RightWindow,'Length ' + IntToStr(length(TWKGDATA1.StrKeyHex)));
  ConsoleWindowWriteLn(RightWindow,'PWKGDATA ' + HexStr(PWKGDATA));
  ConsoleWindowWriteLn(RightWindow,'Creating a new file ' + Filename);
+ }
+
+
+
+
+{Let's try creating a file and writing some text to it, we'll assign our filename
+   to a variable.}
+  Filename:='C:\test0513.txt';
+
+  {We should check if the file exists first before trying to create it}
+  ConsoleWindowWriteLn(LeftWindow,'Checking to see if ' + Filename + ' exists');
+  if FileExists(Filename) then
+   begin
+    {If it does exist we can delete it}
+    ConsoleWindowWriteLn(LeftWindow,'Deleting the file ' + Filename);
+    DeleteFile(Filename);
+   end;
+
+  {Now create the file, let's use a TFileStream class to do this. We pass both the
+   filename and the mode to TFileStream. fmCreate tells it to create a new file.}
+  ConsoleWindowWriteLn(LeftWindow,'Creating a new file ' + Filename);
   {TFileStream will raise an exception if creating the file fails}
- {
- try
-  FileStream:=TFileStream.Create(Filename,fmCreate);
+  try
+   FileStream:=TFileStream.Create(Filename,fmCreate);
 
-  {We've created the file, now we need to write some content to it, we can use
-   a TStringList for that but there are many other ways as well.}
-  StringList:=TStringList.Create;
+   {We've created the file, now we need to write some content to it, we can use
+    a TStringList for that but there are many other ways as well.}
+   StringList:=TStringList.Create;
 
-  {Add some text to our string list}
-  StringList.Add(TWKGDATA1.StrKeyAsc);
+   {Add some text to our string list}
+ StringList.Add('ASC & Hex key');
+StringList.Add(TWKGDATA1.StrKeyAsc);
   StringList.Add(TWKGDATA1.StrKeyHex);
+  StringList.Add('Strplaintext');
   StringList.Add(TWKGDATA1.Strplaintext[0]);
   StringList.Add(TWKGDATA1.Strplaintext[1]);
   StringList.Add(TWKGDATA1.Strplaintext[2]);
@@ -504,6 +523,7 @@ begin
   StringList.Add(TWKGDATA1.Strplaintext[5]);
   StringList.Add(TWKGDATA1.Strplaintext[6]);
   StringList.Add(TWKGDATA1.Strplaintext[7]);
+  StringList.Add('StrIV');
   StringList.Add(TWKGDATA1.StrIV[0]);
   StringList.Add(TWKGDATA1.StrIV[1]);
   StringList.Add(TWKGDATA1.StrIV[2]);
@@ -513,6 +533,7 @@ begin
   StringList.Add(TWKGDATA1.StrIV[6]);
   StringList.Add(TWKGDATA1.StrIV[7]);
 
+  StringList.Add('StrEnc');
   StringList.Add(TWKGDATA1.StrEnc[0]);
   StringList.Add(TWKGDATA1.StrEnc[1]);
   StringList.Add(TWKGDATA1.StrEnc[2]);
@@ -521,7 +542,7 @@ begin
   StringList.Add(TWKGDATA1.StrEnc[5]);
   StringList.Add(TWKGDATA1.StrEnc[6]);
   StringList.Add(TWKGDATA1.StrEnc[7]);
-
+  StringList.Add('StrDecry');
   StringList.Add(TWKGDATA1.StrDec[0]);
   StringList.Add(TWKGDATA1.StrDec[1]);
   StringList.Add(TWKGDATA1.StrDec[2]);
@@ -532,20 +553,53 @@ begin
   StringList.Add(TWKGDATA1.StrDec[7]);
 
 
-  {Since TStringList has a SaveToStream method, we can just call that to write
-   all the strings to our new file.}
-  ConsoleWindowWriteLn(RightWindow,'Saving the TStringList to the file');
-  StringList.SaveToStream(FileStream);
+   {Since TStringList has a SaveToStream method, we can just call that to write
+    all the strings to our new file.}
+   ConsoleWindowWriteLn(LeftWindow,'Saving the TStringList to the file');
+   StringList.SaveToStream(FileStream);
 
-  {With that done we can close the file and free the string list}
-  ConsoleWindowWriteLn(RightWindow,'Closing the file');
-  ConsoleWindowWriteLn(RightWindow,'');
-  FileStream.Free;
-  StringList.Free;
-   }
- {Halt this thread}
-  end.
+   {With that done we can close the file and free the string list}
+   ConsoleWindowWriteLn(LeftWindow,'Closing the file');
+   ConsoleWindowWriteLn(LeftWindow,'');
+   FileStream.Free;
+   StringList.Free;
 
+   {Did it work? Let's open the file and display it on screen to see.}
+   ConsoleWindowWriteLn(LeftWindow,'Opening the file ' + Filename);
+   try
+    FileStream:=TFileStream.Create(Filename,fmOpenReadWrite);
+
+    {Recreate our string list}
+    StringList:=TStringList.Create;
+
+    {And use LoadFromStream to read it}
+    ConsoleWindowWriteLn(LeftWindow,'Loading the TStringList from the file');
+    StringList.LoadFromStream(FileStream);
+
+    {Iterate the strings and print them to the screen}
+    ConsoleWindowWriteLn(LeftWindow,'The contents of the file are:');
+    for Count:=0 to StringList.Count - 1 do
+     begin
+      ConsoleWindowWriteLn(LeftWindow,StringList.Strings[Count]);
+     end;
+
+    {Close the file and free the string list again}
+    ConsoleWindowWriteLn(LeftWindow,'Closing the file');
+    ConsoleWindowWriteLn(LeftWindow,'');
+    FileStream.Free;
+    StringList.Free;
+
+    {If you remove the SD card and put in back in your computer, you should see the
+     file "Example 08 File Handling.txt" on it. If you open it in a notepad you should
+     see the contents exactly as they appeared on screen.}
+   except
+    {TFileStream couldn't open the file}
+    ConsoleWindowWriteLn(LeftWindow,'Failed to open the file ' + Filename);
+   end;
+  except
+   {Something went wrong creating the file}
+   ConsoleWindowWriteLn(LeftWindow,'Failed to create the file ' + Filename);
+  end;
  ThreadHalt(0);
 end.
 
