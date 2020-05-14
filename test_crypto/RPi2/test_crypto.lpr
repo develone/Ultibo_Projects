@@ -51,7 +51,7 @@ function StringToBytes(const Value:String;Data:PByte;Size:LongWord):Boolean;
 }
 type
 
-TWKGDATA = record
+CBC = record
   {0123456789abcdef0123456789abcdef}
   StrKeyAsc:String[32];
   {0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
@@ -64,9 +64,9 @@ TWKGDATA = record
 end;
 
 var
-  PWKGDATA:^TWKGDATA;
+  PWKGDATA:^CBC;
 
-  TWKGDATA1:TWKGDATA;
+  CBC1:CBC;
 
 
   LeftWindow:TWindowHandle;
@@ -84,6 +84,12 @@ var
  AESCBCKey:PByte;
  AESCBCData:PByte;
  AESCBCVector:PByte;
+
+ AESGCMKey:PByte;
+ AESGCMIV:PByte;
+ AESGCMAAD:PByte;
+ AESGCMData:PByte;
+ AESGCMTag:PByte;
 
  Cipher:PCipherContext;
 
@@ -246,15 +252,15 @@ begin
  begin
  InKey:=2;
  EncryptDecrypt:=1;
- InKeyStr:=TWKGDATA1.StrKeyHex;
- InIVStr:=TWKGDATA1.StrIV[LP];
- S1:=TWKGDATA1.Strplaintext[LP];
+ InKeyStr:=CBC1.StrKeyHex;
+ InIVStr:=CBC1.StrIV[LP];
+ S1:=CBC1.Strplaintext[LP];
  S2:=BytesToString(PByte(S1),Length(S1) * SizeOf(Char));
  InDataStr:=S2;
 
- TWKGDATA1.StrEnc[LP]:= cbcencryption(InKeyStr,InDataStr,InIVStr,InKey,EncryptDecrypt);
+ CBC1.StrEnc[LP]:= cbcencryption(InKeyStr,InDataStr,InIVStr,InKey,EncryptDecrypt);
  {Encrypted of previous blk bec IVector of next blk}
- TWKGDATA1.StrIV[LP+1]:=TWKGDATA1.StrEnc[LP];
+ CBC1.StrIV[LP+1]:=CBC1.StrEnc[LP];
 
  end;
  
@@ -264,12 +270,12 @@ for LP:=start to stop do
  begin
  InKey:=2;
  EncryptDecrypt:=0;
- InKeyStr:=TWKGDATA1.StrKeyHex;
- InIVStr:=TWKGDATA1.StrIV[LP];
+ InKeyStr:=CBC1.StrKeyHex;
+ InIVStr:=CBC1.StrIV[LP];
 
- InDataStr:=TWKGDATA1.StrEnc[LP];
+ InDataStr:=CBC1.StrEnc[LP];
 
- TWKGDATA1.StrDec[LP]:= cbcencryption(InKeyStr,InDataStr,InIVStr,InKey,EncryptDecrypt);
+ CBC1.StrDec[LP]:= cbcencryption(InKeyStr,InDataStr,InIVStr,InKey,EncryptDecrypt);
 
  end;
  Result:=True;
@@ -289,20 +295,20 @@ begin
  if(lftrht=0) then
  begin
  ConsoleWindowWriteLn (LeftWindow, '');
- ConsoleWindowWriteLn (LeftWindow, 'Key:    ' + TWKGDATA1.StrKeyHex);
- ConsoleWindowWriteLn (LeftWindow, 'IVector:' + TWKGDATA1.StrIV[LP] );
+ ConsoleWindowWriteLn (LeftWindow, 'Key:    ' + CBC1.StrKeyHex);
+ ConsoleWindowWriteLn (LeftWindow, 'IVector:' + CBC1.StrIV[LP] );
  ConsoleWindowWriteLn (LeftWindow, 'Mode:   ' +'Cipher Block Chaining (CBC)');
- ConsoleWindowWriteLn (LeftWindow, 'Data:   ' + TWKGDATA1.StrEnc[LP]);
- ConsoleWindowWriteLn (LeftWindow, 'Actual: ' + TWKGDATA1.StrDec[LP]);
+ ConsoleWindowWriteLn (LeftWindow, 'Data:   ' + CBC1.StrEnc[LP]);
+ ConsoleWindowWriteLn (LeftWindow, 'Actual: ' + CBC1.StrDec[LP]);
  end;
  if(lftrht=1) then
  begin
  ConsoleWindowWriteLn (RightWindow, '');
- ConsoleWindowWriteLn (RightWindow, 'Key:    ' + TWKGDATA1.StrKeyHex);
- ConsoleWindowWriteLn (RightWindow, 'IVector:' + TWKGDATA1.StrIV[LP] );
+ ConsoleWindowWriteLn (RightWindow, 'Key:    ' + CBC1.StrKeyHex);
+ ConsoleWindowWriteLn (RightWindow, 'IVector:' + CBC1.StrIV[LP] );
  ConsoleWindowWriteLn (RightWindow, 'Mode:   ' +'Cipher Block Chaining (CBC)');
- ConsoleWindowWriteLn (RightWindow, 'Data:   ' + TWKGDATA1.StrEnc[LP]);
- ConsoleWindowWriteLn (RightWindow, 'Actual: ' + TWKGDATA1.StrDec[LP]);
+ ConsoleWindowWriteLn (RightWindow, 'Data:   ' + CBC1.StrEnc[LP]);
+ ConsoleWindowWriteLn (RightWindow, 'Actual: ' + CBC1.StrDec[LP]);
  end;
   Result:=True;
  end;
@@ -399,43 +405,43 @@ begin
 
 {**************************Start Init**************************}
   {Create the record}
-  PWKGDATA:=@TWKGDATA1;
-  TWKGDATA1.StrIV[0]:='000102030405060708090A0B0C0D0E0F';
+  PWKGDATA:=@CBC1;
+  CBC1.StrIV[0]:='000102030405060708090A0B0C0D0E0F';
                        {0123456789abcdef0123456789abcdef}
-  TWKGDATA1.StrKeyAsc:='Now we are engaged in a great ci';
-  S1:=TWKGDATA1.StrKeyAsc;
+  CBC1.StrKeyAsc:='Now we are engaged in a great ci';
+  S1:=CBC1.StrKeyAsc;
   S2:=BytesToString(PByte(S1),Length(S1) * SizeOf(Char));
-  TWKGDATA1.StrKeyHex:=S2;
-  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.StrKeyAsc ' + TWKGDATA1.StrKeyAsc);
-  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.StrKeyHex ' + TWKGDATA1.StrKeyHex);
+  CBC1.StrKeyHex:=S2;
+  ConsoleWindowWriteLn (LeftWindow, 'CBC1.StrKeyAsc ' + CBC1.StrKeyAsc);
+  ConsoleWindowWriteLn (LeftWindow, 'CBC1.StrKeyHex ' + CBC1.StrKeyHex);
 
-  TWKGDATA1.Strplaintext[0]:='Four score and s';
+  CBC1.Strplaintext[0]:='Four score and s';
 
-  TWKGDATA1.Strplaintext[1]:='even years ago o';
+  CBC1.Strplaintext[1]:='even years ago o';
 
-  TWKGDATA1.Strplaintext[2]:='ur fathers broug';
+  CBC1.Strplaintext[2]:='ur fathers broug';
 
-  TWKGDATA1.Strplaintext[3]:='ht forth on this';
+  CBC1.Strplaintext[3]:='ht forth on this';
 
-  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[0] ' + TWKGDATA1.Strplaintext[0]);
-  S1:=TWKGDATA1.Strplaintext[0];
+  ConsoleWindowWriteLn (LeftWindow, 'CBC1.Strplaintext[0] ' + CBC1.Strplaintext[0]);
+  S1:=CBC1.Strplaintext[0];
   S2:=BytesToString(PByte(S1),Length(S1) * SizeOf(Char));
-  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[0] ' + S2);
+  ConsoleWindowWriteLn (LeftWindow, 'CBC1.Strplaintext[0] ' + S2);
 
-  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[1] ' + TWKGDATA1.Strplaintext[1]);
-  S1:=TWKGDATA1.Strplaintext[1];
+  ConsoleWindowWriteLn (LeftWindow, 'CBC1.Strplaintext[1] ' + CBC1.Strplaintext[1]);
+  S1:=CBC1.Strplaintext[1];
   S2:=BytesToString(PByte(S1),Length(S1) * SizeOf(Char));
-  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[1] ' + S2);
+  ConsoleWindowWriteLn (LeftWindow, 'CBC1.Strplaintext[1] ' + S2);
 
-  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[2] ' + TWKGDATA1.Strplaintext[2]);
-  S1:=TWKGDATA1.Strplaintext[2];
+  ConsoleWindowWriteLn (LeftWindow, 'CBC1.Strplaintext[2] ' + CBC1.Strplaintext[2]);
+  S1:=CBC1.Strplaintext[2];
   S2:=BytesToString(PByte(S1),Length(S1) * SizeOf(Char));
-  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[2] ' + S2);
+  ConsoleWindowWriteLn (LeftWindow, 'CBC1.Strplaintext[2] ' + S2);
 
-  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[3] ' + TWKGDATA1.Strplaintext[3]);
-  S1:=TWKGDATA1.Strplaintext[3];
+  ConsoleWindowWriteLn (LeftWindow, 'CBC1.Strplaintext[3] ' + CBC1.Strplaintext[3]);
+  S1:=CBC1.Strplaintext[3];
   S2:=BytesToString(PByte(S1),Length(S1) * SizeOf(Char));
-  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[3] ' + S2);
+  ConsoleWindowWriteLn (LeftWindow, 'CBC1.Strplaintext[3] ' + S2);
 {**************************End Init**************************}
 
 
@@ -448,37 +454,37 @@ begin
 
  {**************************Start Init4 to 7**************************}
  ConsoleWindowWriteLn (LeftWindow, '');
- TWKGDATA1.Strplaintext[4]:=' continent, a ne';
+ CBC1.Strplaintext[4]:=' continent, a ne';
 
-  TWKGDATA1.Strplaintext[5]:='w nation, concei';
+  CBC1.Strplaintext[5]:='w nation, concei';
 
-  TWKGDATA1.Strplaintext[6]:='ved in Liberty, ';
+  CBC1.Strplaintext[6]:='ved in Liberty, ';
 
-  TWKGDATA1.Strplaintext[7]:='and dedicated to';
+  CBC1.Strplaintext[7]:='and dedicated to';
 
-  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[4] ' + TWKGDATA1.Strplaintext[4]);
- S1:=TWKGDATA1.Strplaintext[4];
+  ConsoleWindowWriteLn (LeftWindow, 'CBC1.Strplaintext[4] ' + CBC1.Strplaintext[4]);
+ S1:=CBC1.Strplaintext[4];
   S2:=BytesToString(PByte(S1),Length(S1) * SizeOf(Char));
-  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[4] ' + S2);
-  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[5] ' + TWKGDATA1.Strplaintext[5]);
-  S1:=TWKGDATA1.Strplaintext[5];
+  ConsoleWindowWriteLn (LeftWindow, 'CBC1.Strplaintext[4] ' + S2);
+  ConsoleWindowWriteLn (LeftWindow, 'CBC1.Strplaintext[5] ' + CBC1.Strplaintext[5]);
+  S1:=CBC1.Strplaintext[5];
   S2:=BytesToString(PByte(S1),Length(S1) * SizeOf(Char));
-  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[5] ' + S2);
-  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[6] ' + TWKGDATA1.Strplaintext[6]);
-  S1:=TWKGDATA1.Strplaintext[6];
+  ConsoleWindowWriteLn (LeftWindow, 'CBC1.Strplaintext[5] ' + S2);
+  ConsoleWindowWriteLn (LeftWindow, 'CBC1.Strplaintext[6] ' + CBC1.Strplaintext[6]);
+  S1:=CBC1.Strplaintext[6];
   S2:=BytesToString(PByte(S1),Length(S1) * SizeOf(Char));
-  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[6] ' + S2);
-  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[7] ' + TWKGDATA1.Strplaintext[7]);
-  S1:=TWKGDATA1.Strplaintext[7];
+  ConsoleWindowWriteLn (LeftWindow, 'CBC1.Strplaintext[6] ' + S2);
+  ConsoleWindowWriteLn (LeftWindow, 'CBC1.Strplaintext[7] ' + CBC1.Strplaintext[7]);
+  S1:=CBC1.Strplaintext[7];
   S2:=BytesToString(PByte(S1),Length(S1) * SizeOf(Char));
-  ConsoleWindowWriteLn (LeftWindow, 'TWKGDATA1.Strplaintext[7] ' + S2);
+  ConsoleWindowWriteLn (LeftWindow, 'CBC1.Strplaintext[7] ' + S2);
 
   start:=4;
  stop:=7;
  encrecord(start,stop);
  lftrht:=1;
  disresults(start,stop,lftrht);
- {ConsoleWindowWriteLn(RightWindow,'Length ' + IntToStr(length(TWKGDATA1.StrKeyHex)));
+ {ConsoleWindowWriteLn(RightWindow,'Length ' + IntToStr(length(CBC1.StrKeyHex)));
  ConsoleWindowWriteLn(RightWindow,'PWKGDATA ' + HexStr(PWKGDATA));
  ConsoleWindowWriteLn(RightWindow,'Creating a new file ' + Filename);
  }
@@ -512,45 +518,45 @@ begin
 
    {Add some text to our string list}
  StringList.Add('ASC & Hex key');
-StringList.Add(TWKGDATA1.StrKeyAsc);
-  StringList.Add(TWKGDATA1.StrKeyHex);
+StringList.Add(CBC1.StrKeyAsc);
+  StringList.Add(CBC1.StrKeyHex);
   StringList.Add('Strplaintext');
-  StringList.Add(TWKGDATA1.Strplaintext[0]);
-  StringList.Add(TWKGDATA1.Strplaintext[1]);
-  StringList.Add(TWKGDATA1.Strplaintext[2]);
-  StringList.Add(TWKGDATA1.Strplaintext[3]);
-  StringList.Add(TWKGDATA1.Strplaintext[4]);
-  StringList.Add(TWKGDATA1.Strplaintext[5]);
-  StringList.Add(TWKGDATA1.Strplaintext[6]);
-  StringList.Add(TWKGDATA1.Strplaintext[7]);
+  StringList.Add(CBC1.Strplaintext[0]);
+  StringList.Add(CBC1.Strplaintext[1]);
+  StringList.Add(CBC1.Strplaintext[2]);
+  StringList.Add(CBC1.Strplaintext[3]);
+  StringList.Add(CBC1.Strplaintext[4]);
+  StringList.Add(CBC1.Strplaintext[5]);
+  StringList.Add(CBC1.Strplaintext[6]);
+  StringList.Add(CBC1.Strplaintext[7]);
   StringList.Add('StrIV');
-  StringList.Add(TWKGDATA1.StrIV[0]);
-  StringList.Add(TWKGDATA1.StrIV[1]);
-  StringList.Add(TWKGDATA1.StrIV[2]);
-  StringList.Add(TWKGDATA1.StrIV[3]);
-  StringList.Add(TWKGDATA1.StrIV[4]);
-  StringList.Add(TWKGDATA1.StrIV[5]);
-  StringList.Add(TWKGDATA1.StrIV[6]);
-  StringList.Add(TWKGDATA1.StrIV[7]);
+  StringList.Add(CBC1.StrIV[0]);
+  StringList.Add(CBC1.StrIV[1]);
+  StringList.Add(CBC1.StrIV[2]);
+  StringList.Add(CBC1.StrIV[3]);
+  StringList.Add(CBC1.StrIV[4]);
+  StringList.Add(CBC1.StrIV[5]);
+  StringList.Add(CBC1.StrIV[6]);
+  StringList.Add(CBC1.StrIV[7]);
 
   StringList.Add('StrEnc');
-  StringList.Add(TWKGDATA1.StrEnc[0]);
-  StringList.Add(TWKGDATA1.StrEnc[1]);
-  StringList.Add(TWKGDATA1.StrEnc[2]);
-  StringList.Add(TWKGDATA1.StrEnc[3]);
-  StringList.Add(TWKGDATA1.StrEnc[4]);
-  StringList.Add(TWKGDATA1.StrEnc[5]);
-  StringList.Add(TWKGDATA1.StrEnc[6]);
-  StringList.Add(TWKGDATA1.StrEnc[7]);
+  StringList.Add(CBC1.StrEnc[0]);
+  StringList.Add(CBC1.StrEnc[1]);
+  StringList.Add(CBC1.StrEnc[2]);
+  StringList.Add(CBC1.StrEnc[3]);
+  StringList.Add(CBC1.StrEnc[4]);
+  StringList.Add(CBC1.StrEnc[5]);
+  StringList.Add(CBC1.StrEnc[6]);
+  StringList.Add(CBC1.StrEnc[7]);
   StringList.Add('StrDecry');
-  StringList.Add(TWKGDATA1.StrDec[0]);
-  StringList.Add(TWKGDATA1.StrDec[1]);
-  StringList.Add(TWKGDATA1.StrDec[2]);
-  StringList.Add(TWKGDATA1.StrDec[3]);
-  StringList.Add(TWKGDATA1.StrDec[4]);
-  StringList.Add(TWKGDATA1.StrDec[5]);
-  StringList.Add(TWKGDATA1.StrDec[6]);
-  StringList.Add(TWKGDATA1.StrDec[7]);
+  StringList.Add(CBC1.StrDec[0]);
+  StringList.Add(CBC1.StrDec[1]);
+  StringList.Add(CBC1.StrDec[2]);
+  StringList.Add(CBC1.StrDec[3]);
+  StringList.Add(CBC1.StrDec[4]);
+  StringList.Add(CBC1.StrDec[5]);
+  StringList.Add(CBC1.StrDec[6]);
+  StringList.Add(CBC1.StrDec[7]);
 
 
    {Since TStringList has a SaveToStream method, we can just call that to write
