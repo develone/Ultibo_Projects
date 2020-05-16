@@ -65,7 +65,9 @@ end;
 GCM = record
   StrData:array [1..32] of String[80];
   StrKeyHex:array [1..32] of String[80];
-  StrIV:array [1..32] of String[80];
+  
+  StrIV:array [1..32] of String[32];
+  StrIV64:String;
   StrAAD:array [1..32] of String[80];
 end;
 var
@@ -412,6 +414,7 @@ begin
   {Create the record}
   PCBC:=@CBC1;
   PGCM:=@GCM1;
+  GCM1.StrIV64:='000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f';
   GCM1.StrKeyHex[0]:='000102030405060708090a0b0c0d0e0f';
   GCM1.StrIV[0]:=StringTrim(GCM1.StrKeyHex[0],2);
   GCM1.StrIV[1]:=StringTrim(GCM1.StrKeyHex[0],4);
@@ -432,16 +435,26 @@ begin
   GCM1.StrIV[15]:=StringTrim(GCM1.StrKeyHex[0],32);
    
   
-  {
-  GCM1.StrADD[0]:=StringTrim(GCM1.StrKeyHex[0],2);
-  GCM1.StrADD[1]:=StringTrim(GCM1.StrKeyHex[0],4);
-  GCM1.StrADD[2]:=StringTrim(GCM1.StrKeyHex[0],6);
-  GCM1.StrADD[3]:=StringTrim(GCM1.StrKeyHex[0],8);
-  GCM1.StrADD[4]:=StringTrim(GCM1.StrKeyHex[0],10);
-  GCM1.StrADD[5]:=StringTrim(GCM1.StrKeyHex[0],12);
-  GCM1.StrADD[6]:=StringTrim(GCM1.StrKeyHex[0],14);
-  GCM1.StrADD[7]:=StringTrim(GCM1.StrKeyHex[0],16);
-  }
+  GCM1.StrData[0]:=StringTrim(GCM1.StrKeyHex[0],2);
+  GCM1.StrData[1]:=StringTrim(GCM1.StrKeyHex[0],4);
+  GCM1.StrData[2]:=StringTrim(GCM1.StrKeyHex[0],6);
+  GCM1.StrData[3]:=StringTrim(GCM1.StrKeyHex[0],8);
+  GCM1.StrData[4]:=StringTrim(GCM1.StrKeyHex[0],10);
+  GCM1.StrData[5]:=StringTrim(GCM1.StrKeyHex[0],12);
+  GCM1.StrData[6]:=StringTrim(GCM1.StrKeyHex[0],14);
+  GCM1.StrData[7]:=StringTrim(GCM1.StrKeyHex[0],16);
+
+  GCM1.StrData[8]:=StringTrim(GCM1.StrKeyHex[0],18);
+  GCM1.StrData[9]:=StringTrim(GCM1.StrKeyHex[0],20);
+  GCM1.StrData[10]:=StringTrim(GCM1.StrKeyHex[0],22);
+  GCM1.StrData[11]:=StringTrim(GCM1.StrKeyHex[0],24);
+  GCM1.StrData[12]:=StringTrim(GCM1.StrKeyHex[0],26);
+  GCM1.StrData[13]:=StringTrim(GCM1.StrKeyHex[0],28);
+  GCM1.StrData[14]:=StringTrim(GCM1.StrKeyHex[0],30);
+  GCM1.StrData[15]:=StringTrim(GCM1.StrKeyHex[0],32);
+
+  //GCM1.StrADD[0]:=StringTrim(GCM1.StrKeyHex[0],2);
+
 
   AESGCMKey:=AllocMem(AES_KEY_SIZE128);
   StringToBytes(GCM1.StrKeyHex[0],PByte(AESGCMKey),AES_KEY_SIZE128);
@@ -617,6 +630,7 @@ StringList.Add(CBC1.StrKeyAsc);
   StringList.Add(CBC1.StrDec[7]);
 
   StringList.Add('GCM');
+  StringList.Add(GCM1.StrIV64);
   StringList.Add(GCM1.StrKeyHex[0]);
 
   StringList.Add('StrIV');
@@ -639,19 +653,26 @@ StringList.Add(CBC1.StrKeyAsc);
   StringList.Add(GCM1.StrIV[14]);
   StringList.Add(GCM1.StrIV[15]);
 
-  StringList.Add('StrADD');
-  {
-  StringList.Add(GCM1.StrADD[0]);
-  StringList.Add(GCM1.StrADD[1]);
-  StringList.Add(GCM1.StrADD[2]);
-  StringList.Add(GCM1.StrADD[3]);
-  StringList.Add(GCM1.StrADD[4]);
-  StringList.Add(GCM1.StrADD[5]);
-  StringList.Add(GCM1.StrADD[6]);
-  StringList.Add(GCM1.StrADD[7]);
-  StringList.Add(GCM1.StrADD[8]);
-  }
-   
+  StringList.Add('StrData');
+  
+  StringList.Add(GCM1.StrData[0]);
+  StringList.Add(GCM1.StrData[1]);
+  StringList.Add(GCM1.StrData[2]);
+  StringList.Add(GCM1.StrData[3]);
+  StringList.Add(GCM1.StrData[4]);
+  StringList.Add(GCM1.StrData[5]);
+  StringList.Add(GCM1.StrData[6]);
+  StringList.Add(GCM1.StrData[7]);
+  StringList.Add(GCM1.StrData[8]);
+  
+  StringList.Add(GCM1.StrData[9]);
+  StringList.Add(GCM1.StrData[10]);
+  StringList.Add(GCM1.StrData[11]);
+  StringList.Add(GCM1.StrData[12]);
+  StringList.Add(GCM1.StrData[13]);
+  StringList.Add(GCM1.StrData[14]);
+  StringList.Add(GCM1.StrData[15]);
+     
    {Since TStringList has a SaveToStream method, we can just call that to write
     all the strings to our new file.}
    ConsoleWindowWriteLn(LeftWindow,'Saving the TStringList to the file');
