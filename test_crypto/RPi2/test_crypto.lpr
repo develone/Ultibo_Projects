@@ -66,7 +66,7 @@ GCM = record
   StrData:array [1..32] of String[80];
   StrKeyHex:array [1..32] of String[80];
   
-  StrIV:array [1..32] of String[32];
+  StrIV:array [1..32] of String[40];
   StrIV64:String;
   StrAAD:array [1..32] of String[80];
 end;
@@ -103,7 +103,7 @@ var
 
  Actual:String;
 
-
+ PStrIV64:^Char;
  InKey:LongWord;
  InKeyStr:String;
  InDataStr:String;
@@ -414,6 +414,7 @@ begin
   {Create the record}
   PCBC:=@CBC1;
   PGCM:=@GCM1;
+                  {01234567890123456789012345678912}
   GCM1.StrIV64:='000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f';
   GCM1.StrKeyHex[0]:='000102030405060708090a0b0c0d0e0f';
   GCM1.StrIV[0]:=StringTrim(GCM1.StrKeyHex[0],2);
@@ -433,8 +434,26 @@ begin
   GCM1.StrIV[13]:=StringTrim(GCM1.StrKeyHex[0],28);
   GCM1.StrIV[14]:=StringTrim(GCM1.StrKeyHex[0],30);
   GCM1.StrIV[15]:=StringTrim(GCM1.StrKeyHex[0],32);
-   
+  {Initization GCM1.StrIV[16] to GCM1.StrIV[19] using String GCM1.StrKeyHex[0]}
+  PStrIV64:=@GCM1.StrKeyHex[0];
+  GCM1.StrIV[16]:=StringTrim(PStrIV64+3,34); 
+ 
+  GCM1.StrIV[17]:=StringTrim(PStrIV64+5,36);
+ 
+  GCM1.StrIV[18]:=StringTrim(PStrIV64+7,38);
   
+  GCM1.StrIV[19]:=StringTrim(PStrIV64+9,40); 
+  {Initization GCM1.StrIV[20] to GCM1.StrIV[23] using String GCM1.StrKeyHex[0]}
+  PStrIV64:=@GCM1.StrIV64;
+  
+  GCM1.StrIV[20]:=StringTrim(PStrIV64+3,34); 
+ 
+  GCM1.StrIV[21]:=StringTrim(PStrIV64+5,36);
+ 
+  GCM1.StrIV[22]:=StringTrim(PStrIV64+7,38);
+  
+  GCM1.StrIV[23]:=StringTrim(PStrIV64+9,40); 
+
   GCM1.StrData[0]:=StringTrim(GCM1.StrKeyHex[0],2);
   GCM1.StrData[1]:=StringTrim(GCM1.StrKeyHex[0],4);
   GCM1.StrData[2]:=StringTrim(GCM1.StrKeyHex[0],6);
@@ -652,7 +671,17 @@ StringList.Add(CBC1.StrKeyAsc);
   StringList.Add(GCM1.StrIV[13]);
   StringList.Add(GCM1.StrIV[14]);
   StringList.Add(GCM1.StrIV[15]);
-
+  StringList.Add('GCM1.StrIV[16] to GCM1.StrIV[19]');
+  StringList.Add(GCM1.StrIV[16]);
+  StringList.Add(GCM1.StrIV[17]);
+  StringList.Add(GCM1.StrIV[18]);
+  StringList.Add(GCM1.StrIV[19]);
+  StringList.Add('GCM1.StrIV[20] to GCM1.StrIV[23]');
+  StringList.Add(GCM1.StrIV[20]);
+  StringList.Add(GCM1.StrIV[21]);
+  StringList.Add(GCM1.StrIV[22]);
+  StringList.Add(GCM1.StrIV[23]);
+   
   StringList.Add('StrData');
   
   StringList.Add(GCM1.StrData[0]);
