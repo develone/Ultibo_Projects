@@ -472,7 +472,23 @@ begin
   GCM1.StrData[14]:=StringTrim(GCM1.StrKeyHex[0],30);
   GCM1.StrData[15]:=StringTrim(GCM1.StrKeyHex[0],32);
 
-  //GCM1.StrADD[0]:=StringTrim(GCM1.StrKeyHex[0],2);
+  GCM1.StrAAD[0]:=StringTrim(GCM1.StrKeyHex[0],2);
+  GCM1.StrAAD[1]:=StringTrim(GCM1.StrKeyHex[0],4);
+  GCM1.StrAAD[2]:=StringTrim(GCM1.StrKeyHex[0],6);
+  GCM1.StrAAD[3]:=StringTrim(GCM1.StrKeyHex[0],8);
+  GCM1.StrAAD[4]:=StringTrim(GCM1.StrKeyHex[0],10);
+  GCM1.StrAAD[5]:=StringTrim(GCM1.StrKeyHex[0],12);
+  GCM1.StrAAD[6]:=StringTrim(GCM1.StrKeyHex[0],14);
+  GCM1.StrAAD[7]:=StringTrim(GCM1.StrKeyHex[0],16);
+  
+  GCM1.StrAAD[8]:=StringTrim(GCM1.StrKeyHex[0],18);
+  GCM1.StrAAD[9]:=StringTrim(GCM1.StrKeyHex[0],20);
+  GCM1.StrAAD[10]:=StringTrim(GCM1.StrKeyHex[0],22);
+  GCM1.StrAAD[11]:=StringTrim(GCM1.StrKeyHex[0],24);
+  GCM1.StrAAD[12]:=StringTrim(GCM1.StrKeyHex[0],26);
+  GCM1.StrAAD[13]:=StringTrim(GCM1.StrKeyHex[0],28);
+  GCM1.StrAAD[14]:=StringTrim(GCM1.StrKeyHex[0],30);
+  GCM1.StrAAD[15]:=StringTrim(GCM1.StrKeyHex[0],32);
 
 
   AESGCMKey:=AllocMem(AES_KEY_SIZE128);
@@ -701,6 +717,26 @@ StringList.Add(CBC1.StrKeyAsc);
   StringList.Add(GCM1.StrData[13]);
   StringList.Add(GCM1.StrData[14]);
   StringList.Add(GCM1.StrData[15]);
+
+  StringList.Add('StrAAD');
+  
+  StringList.Add(GCM1.StrAAD[0]);
+  StringList.Add(GCM1.StrAAD[1]);
+  StringList.Add(GCM1.StrAAD[2]);
+  StringList.Add(GCM1.StrAAD[3]);
+  StringList.Add(GCM1.StrAAD[4]);
+  StringList.Add(GCM1.StrAAD[5]);
+  StringList.Add(GCM1.StrAAD[6]);
+  StringList.Add(GCM1.StrAAD[7]);
+  StringList.Add(GCM1.StrAAD[8]);
+  
+  StringList.Add(GCM1.StrAAD[9]);
+  StringList.Add(GCM1.StrAAD[10]);
+  StringList.Add(GCM1.StrAAD[11]);
+  StringList.Add(GCM1.StrAAD[12]);
+  StringList.Add(GCM1.StrAAD[13]);
+  StringList.Add(GCM1.StrAAD[14]);
+  StringList.Add(GCM1.StrAAD[15]);
      
    {Since TStringList has a SaveToStream method, we can just call that to write
     all the strings to our new file.}
