@@ -69,13 +69,52 @@ GCM = record
   StrIV:array [1..32] of String[40];
   StrIV64:String;
   StrAAD:array [1..32] of String[80];
+  Actual:array [1..32] of String[80];
+  Expected:array [1..32] of String[80];
+  ActualTag:array [1..32] of String[80];
+  ExpectedTag:array [1..32] of String[80];
 end;
+const
+ AESGCMTestVectors:array[1..32,1..2] of String = (
+ ('3A', '03C32E0E9D7E07A410B9BEE40A8F0D26'),
+ ('26AE', '3A635BBDC1A17CA40B58CEEA78105CDC'),
+ ('142FAC', '7E8922E8FA6F1E41E4339F0B52176DE4'),
+ ('20C1863F', 'A1D12620C22EA7A0AA0E74667A20B8E1'),
+ ('B3B796AA54', '53F0F9F03791BBD76BC99D1B5639F3C0'),
+ ('FDCFF8EA82D8', 'B56076B42E3EEAC73DD42FC83B9220F9'),
+ ('4695E719E67849', 'B4A1A2E29AAD713D5677CF425E65A400'),
+ ('EE5BA3309D417697', '146EA95CED151F8C40DF98C1CC54930B'),
+ ('13FF05ABB084FA608F', '55550AADC3461CC190CA22F29C6246CD'),
+ ('008B0102208A22D3A562', '7178534BC7145754BAE525CC06E14A6B'),
+ ('3536DBBB07B026E78E94C8', 'AB27183AEA2240B0166D702EEB2A7BFA'),
+ ('00739D5A27AE82AC7D6A40EC', '4354578C3D241074D3C1F6496420F239'),
+ ('DA41A5F458400C94B84026C052', 'DC6CB036FCAE9765A69F5B8C38B0B767'),
+ ('4C99797C7EDCEA9D5425565522E2', '3FFEEC557F0D5FA73472D2A3F8E71389'),
+ ('D381E7AD2E5BE2C97FB4BD958BC2EB', '6BF713D4E7DA7C4290967A1D23F97EDD'),
+ ('5016C127F16A4787734AF3A3E6F6F0F7', '8CD8458531E94BC8160E2176F63F8D0B'),
+ ('BDF3D0F24D9415AB5CF9B87BB45B4A8AE4', 'D81A3D56451313742ACE53D41223F6AF'),
+ ('68C1FCBE22FBDB296C246F2E34D871A6902E', '7AFD64D4EB0DE7E2A842B518AC6D483F'),
+ ('7D8D3C31E643611B0B557F29B437F635FE3FD0', '8501B61DBF4A4DD19B87E95055B95962'),
+ ('4185EEB0B9B480F69B3EC7A162810073A36AD95A', 'B9BCA6D9CA0AC2B4B35D7BFF4DB27D25'),
+ ('F991F4A481E322FEEC6FE9302D010AC4C811B23B4A', '54FA4DDA92E57509F4D48D206A03624F'),
+ ('B288424FF96596B2A30A1EB9480F5EADC2F6D8551B9A', '2C998C8DFDC7663C8DE677B2F1CBCB57'),
+ ('1066FE3DCB9F8AE0DC0693F7179F111E0A7A1FFE944FF4', '65402D1F8AFBDC819D6D1ADB5375AFD0'),
+ ('0A8772CCDE122EFF01D7C187C77F07BDA50997B4320CD0D8', 'F55823AFC3D9FE6E749E70E82C823925'),
+ ('E6E2FBB3E2238BC8CB396F463C2F488B4B4933087728D39815', 'F06DA35A9AEE65F9AD0DAD5B99AB4DF6'),
+ ('569BD39CB1693CB89B88923ABE0D8CFA0B4F22A48A15E2EACD4A', '661AF51FF0E0E363406AB278BFC9176D'),
+ ('199EED81C2428170EB089060FF9676596EADD2270895A0C8650903', '90AA9C634469D45E7BDD9AB955B90130'),
+ ('B5200497A0654009B9F5B0D45FFDCF192F3042D6B05C6D6A8191A7EA', '71F6C4982AA50705D5FFC60512FC674C'),
+ ('E39DA262C0E851B5CB5BD55A8B19D0AC0ABDC6FF3F32DF3B1896242D9E', 'B58AA05F594FC9779E185353CC52B8FB'),
+ ('AF349B91BAD4BE2F2D5E4DDE28A1AA74115A9059A5EBBF9E38F341DC368B', '966B04FE43A2A9D94004E756F7DBFEFA'),
+ ('8C87861DFFDE72FA64E926BF741330F64E2B30837650F309A3F979AE43BA2E', 'A5C825AE1B844D6A8D531077C881BD36'),
+ ('924E178A17FA1CA0E7486F0404123B91DBF797BB9DBDE9B1D48D5C7F53165912', '10F972B6F9E0A3C1CF9CCF56543DCA79'));
+
 var
   PCBC:^CBC;
   PGCM:^GCM;
   CBC1:CBC;
   GCM1:GCM;
-
+ 
   LeftWindow:TWindowHandle;
   RightWindow:TWindowHandle;
   HTTPListener:THTTPListener;
@@ -500,18 +539,85 @@ AESGCMKey:=AllocMem(AES_KEY_SIZE128);
   begin
    AESGCMIV:=AllocMem(Count);
    StringToBytes('000102030405060708090a0b0c0d0e0f',PByte(AESGCMIV),Count);
-   //S1:=GCM1.StrKeyHex[0];
-   //S2:=BytesToString(PByte(S1),(Count*2) * SizeOf(Char));
-   //GCM1.StrIV[Count]:=S2;
    AESGCMAAD:=AllocMem(Count);
    StringToBytes('000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f',PByte(AESGCMAAD),Count);
    AESGCMData:=AllocMem(Count);
    StringToBytes('000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f',PByte(AESGCMData),Count);
- end;
+
+   if AESGCMEncryptData(AESGCMKey,AES_KEY_SIZE128,AESGCMIV,AESGCMAAD,AESGCMData,AESGCMData,Count,Count,Count,AESGCMTag) then
+    begin
+     GCM1.Actual[Count]:=BytesToString(AESGCMData,Count);
+     GCM1.Expected[Count]:=Lowercase(AESGCMTestVectors[Count,1]); {Source: https://github.com/libtom/libtomcrypt/blob/develop/notes/gcm_tv.txt}
+
+     GCM1.ActualTag[Count]:=BytesToString(AESGCMTag,AES_BLOCK_SIZE);
+     GCM1.ExpectedTag[Count]:=Lowercase(AESGCMTestVectors[Count,2]);
+
+     //AddItemEx(AResponse,'Expected:',Expected,3);
+     //AddItemEx(AResponse,'Actual:',Actual,3);
+
+     //AddItemEx(AResponse,'ExpectedTag:',ExpectedTag,3);
+     //AddItemEx(AResponse,'ActualTag:',ActualTag,3);
+
+     if (Uppercase(GCM1.Actual[Count]) = Uppercase(GCM1.Expected[Count])) and (Uppercase(GCM1.ActualTag[Count]) = Uppercase(GCM1.ExpectedTag[Count])) then
+      begin
+       //AddItemEx(AResponse,'Result:','Correct',3);
+       //AddBlank(AResponse);
+
+       System.Move(AESGCMTag^,AESGCMKey^,AES_BLOCK_SIZE);
+      end
+     else
+      begin
+       //AddItemEx(AResponse,'Result:','Incorrect',3);
+       Break;
+      end;
+    end
+   else
+    begin
+     //AddItemEx(AResponse,'Result:','Failed',3);
+     Break;
+    end;
+
+ 
    FreeMem(AESGCMIV);
    FreeMem(AESGCMAAD);
    FreeMem(AESGCMData);
-
+ end;
+{
+ FreeMem(AESGCMKey);
+ FreeMem(AESGCMTag);
+Hash:=HashCreate(CRYPTO_HASH_ALG_HMAC_MD5,PChar('key'),3);
+ if Hash <> nil then
+  begin
+   HashUpdate(Hash,PChar('The quick brown fox jumps over the lazy dog'),43);
+   HashFinish(Hash,@MD5Digest,SizeOf(TMD5Digest));
+   
+   Actual:=MD5DigestToString(@MD5Digest);
+   Expected:=Lowercase('80070713463e7749b90c2dc24911e275'); {Source: https://en.wikipedia.org/wiki/Hash-based_message_authentication_code}
+   
+   //AddItemEx(AResponse,'Expected:',Expected,3);
+   //AddItemEx(AResponse,'Actual:',Actual,3);
+   
+   if Uppercase(Actual) = Uppercase(Expected) then
+    begin
+     //AddItemEx(AResponse,'Result:','Correct',3);
+    end
+   else
+    begin
+     //AddItemEx(AResponse,'Result:','Incorrect',3);
+    end;
+   
+   HashDestroy(Hash);
+  end
+ else
+  begin
+   //AddItemEx(AResponse,'Result:','HashCreate Failed',3);
+  end;  
+ //AddBlank(AResponse);
+ 
+ {Return Result}
+ Result:=True;
+end;
+}
   CBC1.StrIV[0]:='000102030405060708090A0B0C0D0E0F';
                        {0123456789abcdef0123456789abcdef}
   CBC1.StrKeyAsc:='Now we are engaged in a great ci';
@@ -737,7 +843,154 @@ StringList.Add(CBC1.StrKeyAsc);
   StringList.Add(GCM1.StrAAD[13]);
   StringList.Add(GCM1.StrAAD[14]);
   StringList.Add(GCM1.StrAAD[15]);
-     
+
+  StringList.Add('Results');
+
+  StringList.Add(GCM1.Actual[1]);
+  StringList.Add(GCM1.ActualTag[1]);
+  StringList.Add(GCM1.Expected[1]);
+  StringList.Add(GCM1.ExpectedTag[1]); 
+  StringList.Add(GCM1.Actual[2]);
+  StringList.Add(GCM1.ActualTag[2]);
+  StringList.Add(GCM1.Expected[2]);
+  StringList.Add(GCM1.ExpectedTag[2]); 
+
+  StringList.Add(GCM1.Actual[3]);
+  StringList.Add(GCM1.ActualTag[3]);
+  StringList.Add(GCM1.Expected[3]);
+  StringList.Add(GCM1.ExpectedTag[3]); 
+  StringList.Add(GCM1.Actual[4]);
+  StringList.Add(GCM1.ActualTag[4]);
+  StringList.Add(GCM1.Expected[4]);
+  StringList.Add(GCM1.ExpectedTag[4]);  
+ 
+  StringList.Add(GCM1.Actual[5]);
+  StringList.Add(GCM1.ActualTag[5]);
+  StringList.Add(GCM1.Expected[5]);
+  StringList.Add(GCM1.ExpectedTag[5]); 
+  StringList.Add(GCM1.Actual[6]);
+  StringList.Add(GCM1.ActualTag[6]);
+  StringList.Add(GCM1.Expected[6]);
+  StringList.Add(GCM1.ExpectedTag[6]); 
+
+  StringList.Add(GCM1.Actual[7]);
+  StringList.Add(GCM1.ActualTag[7]);
+  StringList.Add(GCM1.Expected[7]);
+  StringList.Add(GCM1.ExpectedTag[7]); 
+  StringList.Add(GCM1.Actual[8]);
+  StringList.Add(GCM1.ActualTag[8]);
+  StringList.Add(GCM1.Expected[8]);
+  StringList.Add(GCM1.ExpectedTag[8]);  
+
+  StringList.Add(GCM1.Actual[9]);
+  StringList.Add(GCM1.ActualTag[9]);
+  StringList.Add(GCM1.Expected[9]);
+  StringList.Add(GCM1.ExpectedTag[9]); 
+  StringList.Add(GCM1.Actual[10]);
+  StringList.Add(GCM1.ActualTag[10]);
+  StringList.Add(GCM1.Expected[10]);
+  StringList.Add(GCM1.ExpectedTag[10]); 
+
+  StringList.Add(GCM1.Actual[11]);
+  StringList.Add(GCM1.ActualTag[11]);
+  StringList.Add(GCM1.Expected[11]);
+  StringList.Add(GCM1.ExpectedTag[11]); 
+  StringList.Add(GCM1.Actual[12]);
+  StringList.Add(GCM1.ActualTag[12]);
+  StringList.Add(GCM1.Expected[12]);
+  StringList.Add(GCM1.ExpectedTag[12]);  
+ 
+  StringList.Add(GCM1.Actual[13]);
+  StringList.Add(GCM1.ActualTag[13]);
+  StringList.Add(GCM1.Expected[13]);
+  StringList.Add(GCM1.ExpectedTag[13]); 
+  StringList.Add(GCM1.Actual[14]);
+  StringList.Add(GCM1.ActualTag[14]);
+  StringList.Add(GCM1.Expected[14]);
+  StringList.Add(GCM1.ExpectedTag[14]); 
+
+  StringList.Add(GCM1.Actual[15]);
+  StringList.Add(GCM1.ActualTag[15]);
+  StringList.Add(GCM1.Expected[15]);
+  StringList.Add(GCM1.ExpectedTag[15]); 
+  StringList.Add(GCM1.Actual[16]);
+  StringList.Add(GCM1.ActualTag[16]);
+  StringList.Add(GCM1.Expected[16]);
+  StringList.Add(GCM1.ExpectedTag[16]);
+
+
+  StringList.Add(GCM1.Actual[16]);
+  StringList.Add(GCM1.ActualTag[16]);
+  StringList.Add(GCM1.Expected[16]);
+  StringList.Add(GCM1.ExpectedTag[16]); 
+  StringList.Add(GCM1.Actual[17]);
+  StringList.Add(GCM1.ActualTag[17]);
+  StringList.Add(GCM1.Expected[17]);
+  StringList.Add(GCM1.ExpectedTag[17]); 
+
+  StringList.Add(GCM1.Actual[18]);
+  StringList.Add(GCM1.ActualTag[18]);
+  StringList.Add(GCM1.Expected[18]);
+  StringList.Add(GCM1.ExpectedTag[19]); 
+  StringList.Add(GCM1.Actual[20]);
+  StringList.Add(GCM1.ActualTag[20]);
+  StringList.Add(GCM1.Expected[20]);
+  StringList.Add(GCM1.ExpectedTag[20]);  
+ 
+  StringList.Add(GCM1.Actual[21]);
+  StringList.Add(GCM1.ActualTag[21]);
+  StringList.Add(GCM1.Expected[21]);
+  StringList.Add(GCM1.ExpectedTag[21]); 
+  StringList.Add(GCM1.Actual[22]);
+  StringList.Add(GCM1.ActualTag[22]);
+  StringList.Add(GCM1.Expected[22]);
+  StringList.Add(GCM1.ExpectedTag[22]); 
+
+  StringList.Add(GCM1.Actual[23]);
+  StringList.Add(GCM1.ActualTag[23]);
+  StringList.Add(GCM1.Expected[23]);
+  StringList.Add(GCM1.ExpectedTag[23]); 
+  StringList.Add(GCM1.Actual[24]);
+  StringList.Add(GCM1.ActualTag[24]);
+  StringList.Add(GCM1.Expected[24]);
+  StringList.Add(GCM1.ExpectedTag[24]);  
+
+  StringList.Add(GCM1.Actual[25]);
+  StringList.Add(GCM1.ActualTag[25]);
+  StringList.Add(GCM1.Expected[25]);
+  StringList.Add(GCM1.ExpectedTag[25]); 
+  StringList.Add(GCM1.Actual[26]);
+  StringList.Add(GCM1.ActualTag[26]);
+  StringList.Add(GCM1.Expected[26]);
+  StringList.Add(GCM1.ExpectedTag[26]); 
+
+  StringList.Add(GCM1.Actual[27]);
+  StringList.Add(GCM1.ActualTag[27]);
+  StringList.Add(GCM1.Expected[27]);
+  StringList.Add(GCM1.ExpectedTag[27]); 
+  StringList.Add(GCM1.Actual[28]);
+  StringList.Add(GCM1.ActualTag[28]);
+  StringList.Add(GCM1.Expected[28]);
+  StringList.Add(GCM1.ExpectedTag[28]);  
+ 
+  StringList.Add(GCM1.Actual[29]);
+  StringList.Add(GCM1.ActualTag[29]);
+  StringList.Add(GCM1.Expected[29]);
+  StringList.Add(GCM1.ExpectedTag[29]); 
+  StringList.Add(GCM1.Actual[30]);
+  StringList.Add(GCM1.ActualTag[30]);
+  StringList.Add(GCM1.Expected[30]);
+  StringList.Add(GCM1.ExpectedTag[30]); 
+
+  StringList.Add(GCM1.Actual[31]);
+  StringList.Add(GCM1.ActualTag[31]);
+  StringList.Add(GCM1.Expected[31]);
+  StringList.Add(GCM1.ExpectedTag[31]); 
+  StringList.Add(GCM1.Actual[32]);
+  StringList.Add(GCM1.ActualTag[32]);
+  StringList.Add(GCM1.Expected[32]);
+  StringList.Add(GCM1.ExpectedTag[32]);  
+
    {Since TStringList has a SaveToStream method, we can just call that to write
     all the strings to our new file.}
    ConsoleWindowWriteLn(LeftWindow,'Saving the TStringList to the file');
