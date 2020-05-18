@@ -473,7 +473,7 @@ begin
      GCM1.Expected[Count]:=Lowercase(AESGCMTestVectors[Count,1]); {Source: https://github.com/libtom/libtomcrypt/blob/develop/notes/gcm_tv.txt}
      GCM1.StrIV[Count]:=BytesToString(AESGCMIV,Count);
      GCM1.StrAAD[Count]:=BytesToString(AESGCMAAD,Count);
-     //GCM1.StrData[Count]:=BytesToString(AESGCMData,Count);
+     GCM1.StrData[Count]:=BytesToString(AESGCMData,Count);
      GCM1.ActualTag[Count]:=BytesToString(AESGCMTag,AES_BLOCK_SIZE);
      GCM1.ExpectedTag[Count]:=Lowercase(AESGCMTestVectors[Count,2]);
 
@@ -699,89 +699,22 @@ StringList.Add(CBC1.StrKeyAsc);
   StringList.Add('StrIV');
    for Count:=1 to 32 do
   begin
-  //StringList.Add(GCM1.StrIV64);
-  //StringList.Add(GCM1.StrKeyHex[0]);
-
-  //StringList.Add('StrIV');
+   
   StringList.Add(GCM1.StrIV[Count]);
   end;
-  {
-  StringList.Add(GCM1.StrIV[1]);
-  StringList.Add(GCM1.StrIV[2]);
-  StringList.Add(GCM1.StrIV[3]);
-  StringList.Add(GCM1.StrIV[4]);
-  StringList.Add(GCM1.StrIV[5]);
-  StringList.Add(GCM1.StrIV[6]);
-  StringList.Add(GCM1.StrIV[7]);
-
-  StringList.Add(GCM1.StrIV[8]); 
-
-  StringList.Add(GCM1.StrIV[9]);
-  StringList.Add(GCM1.StrIV[10]);
-  StringList.Add(GCM1.StrIV[11]);
-  StringList.Add(GCM1.StrIV[12]);
-  StringList.Add(GCM1.StrIV[13]);
-  StringList.Add(GCM1.StrIV[14]);
-  StringList.Add(GCM1.StrIV[15]);
-  StringList.Add('GCM1.StrIV[16] to GCM1.StrIV[19]');
-  StringList.Add(GCM1.StrIV[16]);
-  StringList.Add(GCM1.StrIV[17]);
-  StringList.Add(GCM1.StrIV[18]);
-  StringList.Add(GCM1.StrIV[19]);
-  StringList.Add('GCM1.StrIV[20] to GCM1.StrIV[23]');
-  StringList.Add(GCM1.StrIV[20]);
-  StringList.Add(GCM1.StrIV[21]);
-  StringList.Add(GCM1.StrIV[22]);
-  StringList.Add(GCM1.StrIV[23]);
-  } 
+  
   StringList.Add('StrData');
    for Count:=1 to 32 do
   begin
   StringList.Add(GCM1.StrData[Count]);
   end;
-  {
-  StringList.Add(GCM1.StrData[0]);
-  StringList.Add(GCM1.StrData[1]);
-  StringList.Add(GCM1.StrData[2]);
-  StringList.Add(GCM1.StrData[3]);
-  StringList.Add(GCM1.StrData[4]);
-  StringList.Add(GCM1.StrData[5]);
-  StringList.Add(GCM1.StrData[6]);
-  StringList.Add(GCM1.StrData[7]);
-  StringList.Add(GCM1.StrData[8]);
   
-  StringList.Add(GCM1.StrData[9]);
-  StringList.Add(GCM1.StrData[10]);
-  StringList.Add(GCM1.StrData[11]);
-  StringList.Add(GCM1.StrData[12]);
-  StringList.Add(GCM1.StrData[13]);
-  StringList.Add(GCM1.StrData[14]);
-  StringList.Add(GCM1.StrData[15]);
-  }
   StringList.Add('StrAAD');
     for Count:=1 to 32 do
   begin
   StringList.Add(GCM1.StrAAD[Count]);
   end;
-  {
-  StringList.Add(GCM1.StrAAD[0]);
-  StringList.Add(GCM1.StrAAD[1]);
-  StringList.Add(GCM1.StrAAD[2]);
-  StringList.Add(GCM1.StrAAD[3]);
-  StringList.Add(GCM1.StrAAD[4]);
-  StringList.Add(GCM1.StrAAD[5]);
-  StringList.Add(GCM1.StrAAD[6]);
-  StringList.Add(GCM1.StrAAD[7]);
-  StringList.Add(GCM1.StrAAD[8]);
   
-  StringList.Add(GCM1.StrAAD[9]);
-  StringList.Add(GCM1.StrAAD[10]);
-  StringList.Add(GCM1.StrAAD[11]);
-  StringList.Add(GCM1.StrAAD[12]);
-  StringList.Add(GCM1.StrAAD[13]);
-  StringList.Add(GCM1.StrAAD[14]);
-  StringList.Add(GCM1.StrAAD[15]);
-  }
   StringList.Add('Results');
   for Count:=1 to 32 do
   begin
