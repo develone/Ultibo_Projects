@@ -466,14 +466,14 @@ begin
    StringToBytes('000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f',PByte(AESGCMAAD),Count);
    AESGCMData:=AllocMem(Count);
    StringToBytes('000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f',PByte(AESGCMData),Count);
-
+   GCM1.StrData[Count]:=BytesToString(AESGCMData,Count);
    if AESGCMEncryptData(AESGCMKey,AES_KEY_SIZE128,AESGCMIV,AESGCMAAD,AESGCMData,AESGCMData,Count,Count,Count,AESGCMTag) then
     begin
      GCM1.Actual[Count]:=BytesToString(AESGCMData,Count);
      GCM1.Expected[Count]:=Lowercase(AESGCMTestVectors[Count,1]); {Source: https://github.com/libtom/libtomcrypt/blob/develop/notes/gcm_tv.txt}
      GCM1.StrIV[Count]:=BytesToString(AESGCMIV,Count);
      GCM1.StrAAD[Count]:=BytesToString(AESGCMAAD,Count);
-     GCM1.StrData[Count]:=BytesToString(AESGCMData,Count);
+     //GCM1.StrData[Count]:=BytesToString(AESGCMData,Count);
      GCM1.ActualTag[Count]:=BytesToString(AESGCMTag,AES_BLOCK_SIZE);
      GCM1.ExpectedTag[Count]:=Lowercase(AESGCMTestVectors[Count,2]);
 
