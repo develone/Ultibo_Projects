@@ -63,53 +63,26 @@ CBC = record
   StrDec:array [1..1024] of String[32];
 end;
 GCM = record
-  StrData:array [1..32] of String[80];
-  StrKeyHex:array [1..32] of String[80];
+  {128Bit Key}
+   
+  {Now we are engag}
+  StrKeyAsc:array [1..32] of String[16];
+  {01234567890123456789012345678901
+   4e6f772077652061726520656e676167}
+  StrKeyHex:array [1..32] of String[32];
+  Strplaintext:array [1..32] of String[16];
+  StrData:array [1..32] of String[32];
+  StrEnc:array [1..32] of String[32];
+  StrDec:array [1..32] of String[32];
+  StrIV:String[32];
   
-  StrIV:array [1..32] of String[40];
-  StrIV64:String;
-  StrAAD:array [1..32] of String[80];
+  StrAAD: String[32];
   Actual:array [1..32] of String[80];
   Expected:array [1..32] of String[80];
   ActualTag:array [1..32] of String[80];
   ExpectedTag:array [1..32] of String[80];
 end;
-const
- AESGCMTestVectors:array[1..32,1..2] of String = (
- ('3A', '03C32E0E9D7E07A410B9BEE40A8F0D26'),
- ('26AE', '3A635BBDC1A17CA40B58CEEA78105CDC'),
- ('142FAC', '7E8922E8FA6F1E41E4339F0B52176DE4'),
- ('20C1863F', 'A1D12620C22EA7A0AA0E74667A20B8E1'),
- ('B3B796AA54', '53F0F9F03791BBD76BC99D1B5639F3C0'),
- ('FDCFF8EA82D8', 'B56076B42E3EEAC73DD42FC83B9220F9'),
- ('4695E719E67849', 'B4A1A2E29AAD713D5677CF425E65A400'),
- ('EE5BA3309D417697', '146EA95CED151F8C40DF98C1CC54930B'),
- ('13FF05ABB084FA608F', '55550AADC3461CC190CA22F29C6246CD'),
- ('008B0102208A22D3A562', '7178534BC7145754BAE525CC06E14A6B'),
- ('3536DBBB07B026E78E94C8', 'AB27183AEA2240B0166D702EEB2A7BFA'),
- ('00739D5A27AE82AC7D6A40EC', '4354578C3D241074D3C1F6496420F239'),
- ('DA41A5F458400C94B84026C052', 'DC6CB036FCAE9765A69F5B8C38B0B767'),
- ('4C99797C7EDCEA9D5425565522E2', '3FFEEC557F0D5FA73472D2A3F8E71389'),
- ('D381E7AD2E5BE2C97FB4BD958BC2EB', '6BF713D4E7DA7C4290967A1D23F97EDD'),
- ('5016C127F16A4787734AF3A3E6F6F0F7', '8CD8458531E94BC8160E2176F63F8D0B'),
- ('BDF3D0F24D9415AB5CF9B87BB45B4A8AE4', 'D81A3D56451313742ACE53D41223F6AF'),
- ('68C1FCBE22FBDB296C246F2E34D871A6902E', '7AFD64D4EB0DE7E2A842B518AC6D483F'),
- ('7D8D3C31E643611B0B557F29B437F635FE3FD0', '8501B61DBF4A4DD19B87E95055B95962'),
- ('4185EEB0B9B480F69B3EC7A162810073A36AD95A', 'B9BCA6D9CA0AC2B4B35D7BFF4DB27D25'),
- ('F991F4A481E322FEEC6FE9302D010AC4C811B23B4A', '54FA4DDA92E57509F4D48D206A03624F'),
- ('B288424FF96596B2A30A1EB9480F5EADC2F6D8551B9A', '2C998C8DFDC7663C8DE677B2F1CBCB57'),
- ('1066FE3DCB9F8AE0DC0693F7179F111E0A7A1FFE944FF4', '65402D1F8AFBDC819D6D1ADB5375AFD0'),
- ('0A8772CCDE122EFF01D7C187C77F07BDA50997B4320CD0D8', 'F55823AFC3D9FE6E749E70E82C823925'),
- ('E6E2FBB3E2238BC8CB396F463C2F488B4B4933087728D39815', 'F06DA35A9AEE65F9AD0DAD5B99AB4DF6'),
- ('569BD39CB1693CB89B88923ABE0D8CFA0B4F22A48A15E2EACD4A', '661AF51FF0E0E363406AB278BFC9176D'),
- ('199EED81C2428170EB089060FF9676596EADD2270895A0C8650903', '90AA9C634469D45E7BDD9AB955B90130'),
- ('B5200497A0654009B9F5B0D45FFDCF192F3042D6B05C6D6A8191A7EA', '71F6C4982AA50705D5FFC60512FC674C'),
- ('E39DA262C0E851B5CB5BD55A8B19D0AC0ABDC6FF3F32DF3B1896242D9E', 'B58AA05F594FC9779E185353CC52B8FB'),
- ('AF349B91BAD4BE2F2D5E4DDE28A1AA74115A9059A5EBBF9E38F341DC368B', '966B04FE43A2A9D94004E756F7DBFEFA'),
- ('8C87861DFFDE72FA64E926BF741330F64E2B30837650F309A3F979AE43BA2E', 'A5C825AE1B844D6A8D531077C881BD36'),
- ('924E178A17FA1CA0E7486F0404123B91DBF797BB9DBDE9B1D48D5C7F53165912', '10F972B6F9E0A3C1CF9CCF56543DCA79'));
-
-var
+ var
   PCBC:^CBC;
   PGCM:^GCM;
   CBC1:CBC;
@@ -451,10 +424,7 @@ begin
 
 {**************************Start Init**************************}
   {Create the record}
-  
- 
-  
-
+  {
   AESGCMKey:=AllocMem(AES_KEY_SIZE128);
   StringToBytes('000102030405060708090a0b0c0d0e0f',PByte(AESGCMKey),AES_KEY_SIZE128);
   AESGCMTag:=AllocMem(AES_BLOCK_SIZE);
@@ -507,41 +477,6 @@ begin
    FreeMem(AESGCMAAD);
    FreeMem(AESGCMData);
  end;
-{
- FreeMem(AESGCMKey);
- FreeMem(AESGCMTag);
-Hash:=HashCreate(CRYPTO_HASH_ALG_HMAC_MD5,PChar('key'),3);
- if Hash <> nil then
-  begin
-   HashUpdate(Hash,PChar('The quick brown fox jumps over the lazy dog'),43);
-   HashFinish(Hash,@MD5Digest,SizeOf(TMD5Digest));
-   
-   Actual:=MD5DigestToString(@MD5Digest);
-   Expected:=Lowercase('80070713463e7749b90c2dc24911e275'); {Source: https://en.wikipedia.org/wiki/Hash-based_message_authentication_code}
-   
-   //AddItemEx(AResponse,'Expected:',Expected,3);
-   //AddItemEx(AResponse,'Actual:',Actual,3);
-   
-   if Uppercase(Actual) = Uppercase(Expected) then
-    begin
-     //AddItemEx(AResponse,'Result:','Correct',3);
-    end
-   else
-    begin
-     //AddItemEx(AResponse,'Result:','Incorrect',3);
-    end;
-   
-   HashDestroy(Hash);
-  end
- else
-  begin
-   //AddItemEx(AResponse,'Result:','HashCreate Failed',3);
-  end;  
- //AddBlank(AResponse);
- 
- {Return Result}
- Result:=True;
-end;
 }
   CBC1.StrIV[0]:='000102030405060708090A0B0C0D0E0F';
                        {0123456789abcdef0123456789abcdef}
@@ -625,10 +560,201 @@ end;
  ConsoleWindowWriteLn(RightWindow,'PWKGDATA ' + HexStr(PWKGDATA));
  ConsoleWindowWriteLn(RightWindow,'Creating a new file ' + Filename);
  }
+ {************start of 1st ***************}
+  GCM1.Strplaintext[0]:='Four score and s';
 
- 
+  GCM1.Strplaintext[1]:='even years ago o';
 
+  GCM1.Strplaintext[2]:='ur fathers broug';
 
+  GCM1.Strplaintext[3]:='ht forth on this';
+
+  AESGCMKey:=AllocMem(AES_KEY_SIZE128);
+  {Now we are engag}  
+  StringToBytes('4e6f772077652061726520656e676167',PByte(AESGCMKey),AES_KEY_SIZE128);
+  GCM1.StrKeyHex[0]:=BytesToString(AESGCMKey,AES_BLOCK_SIZE);
+   
+  AESGCMTag:=AllocMem(AES_BLOCK_SIZE);
+  AESGCMIV:=AllocMem(AES_BLOCK_SIZE);
+  AESGCMAAD:=AllocMem(AES_BLOCK_SIZE);
+  StringToBytes('000102030405060708090a0b0c0d0e0f',PByte(AESGCMIV),AES_BLOCK_SIZE);
+  GCM1.StrIV:=BytesToString(AESGCMIV,AES_BLOCK_SIZE);
+  StringToBytes('000102030405060708090a0b0c0d0e0f',PByte(AESGCMAAD),AES_BLOCK_SIZE);
+  GCM1.StrAAD:=BytesToString(AESGCMAAD,AES_BLOCK_SIZE);
+  AESGCMData:=AllocMem(AES_BLOCK_SIZE);
+   
+  StringToBytes('466f75722073636f726520616e642073',PByte(AESGCMData),AES_BLOCK_SIZE);
+  
+  ConsoleWindowWriteLn (RightWindow, 'Inputs1');
+  ConsoleWindowWriteLn (RightWindow, 'Key: ' +  GCM1.StrKeyHex[0]);
+  ConsoleWindowWriteLn (RightWindow, 'IV: ' +  GCM1.StrIV);
+  ConsoleWindowWriteLn (RightWindow, 'AAD: ' +  GCM1.StrAAD);
+  ConsoleWindowWriteLn (RightWindow, 'Data: ' +  BytesToString(AESGCMData,AES_BLOCK_SIZE));
+  ConsoleWindowWriteLn (RightWindow, 'Tag: ' +  BytesToString(AESGCMTag,AES_BLOCK_SIZE));
+  if AESGCMEncryptData(AESGCMKey,AES_KEY_SIZE128,AESGCMIV,AESGCMAAD,AESGCMData,AESGCMData,AES_BLOCK_SIZE,AES_BLOCK_SIZE,AES_BLOCK_SIZE,AESGCMTag) then
+    begin
+      GCM1.StrEnc[0]:=BytesToString(AESGCMData,AES_BLOCK_SIZE); 
+      ConsoleWindowWriteLn (RightWindow, 'GCMEncrypt ok ' );
+    end
+  else
+    begin
+    ConsoleWindowWriteLn (RightWindow, 'GCMEncrypt failed');
+    end;
+   
+  ConsoleWindowWriteLn (RightWindow, 'Key: ' +  GCM1.StrKeyHex[0]);
+  ConsoleWindowWriteLn (RightWindow, 'IV: ' +  BytesToString(AESGCMIV,AES_BLOCK_SIZE));
+  ConsoleWindowWriteLn (RightWindow, 'ADD: ' +  BytesToString(AESGCMAAD,AES_BLOCK_SIZE));
+  ConsoleWindowWriteLn (RightWindow, 'Data: ' +  GCM1.StrEnc[0]);
+  GCM1.StrKeyHex[1]:=BytesToString(AESGCMTag,AES_BLOCK_SIZE);
+  {AESGCMTag becomes the key for the next block}
+  ConsoleWindowWriteLn (RightWindow, 'Tag: ' + GCM1.StrKeyHex[1] );
+   FreeMem(AESGCMIV);
+   FreeMem(AESGCMAAD);
+   FreeMem(AESGCMData);  
+   FreeMem(AESGCMTag);
+
+  AESGCMKey:=AllocMem(AES_KEY_SIZE128);
+  StringToBytes(GCM1.StrKeyHex[0],PByte(AESGCMKey),AES_KEY_SIZE128);
+  AESGCMTag:=AllocMem(AES_BLOCK_SIZE);
+   
+  AESGCMIV:=AllocMem(AES_BLOCK_SIZE);
+  AESGCMAAD:=AllocMem(AES_BLOCK_SIZE);
+  StringToBytes(GCM1.StrIV,PByte(AESGCMIV),AES_BLOCK_SIZE);
+   
+  StringToBytes(GCM1.StrAAD,PByte(AESGCMAAD),AES_BLOCK_SIZE);
+   
+  AESGCMData:=AllocMem(AES_BLOCK_SIZE);
+  StringToBytes(GCM1.StrEnc[0],PByte(AESGCMData),AES_BLOCK_SIZE);
+   
+  ConsoleWindowWriteLn (RightWindow, 'Inputs Decrypt');
+  ConsoleWindowWriteLn (RightWindow, 'Key: ' +  GCM1.StrKeyHex[0]);
+  ConsoleWindowWriteLn (RightWindow, 'IV: ' +  GCM1.StrIV);
+  ConsoleWindowWriteLn (RightWindow, 'AAD: ' +  GCM1.StrAAD);
+  ConsoleWindowWriteLn (RightWindow, 'Data: ' +  GCM1.StrEnc[0]);
+  
+  ConsoleWindowWriteLn (RightWindow, 'Tag: ' +  BytesToString(AESGCMTag,AES_BLOCK_SIZE));
+   
+  
+  ConsoleWindowWriteLn (RightWindow,'data to decrypt: '+GCM1.StrEnc[0]);
+  if AESGCMDecryptData(AESGCMKey,AES_KEY_SIZE128,AESGCMIV,AESGCMAAD,AESGCMData,AESGCMData,AES_BLOCK_SIZE,AES_BLOCK_SIZE,AES_BLOCK_SIZE,AESGCMTag) then
+    begin
+      GCM1.StrDec[0]:=BytesToString(AESGCMData,AES_BLOCK_SIZE);
+       
+      ConsoleWindowWriteLn (RightWindow, 'GCMDecrypt ok');
+    end
+  else
+    begin
+    ConsoleWindowWriteLn (RightWindow, 'GCMDecrypt failed');
+    end;
+  {Since the AESGCMDecryptData is failing but the AESGCMTag is returning the  Decrypted}
+  GCM1.StrDec[0]:=BytesToString(AESGCMData,AES_BLOCK_SIZE);
+  ConsoleWindowWriteLn (RightWindow, 'Outputs Decrypt');
+  ConsoleWindowWriteLn (RightWindow, 'Key: ' +  GCM1.StrKeyHex[0]);
+  ConsoleWindowWriteLn (RightWindow, 'IV: ' +  GCM1.StrIV);
+  ConsoleWindowWriteLn (RightWindow, 'ADD: ' +  GCM1.StrAAD);
+  ConsoleWindowWriteLn (RightWindow, 'Data: ' +  GCM1.StrDec[0]);
+  ConsoleWindowWriteLn (RightWindow, 'Data: ' +  BytesToString(AESGCMData,AES_BLOCK_SIZE));
+  ConsoleWindowWriteLn (RightWindow, 'Tag: ' +  BytesToString(AESGCMTag,AES_BLOCK_SIZE));
+
+   FreeMem(AESGCMIV);
+   FreeMem(AESGCMAAD);
+   FreeMem(AESGCMData);  
+   FreeMem(AESGCMTag);
+{************end of 1st ***************}
+{************start of 2nd ***************}
+  AESGCMKey:=AllocMem(AES_KEY_SIZE128);
+  {798c536d4a8351dc7763d79d6434dd79}  
+  StringToBytes(GCM1.StrKeyHex[1],PByte(AESGCMKey),AES_KEY_SIZE128);
+  //GCM1.StrKeyHex[1]:=BytesToString(AESGCMKey,AES_BLOCK_SIZE);
+   
+  AESGCMTag:=AllocMem(AES_BLOCK_SIZE);
+  AESGCMIV:=AllocMem(AES_BLOCK_SIZE);
+  AESGCMAAD:=AllocMem(AES_BLOCK_SIZE);
+  StringToBytes('000102030405060708090a0b0c0d0e0f',PByte(AESGCMIV),AES_BLOCK_SIZE);
+  GCM1.StrIV:=BytesToString(AESGCMIV,AES_BLOCK_SIZE);
+  StringToBytes('000102030405060708090a0b0c0d0e0f',PByte(AESGCMAAD),AES_BLOCK_SIZE);
+  GCM1.StrAAD:=BytesToString(AESGCMAAD,AES_BLOCK_SIZE);
+  AESGCMData:=AllocMem(AES_BLOCK_SIZE);
+   
+  StringToBytes('6576656e2079656172732061676f206f',PByte(AESGCMData),AES_BLOCK_SIZE);
+  
+  ConsoleWindowWriteLn (RightWindow, 'Inputs1');
+  ConsoleWindowWriteLn (RightWindow, 'Key: ' +  GCM1.StrKeyHex[1]);
+  ConsoleWindowWriteLn (RightWindow, 'IV: ' +  GCM1.StrIV);
+  ConsoleWindowWriteLn (RightWindow, 'AAD: ' +  GCM1.StrAAD);
+  ConsoleWindowWriteLn (RightWindow, 'Data: ' +  BytesToString(AESGCMData,AES_BLOCK_SIZE));
+  ConsoleWindowWriteLn (RightWindow, 'Tag: ' +  BytesToString(AESGCMTag,AES_BLOCK_SIZE));
+  if AESGCMEncryptData(AESGCMKey,AES_KEY_SIZE128,AESGCMIV,AESGCMAAD,AESGCMData,AESGCMData,AES_BLOCK_SIZE,AES_BLOCK_SIZE,AES_BLOCK_SIZE,AESGCMTag) then
+    begin
+      GCM1.StrEnc[1]:=BytesToString(AESGCMData,AES_BLOCK_SIZE); 
+      ConsoleWindowWriteLn (RightWindow, 'GCMEncrypt ok ' );
+    end
+  else
+    begin
+    ConsoleWindowWriteLn (RightWindow, 'GCMEncrypt failed');
+    end;
+   
+  ConsoleWindowWriteLn (RightWindow, 'Key: ' +  GCM1.StrKeyHex[1]);
+  ConsoleWindowWriteLn (RightWindow, 'IV: ' +  BytesToString(AESGCMIV,AES_BLOCK_SIZE));
+  ConsoleWindowWriteLn (RightWindow, 'ADD: ' +  BytesToString(AESGCMAAD,AES_BLOCK_SIZE));
+  ConsoleWindowWriteLn (RightWindow, 'Data: ' +  GCM1.StrEnc[1]);
+  GCM1.StrKeyHex[2]:=BytesToString(AESGCMTag,AES_BLOCK_SIZE);
+  {AESGCMTag becomes the key for the next block}
+  ConsoleWindowWriteLn (RightWindow, 'Tag: ' + GCM1.StrKeyHex[1] );
+   FreeMem(AESGCMIV);
+   FreeMem(AESGCMAAD);
+   FreeMem(AESGCMData);  
+   FreeMem(AESGCMTag);
+
+  AESGCMKey:=AllocMem(AES_KEY_SIZE128);
+  StringToBytes(GCM1.StrKeyHex[1],PByte(AESGCMKey),AES_KEY_SIZE128);
+  AESGCMTag:=AllocMem(AES_BLOCK_SIZE);
+   
+  AESGCMIV:=AllocMem(AES_BLOCK_SIZE);
+  AESGCMAAD:=AllocMem(AES_BLOCK_SIZE);
+  StringToBytes(GCM1.StrIV,PByte(AESGCMIV),AES_BLOCK_SIZE);
+   
+  StringToBytes(GCM1.StrAAD,PByte(AESGCMAAD),AES_BLOCK_SIZE);
+   
+  AESGCMData:=AllocMem(AES_BLOCK_SIZE);
+  StringToBytes(GCM1.StrEnc[1],PByte(AESGCMData),AES_BLOCK_SIZE);
+   
+  ConsoleWindowWriteLn (RightWindow, 'Inputs Decrypt');
+  ConsoleWindowWriteLn (RightWindow, 'Key: ' +  GCM1.StrKeyHex[1]);
+  ConsoleWindowWriteLn (RightWindow, 'IV: ' +  GCM1.StrIV);
+  ConsoleWindowWriteLn (RightWindow, 'AAD: ' +  GCM1.StrAAD);
+  ConsoleWindowWriteLn (RightWindow, 'Data: ' +  GCM1.StrEnc[1]);
+  
+  ConsoleWindowWriteLn (RightWindow, 'Tag: ' +  BytesToString(AESGCMTag,AES_BLOCK_SIZE));
+   
+  
+  ConsoleWindowWriteLn (RightWindow,'data to decrypt: '+GCM1.StrEnc[1]);
+  if AESGCMDecryptData(AESGCMKey,AES_KEY_SIZE128,AESGCMIV,AESGCMAAD,AESGCMData,AESGCMData,AES_BLOCK_SIZE,AES_BLOCK_SIZE,AES_BLOCK_SIZE,AESGCMTag) then
+    begin
+      GCM1.StrDec[1]:=BytesToString(AESGCMData,AES_BLOCK_SIZE);
+       
+      ConsoleWindowWriteLn (RightWindow, 'GCMDecrypt ok');
+    end
+  else
+    begin
+    ConsoleWindowWriteLn (RightWindow, 'GCMDecrypt failed');
+    end;
+  {Since the AESGCMDecryptData is failing but the AESGCMTag is returning the  Decrypted}
+  GCM1.StrDec[1]:=BytesToString(AESGCMData,AES_BLOCK_SIZE);
+  ConsoleWindowWriteLn (RightWindow, 'Outputs Decrypt');
+  ConsoleWindowWriteLn (RightWindow, 'Key: ' +  GCM1.StrKeyHex[1]);
+  ConsoleWindowWriteLn (RightWindow, 'IV: ' +  GCM1.StrIV);
+  ConsoleWindowWriteLn (RightWindow, 'ADD: ' +  GCM1.StrAAD);
+  ConsoleWindowWriteLn (RightWindow, 'Data: ' +  GCM1.StrDec[1]);
+  ConsoleWindowWriteLn (RightWindow, 'Data: ' +  BytesToString(AESGCMData,AES_BLOCK_SIZE));
+  ConsoleWindowWriteLn (RightWindow, 'Tag: ' +  BytesToString(AESGCMTag,AES_BLOCK_SIZE));
+
+   FreeMem(AESGCMIV);
+   FreeMem(AESGCMAAD);
+   FreeMem(AESGCMData);  
+   FreeMem(AESGCMTag);
+
+ {************end of 2nd ***************}
 {Let's try creating a file and writing some text to it, we'll assign our filename
    to a variable.}
   Filename:='C:\test0513.txt';
@@ -694,27 +820,28 @@ StringList.Add(CBC1.StrKeyAsc);
   StringList.Add(CBC1.StrDec[5]);
   StringList.Add(CBC1.StrDec[6]);
   StringList.Add(CBC1.StrDec[7]);
-
+  
   StringList.Add('GCM');
+  StringList.Add('Strplaintext');
+  StringList.Add(GCM1.Strplaintext[0]);
+  StringList.Add(GCM1.Strplaintext[1]);
+  StringList.Add(GCM1.Strplaintext[2]);
+  StringList.Add(GCM1.Strplaintext[3]);  
   StringList.Add('StrIV');
-   for Count:=1 to 32 do
-  begin
-   
-  StringList.Add(GCM1.StrIV[Count]);
-  end;
-  
-  StringList.Add('StrData');
-   for Count:=1 to 32 do
-  begin
-  StringList.Add(GCM1.StrData[Count]);
-  end;
-  
+  StringList.Add(GCM1.StrIV);
   StringList.Add('StrAAD');
-    for Count:=1 to 32 do
-  begin
-  StringList.Add(GCM1.StrAAD[Count]);
-  end;
-  
+  StringList.Add(GCM1.StrAAD);
+  StringList.Add('Key');
+  StringList.Add(GCM1.StrKeyHex[0]);
+  StringList.Add(GCM1.StrKeyHex[1]);
+  StringList.Add(GCM1.StrKeyHex[2]);
+  StringList.Add('Enc');
+  StringList.Add(GCM1.StrEnc[0]);
+  StringList.Add(GCM1.StrEnc[1]);
+  StringList.Add('Dec');
+  StringList.Add(GCM1.StrDec[0]);
+  StringList.Add(GCM1.StrDec[1]);  
+  {
   StringList.Add('Results');
   for Count:=1 to 32 do
   begin
@@ -725,7 +852,7 @@ StringList.Add(CBC1.StrKeyAsc);
   StringList.Add('Exp&Act '+GCM1.Expected[Count]+' '+GCM1.Actual[Count] );
   StringList.Add('ExpTag&ActTag '+GCM1.ExpectedTag[Count]+' '+GCM1.ActualTag[Count] );
   end;
-
+  } 
    {Since TStringList has a SaveToStream method, we can just call that to write
     all the strings to our new file.}
    ConsoleWindowWriteLn(LeftWindow,'Saving the TStringList to the file');
