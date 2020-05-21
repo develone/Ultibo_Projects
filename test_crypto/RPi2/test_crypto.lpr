@@ -424,60 +424,7 @@ begin
 
 {**************************Start Init**************************}
   {Create the record}
-  {
-  AESGCMKey:=AllocMem(AES_KEY_SIZE128);
-  StringToBytes('000102030405060708090a0b0c0d0e0f',PByte(AESGCMKey),AES_KEY_SIZE128);
-  AESGCMTag:=AllocMem(AES_BLOCK_SIZE);
- for Count:=1 to 32 do
-  begin
-   AESGCMIV:=AllocMem(Count);
-   StringToBytes('000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f',PByte(AESGCMIV),Count);
-   AESGCMAAD:=AllocMem(Count);
-   StringToBytes('000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f',PByte(AESGCMAAD),Count);
-   AESGCMData:=AllocMem(Count);
-   StringToBytes('000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f',PByte(AESGCMData),Count);
-   GCM1.StrData[Count]:=BytesToString(AESGCMData,Count);
-   if AESGCMEncryptData(AESGCMKey,AES_KEY_SIZE128,AESGCMIV,AESGCMAAD,AESGCMData,AESGCMData,Count,Count,Count,AESGCMTag) then
-    begin
-     GCM1.Actual[Count]:=BytesToString(AESGCMData,Count);
-     GCM1.Expected[Count]:=Lowercase(AESGCMTestVectors[Count,1]); {Source: https://github.com/libtom/libtomcrypt/blob/develop/notes/gcm_tv.txt}
-     GCM1.StrIV[Count]:=BytesToString(AESGCMIV,Count);
-     GCM1.StrAAD[Count]:=BytesToString(AESGCMAAD,Count);
-     //GCM1.StrData[Count]:=BytesToString(AESGCMData,Count);
-     GCM1.ActualTag[Count]:=BytesToString(AESGCMTag,AES_BLOCK_SIZE);
-     GCM1.ExpectedTag[Count]:=Lowercase(AESGCMTestVectors[Count,2]);
-
-     //AddItemEx(AResponse,'Expected:',Expected,3);
-     //AddItemEx(AResponse,'Actual:',Actual,3);
-
-     //AddItemEx(AResponse,'ExpectedTag:',ExpectedTag,3);
-     //AddItemEx(AResponse,'ActualTag:',ActualTag,3);
-
-     if (Uppercase(GCM1.Actual[Count]) = Uppercase(GCM1.Expected[Count])) and (Uppercase(GCM1.ActualTag[Count]) = Uppercase(GCM1.ExpectedTag[Count])) then
-      begin
-       //AddItemEx(AResponse,'Result:','Correct',3);
-       //AddBlank(AResponse);
-
-       System.Move(AESGCMTag^,AESGCMKey^,AES_BLOCK_SIZE);
-      end
-     else
-      begin
-       //AddItemEx(AResponse,'Result:','Incorrect',3);
-       Break;
-      end;
-    end
-   else
-    begin
-     //AddItemEx(AResponse,'Result:','Failed',3);
-     Break;
-    end;
-
- 
-   FreeMem(AESGCMIV);
-   FreeMem(AESGCMAAD);
-   FreeMem(AESGCMData);
- end;
-}
+  
   CBC1.StrIV[0]:='000102030405060708090A0B0C0D0E0F';
                        {0123456789abcdef0123456789abcdef}
   CBC1.StrKeyAsc:='Now we are engaged in a great ci';
