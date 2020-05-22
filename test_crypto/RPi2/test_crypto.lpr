@@ -83,6 +83,18 @@ GCM = record
   ExpectedTag:array [1..32] of String[80];
 end;
  var
+   MyKey: AnsiString = '1234567890123456'; {Must be 16, 24 or 32 bytes}
+  MyIV: AnsiString = 'My Secret IV';
+  MyAAD: AnsiString = 'My Extra Secret AAD';
+  MyData: AnsiString = 'The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.';
+  MyResult: AnsiString;
+   Key: PByte;
+  IV: PByte;
+  AAD: PByte;
+  Plain: PByte;
+  Crypt: PByte;
+  Tag: PByte;
+
   PCBC:^CBC;
   PGCM:^GCM;
   CBC1:CBC;
@@ -530,7 +542,7 @@ begin
   GCM1.StrAAD:=BytesToString(AESGCMAAD,AES_BLOCK_SIZE);
   AESGCMData:=AllocMem(AES_BLOCK_SIZE);
    
-  StringToBytes('466f75722073636f726520616e642073',PByte(AESGCMData),AES_BLOCK_SIZE);
+  StringToBytes('757220666174686572732062726f7567',PByte(AESGCMData),AES_BLOCK_SIZE);
   
   ConsoleWindowWriteLn (RightWindow, 'Inputs1');
   ConsoleWindowWriteLn (RightWindow, 'Key: ' +  GCM1.StrKeyHex[0]);
@@ -623,7 +635,7 @@ begin
   GCM1.StrAAD:=BytesToString(AESGCMAAD,AES_BLOCK_SIZE);
   AESGCMData:=AllocMem(AES_BLOCK_SIZE);
    
-  StringToBytes('6576656e2079656172732061676f206f',PByte(AESGCMData),AES_BLOCK_SIZE);
+  StringToBytes('687420666f727468206f6e2074686973',PByte(AESGCMData),AES_BLOCK_SIZE);
   
   ConsoleWindowWriteLn (RightWindow, 'Inputs1');
   ConsoleWindowWriteLn (RightWindow, 'Key: ' +  GCM1.StrKeyHex[1]);
@@ -846,6 +858,53 @@ StringList.Add(CBC1.StrKeyAsc);
   except
    {Something went wrong creating the file}
    ConsoleWindowWriteLn(LeftWindow,'Failed to create the file ' + Filename);
+  end;
+  ConsoleWindowWriteLn(RightWindow, 'AES GCM Encrypt/Decrypt test');
+  ConsoleWindowWriteLn(RightWindow, 'MyData is ' + MyData);
+
+  {Allocate buffers}
+  Key := AllocMem(Length(MyKey));
+  IV := AllocMem(Length(MyIV));
+  AAD := AllocMem(Length(MyAAD));
+  Plain := AllocMem(Length(MyData));
+  Crypt := AllocMem(Length(MyData));
+  Tag := AllocMem(AES_BLOCK_SIZE);
+
+  {Copy the values}
+  Move(MyKey[1], Key^, Length(MyKey));
+  Move(MyIV[1], IV^, Length(MyIV));
+  Move(MyAAD[1], AAD^, Length(MyAAD));
+  Move(MyData[1], Plain^, Length(MyData));
+
+  {Clear the crypt buffer}
+  FillChar(Crypt^, Length(MyData), 0);
+
+  {Encrypt the data}
+  if AESGCMEncryptData(Key, Length(MyKey), IV, AAD, Plain, Crypt, Length(MyIV), Length(MyAAD), Length(MyData), Tag) then
+  begin
+    ConsoleWindowWriteLn(RightWindow, 'AES GCM Encrypt Success');
+
+    {Clear the plain buffer}
+    FillChar(Plain^, Length(MyData), 0);
+
+    {Decrypt the Data}
+    if AESGCMDecryptData(Key, Length(MyKey), IV, AAD, Crypt, Plain, Length(MyIV), Length(MyAAD), Length(MyData), Tag) then
+    begin
+      ConsoleWindowWriteLn(RightWindow, 'AES GCM Decrypt Success');
+
+      {Copy the result}
+      SetString(MyResult, PAnsiChar(Plain), Length(MyData));
+
+      ConsoleWindowWriteLn(RightWindow, 'MyResult is ' + MyResult);
+    end
+    else
+    begin
+      ConsoleWindowWriteLn(RightWindow, 'AES GCM Decrypt Failure');
+    end;
+  end
+  else
+  begin
+    ConsoleWindowWriteLn(RightWindow, 'AES GCM Encrypt Failure');
   end;
 
  ThreadHalt(0);
