@@ -1,0 +1,31 @@
+. ~/fpc.sh
+#echo $PATH
+#export PATH=/home/devel/ultibo/core/fpc/bin:$PATH
+#echo $PATH
+
+Requires: https://github.com/ultibohub/AraratSynapse.git
+
+fpc -vi -B -Tultibo -Parm -CpARMV7A -WpRPI2B -Fu../../../AraratSynapse @/home/devel/ultibo/core/fpc/bin/RPI2.CFG -O2 cryptosock.lpr
+Free Pascal Compiler version 3.1.1 [2020/02/18] for arm
+Copyright (c) 1993-2015 by Florian Klaempfl and others
+Target OS: Ultibo
+Compiling cryptosock.lpr
+Compiling /home/devel/AraratSynapse/blcksock.pas
+Compiling /home/devel/AraratSynapse/synafpc.pas
+Assembling synafpc
+Compiling /home/devel/AraratSynapse/synsock.pas
+Assembling synsock
+Compiling /home/devel/AraratSynapse/synautil.pas
+Assembling synautil
+Compiling /home/devel/AraratSynapse/synacode.pas
+Assembling synacode
+Compiling /home/devel/AraratSynapse/synaip.pas
+Assembling synaip
+Assembling blcksock
+Compiling uTFTP.pas
+Assembling utftp
+cryptosock.lpr(59,3) Note: Local variable "TCP" not used
+Assembling cryptosock
+Linking cryptosock
+12739 lines compiled, 2.7 sec, 2781109 bytes code, 89204 bytes data
+1 note(s) issued
