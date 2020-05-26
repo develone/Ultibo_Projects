@@ -80,8 +80,8 @@ TTCPThread = class(TManagedThread)
      constructor Create();
      destructor Destroy; override;
      procedure ProcessingData(procSock: TSocket;Data: string);
-     {procedure ProcessFpga(Data: string;ProgWindow:TWindowHandle);}
-     {procedure ProcessFpga(Data: string);}
+     {procedure ProcessEncryptDecrypt(Data: string;ProgWindow:TWindowHandle);}
+     procedure ProcessEncryptDecrypt(Data: string);
      Property Number: integer read Fnumber Write FNumber;
 end;
 
@@ -230,6 +230,7 @@ procedure TListenerThread.Execute;
 
 
 var
+  {
   MyKey: AnsiString = '1234567890123456'; {Must be 16, 24 or 32 bytes}
   MyIV: AnsiString = 'My Secret IV';
   MyAAD: AnsiString = 'My Extra Secret AAD';
@@ -241,6 +242,7 @@ var
   Plain: PByte;
   Crypt: PByte;
   Tag: PByte;
+  }
 
 ClientSock : TSocket;
 ClientThread : TTCPThread;
@@ -284,53 +286,6 @@ ff : Boolean;
   //lclfn:='catzip.bin';
   WindowHandle:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_FULL,True);
 
-    ConsoleWindowWriteLn(WindowHandle, 'AES GCM Encrypt/Decrypt test');
-  ConsoleWindowWriteLn(WindowHandle, 'MyData is ' + MyData);
-
-  {Allocate buffers}
-  Key := AllocMem(Length(MyKey));
-  IV := AllocMem(Length(MyIV));
-  AAD := AllocMem(Length(MyAAD));
-  Plain := AllocMem(Length(MyData));
-  Crypt := AllocMem(Length(MyData));
-  Tag := AllocMem(AES_BLOCK_SIZE);
-
-  {Copy the values}
-  Move(MyKey[1], Key^, Length(MyKey));
-  Move(MyIV[1], IV^, Length(MyIV));
-  Move(MyAAD[1], AAD^, Length(MyAAD));
-  Move(MyData[1], Plain^, Length(MyData));
-
-  {Clear the crypt buffer}
-  FillChar(Crypt^, Length(MyData), 0);
-
-  {Encrypt the data}
-  if AESGCMEncryptData(Key, Length(MyKey), IV, AAD, Plain, Crypt, Length(MyIV), Length(MyAAD), Length(MyData), Tag) then
-  begin
-    ConsoleWindowWriteLn(WindowHandle, 'AES GCM Encrypt Success');
-
-    {Clear the plain buffer}
-    FillChar(Plain^, Length(MyData), 0);
-
-    {Decrypt the Data}
-    if AESGCMDecryptData(Key, Length(MyKey), IV, AAD, Crypt, Plain, Length(MyIV), Length(MyAAD), Length(MyData), Tag) then
-    begin
-      ConsoleWindowWriteLn(WindowHandle, 'AES GCM Decrypt Success');
-
-      {Copy the result}
-      SetString(MyResult, PAnsiChar(Plain), Length(MyData));
-
-      ConsoleWindowWriteLn(WindowHandle, 'MyResult is ' + MyResult);
-    end
-    else
-    begin
-      ConsoleWindowWriteLn(WindowHandle, 'AES GCM Decrypt Failure');
-    end;
-  end
-  else
-  begin
-    ConsoleWindowWriteLn(WindowHandle, 'AES GCM Encrypt Failure');
-  end;
 
 
   nr := 11;
@@ -445,7 +400,68 @@ begin
   inherited;
 end;
 
-{procedure TTCPThread.ProcessFpga(Data : string;ProgWindow:TWindowHandle);}
+{procedure TTCPThread.ProcessEncryptDecrypt(Data : string;ProgWindow:TWindowHandle);}
+procedure TTCPThread.ProcessEncryptDecrypt(Data: string);
+var
+  MyKey: AnsiString = '1234567890123456'; {Must be 16, 24 or 32 bytes}
+  MyIV: AnsiString = 'My Secret IV';
+  MyAAD: AnsiString = 'My Extra Secret AAD';
+  MyData: AnsiString = 'The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.';
+  MyResult: AnsiString;
+  Key: PByte;
+  IV: PByte;
+  AAD: PByte;
+  Plain: PByte;
+  Crypt: PByte;
+  Tag: PByte;
+begin
+  MyData:=Data;
+  {Allocate buffers}
+  Key := AllocMem(Length(MyKey));
+  IV := AllocMem(Length(MyIV));
+  AAD := AllocMem(Length(MyAAD));
+  Plain := AllocMem(Length(MyData));
+  Crypt := AllocMem(Length(MyData));
+  Tag := AllocMem(AES_BLOCK_SIZE);
+
+  {Copy the values}
+  Move(MyKey[1], Key^, Length(MyKey));
+  Move(MyIV[1], IV^, Length(MyIV));
+  Move(MyAAD[1], AAD^, Length(MyAAD));
+  Move(MyData[1], Plain^, Length(MyData));
+
+  {Clear the crypt buffer}
+  FillChar(Crypt^, Length(MyData), 0);
+  {Encrypt the data}
+  if AESGCMEncryptData(Key, Length(MyKey), IV, AAD, Plain, Crypt, Length(MyIV), Length(MyAAD), Length(MyData), Tag) then
+  begin
+    WriteLn('AES GCM Encrypt Success');
+
+    {Clear the plain buffer}
+    FillChar(Plain^, Length(MyData), 0);
+
+    {Decrypt the Data}
+    if AESGCMDecryptData(Key, Length(MyKey), IV, AAD, Crypt, Plain, Length(MyIV), Length(MyAAD), Length(MyData), Tag) then
+    begin
+      WriteLn('AES GCM Decrypt Success');
+
+      {Copy the result}
+      SetString(MyResult, PAnsiChar(Plain), Length(MyData));
+
+      WriteLn('MyResult is ' + MyResult);
+    end
+    else
+    begin
+      WriteLn('AES GCM Decrypt Failure');
+    end;
+  end
+  else
+  begin
+    WriteLn('AES GCM Encrypt Failure');
+  end;
+  //SetString(MyResult, PAnsiChar(Crypt), Length(MyData));
+  //WriteLn('Encrypt is ' + MyResult);
+end;
 
 procedure TTCPThread.ProcessingData(procSock: TSocket; Data: string);
 begin
@@ -455,7 +471,7 @@ begin
    WriteLn(data+#32+'we get it from '+IntToStr(number)+' thread');
    //ProcessFpga(Data,TTCPThread.WindowHandle);
    //WriteLn('Calling ProcessFpga');
-   //ProcessFpga(Data);
+   ProcessEncryptDecrypt(Data);
    WriteLn(data);
    end;
 end;
