@@ -81,7 +81,7 @@ TTCPThread = class(TManagedThread)
      destructor Destroy; override;
      procedure ProcessingData(procSock: TSocket;Data: string);
      {procedure ProcessFpga(Data: string;ProgWindow:TWindowHandle);}
-     procedure ProcessFpga(Data: string);
+     {procedure ProcessFpga(Data: string);}
      Property Number: integer read Fnumber Write FNumber;
 end;
 
@@ -356,7 +356,7 @@ ff : Boolean;
       ConsoleWindowWriteLn(WindowHandle,'Bind on 5050');
       end
      else
-      WriteLn('Bind error: '+GetErrorDescEx);
+      ConsoleWindowWriteLn(WindowHandle,'Bind error: '+GetErrorDescEx);
       listen;
       repeat
         if CanRead(100) then
@@ -367,10 +367,10 @@ ff : Boolean;
               begin
               //TTCPThread.Create()
              ClientThread:=FThreadManager.GetSuspendThread(ClientSock);
-              WriteLn('We have '+ IntToStr(FThreadManager.GetActiveThreadCount)+#32+'client threads!');
+              ConsoleWindowWriteLn(WindowHandle,'We have '+ IntToStr(FThreadManager.GetActiveThreadCount)+#32+'client threads!');
               end
              else
-              WriteLn('TCP thread creation error: '+GetErrorDescEx);
+              ConsoleWindowWriteLn(WindowHandle,'TCP thread creation error: '+GetErrorDescEx);
          end;
         FThreadManager.clearFinishedThreads;
       sleep(10);
@@ -446,72 +446,6 @@ begin
 end;
 
 {procedure TTCPThread.ProcessFpga(Data : string;ProgWindow:TWindowHandle);}
-procedure TTCPThread.ProcessFpga(Data : string);
-{123456789012345
- gpio 0x00010001
- gpio 0x00030003
- gpio 0x00070007
- gpio 0x00010009
- gpio 0x00020000
- gpio 0x00040000
- gpio 0x00070000}
-
-var
-  nr : integer;
-  datab : Byte;
-  bp : ^Byte;
-  rdp : ^Byte;
-  CmdArray : array [0..11] of Byte;
-  RDArray : array [0..11] of Byte;
-  cmd : string;
-begin
-  cmd := copy(Data,1,4);
-  if (cmd = 'gpio') then
-   begin
-     WriteLn('in ProcessFpga');
-     CmdArray[0] := 193; // 0xC1 0x41
-     CmdArray[1] := 177; // 0xB1 0x31
-     CmdArray[2] := 176; // 0xB0 0x30
-     CmdArray[3] := 176; // 0xB0 0x30
-     CmdArray[4] := 185; // 0xB9 0x39
-     CmdArray[5] := 215; // 0xD7 0x57
-
-     cmd := copy(Data,11,1);
-     if (cmd ='1' ) then  CmdArray[6] := 177;
-     if (cmd ='2' ) then  CmdArray[6] := 178;
-     if (cmd ='3' ) then  CmdArray[6] := 179;
-     if (cmd ='4' ) then  CmdArray[6] := 180;
-     if (cmd ='6' ) then  CmdArray[6] := 182;
-     if (cmd ='7' ) then  CmdArray[6] := 183;
-
-     CmdArray[7] := 176; // 0xB0 0x30
-     CmdArray[8] := 176; // 0xB0 0x30
-     CmdArray[9] := 176; // 0xB0 0x30
-     cmd := copy(Data,15,1);
-     if (cmd ='0' ) then  CmdArray[10] := 176;
-     if (cmd ='1' ) then  CmdArray[10] := 177;
-     if (cmd ='2' ) then  CmdArray[10] := 178;
-     if (cmd ='3' ) then  CmdArray[10] := 179;
-     if (cmd ='4' ) then  CmdArray[10] := 180;
-     if (cmd ='6' ) then  CmdArray[10] := 182;
-     if (cmd ='7' ) then  CmdArray[10] := 183;
-     CmdArray[11] := 138;
-     nr := 11;
-     bp := @CmdArray;
-     rdp := @RDArray;;
-     for nr := 0 to nr do
-      begin
-      datab := bp^;
-      inc(bp);
-
-      WriteLn('using ptr '+inttostr(nr) + ' '+ inttostr(datab));
-     end;
-     bp := @CmdArray;
-     WriteFpga1(bp,nr,rdp);
-   end;
-  if data <> '' then
-    WriteLn(data);
-end;
 
 procedure TTCPThread.ProcessingData(procSock: TSocket; Data: string);
 begin
@@ -520,8 +454,8 @@ begin
    begin
    WriteLn(data+#32+'we get it from '+IntToStr(number)+' thread');
    //ProcessFpga(Data,TTCPThread.WindowHandle);
-   WriteLn('Calling ProcessFpga');
-   ProcessFpga(Data);
+   //WriteLn('Calling ProcessFpga');
+   //ProcessFpga(Data);
    WriteLn(data);
    end;
 end;
