@@ -391,6 +391,12 @@ end;
 procedure TTCPThread.ProcessEncryptDecrypt(Data: string);
 {412345678901234567890123456789012:My Secret IV:My Extra Secret AAD:The quick brown The quick brown The quick brown The quick brown The quick brown The quick brown}
 var
+  Count:Integer;
+  Filename:String;
+  SearchRec:TSearchRec;
+  StringList:TStringList;
+  FileStream:TFileStream;
+   
   newstr: AnsiString;
   teststr: AnsiString;
   DatainLen:LongWord;
@@ -493,6 +499,115 @@ WriteLn('MyKey '+MyKey);
   end;
  
 end;
+
+{First let's list the contents of the SD card. We can guess that it will be C:\
+  drive because we didn't include the USB host driver.}
+ WriteLn('Contents of drive C:\');
+
+ {To list the contents we need to use FindFirst/FindNext, start with FindFirst}
+ if FindFirst('C:\*.*',faAnyFile,SearchRec) = 0 then
+  begin
+   {If FindFirst succeeds it will return 0 and we can proceed with the search}
+   repeat
+    {Print the file found to the screen}
+    //WriteLn('Filename is ' + SearchRec.Name + ' - Size is ' + IntToStr(SearchRec.Size) + ' - Time is ' + DateTimeToStr(FileDateToDateTime(SearchRec.Time)));
+
+   {We keep calling FindNext until there are no more files to find}
+   until FindNext(SearchRec) <> 0;
+  end;
+
+{After any call to FindFirst, you must call FindClose or else memory will be leaked}
+ FindClose(SearchRec);
+ WriteLn('');
+{Let's try creating a file and writing some text to it, we'll assign our filename
+   to a variable.}
+  Filename:='C:\test0527.txt';
+
+  {We should check if the file exists first before trying to create it}
+  WriteLn('Checking to see if ' + Filename + ' exists');
+  if FileExists(Filename) then
+   begin
+    {If it does exist we can delete it}
+    WriteLn('Deleting the file ' + Filename);
+    DeleteFile(PChar(Filename));
+   end;
+
+  {Now create the file, let's use a TFileStream class to do this. We pass both the
+   filename and the mode to TFileStream. fmCreate tells it to create a new file.}
+  WriteLn('Creating a new file ' + Filename);
+  {TFileStream will raise an exception if creating the file fails}
+  try
+   FileStream:=TFileStream.Create(Filename,fmCreate);
+
+   {We've created the file, now we need to write some content to it, we can use
+    a TStringList for that but there are many other ways as well.}
+   StringList:=TStringList.Create;
+
+   {Add some text to our string list}
+ StringList.Add(MyKey);
+ StringList.Add(MyIV);
+ StringList.Add(MyAAD);
+ StringList.Add(MyData);
+ StringList.Add(MyResult);
+ SetString(MyResult, PAnsiChar(Crypt), Length(MyData));
+ StringList.Add(MyResult);
+  {Since TStringList has a SaveToStream method, we can just call that to write
+   all the strings to our new file.}
+  WriteLn('Saving the TStringList to the file');
+  StringList.SaveToStream(FileStream);
+ {Iterate the strings and print them to the screen}
+    WriteLn('The contents of the file are:');
+    for Count:=0 to StringList.Count - 1 do
+     begin
+      WriteLn(StringList.Strings[Count]);
+     end;
+  {With that done we can close the file and free the string list}
+   WriteLn('Closing the file');
+   WriteLn('');
+   FileStream.Free;
+   StringList.Free;
+
+   {Did it work? Let's open the file and display it on screen to see.}
+   WriteLn('Opening the file ' + Filename);
+   try
+    FileStream:=TFileStream.Create(Filename,fmOpenReadWrite);
+
+    {Recreate our string list}
+    StringList:=TStringList.Create;
+    StringList.Add('ASC & Hex key');
+    StringList.Add(MyResult);
+    SetString(MyResult, PAnsiChar(Crypt), Length(MyData));
+    StringList.Add(MyResult);
+    
+    {And use LoadFromStream to read it}
+    WriteLn('Loading the TStringList from the file');
+    StringList.LoadFromStream(FileStream);
+
+    {Iterate the strings and print them to the screen}
+    {
+    WriteLn('The contents of the file are:');
+    for Count:=0 to StringList.Count - 1 do
+     begin
+      WriteLn(StringList.Strings[Count]);
+     end;
+    }
+    {Close the file and free the string list again}
+    WriteLn('Closing the file');
+    WriteLn('');
+    FileStream.Free;
+    StringList.Free;
+
+    {If you remove the SD card and put in back in your computer, you should see the
+     file "Example 08 File Handling.txt" on it. If you open it in a notepad you should
+     see the contents exactly as they appeared on screen.}
+   except
+    {TFileStream couldn't open the file}
+    WriteLn('Failed to open the file ' + Filename);
+   end;
+  except
+   {Something went wrong creating the file}
+   WriteLn('Failed to create the file ' + Filename);
+  end;
 end;
 procedure TTCPThread.ProcessingData(procSock: TSocket; Data: string);
 begin
