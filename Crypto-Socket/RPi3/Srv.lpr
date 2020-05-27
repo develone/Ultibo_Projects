@@ -230,19 +230,6 @@ procedure TListenerThread.Execute;
 
 
 var
-  {
-  MyKey: AnsiString = '1234567890123456'; {Must be 16, 24 or 32 bytes}
-  MyIV: AnsiString = 'My Secret IV';
-  MyAAD: AnsiString = 'My Extra Secret AAD';
-  MyData: AnsiString = 'The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.';
-  MyResult: AnsiString;
-  Key: PByte;
-  IV: PByte;
-  AAD: PByte;
-  Plain: PByte;
-  Crypt: PByte;
-  Tag: PByte;
-  }
 
 ClientSock : TSocket;
 ClientThread : TTCPThread;
@@ -402,7 +389,12 @@ end;
 
 {procedure TTCPThread.ProcessEncryptDecrypt(Data : string;ProgWindow:TWindowHandle);}
 procedure TTCPThread.ProcessEncryptDecrypt(Data: string);
+{412345678901234567890123456789012:My Secret IV:My Extra Secret AAD:The quick brown The quick brown The quick brown The quick brown The quick brown The quick brown}
 var
+  newstr: AnsiString;
+  teststr: AnsiString;
+  DatainLen:LongWord;
+  comindex:Integer;
   MyKey: AnsiString = '1234567890123456'; {Must be 16, 24 or 32 bytes}
   MyIV: AnsiString = 'My Secret IV';
   MyAAD: AnsiString = 'My Extra Secret AAD';
@@ -415,7 +407,47 @@ var
   Crypt: PByte;
   Tag: PByte;
 begin
-  MyData:=Data;
+   
+  DatainLen:=Length(Data);
+  newstr:=RightStr(Data,DatainLen-1);
+  teststr:=LeftStr(Data,1);
+  WriteLn(teststr);
+  WriteLn(IntToStr(DatainLen));
+  WriteLn(newstr);
+  if (teststr='4') then
+    begin
+WriteLn('Key '+MyKey);
+WriteLn('IV '+MyIV);
+WriteLn('AAD '+MyAAD);
+WriteLn('Data '+MyData);
+comindex:=LastDelimiter('\.:',Data);
+WriteLn(IntToStr(comindex));
+MyData:=RightStr(Data,DatainLen-comindex);
+WriteLn('MyData '+MyData);
+Data:=LeftStr(Data,comindex-1);
+WriteLn(Data);
+DatainLen:=Length(Data);
+WriteLn(IntToStr(DatainLen));
+
+comindex:=LastDelimiter('\.:',Data);
+WriteLn(IntToStr(comindex));
+MyAAD:=RightStr(Data,DatainLen-comindex);
+WriteLn('MyAAD '+MyAAD);
+Data:=LeftStr(Data,comindex-1);
+WriteLn(Data);
+DatainLen:=Length(Data);
+
+comindex:=LastDelimiter('\.:',Data);
+WriteLn(IntToStr(comindex));
+MyIV:=RightStr(Data,DatainLen-comindex);
+WriteLn('MyIV '+MyIV);
+Data:=LeftStr(Data,comindex-1);
+WriteLn(Data);
+DatainLen:=Length(Data);
+MyKey:=RightStr(Data,DatainLen-1);
+WriteLn('MyKey '+MyKey);
+
+ 
   {Allocate buffers}
   Key := AllocMem(Length(MyKey));
   IV := AllocMem(Length(MyIV));
@@ -459,10 +491,9 @@ begin
   begin
     WriteLn('AES GCM Encrypt Failure');
   end;
-  //SetString(MyResult, PAnsiChar(Crypt), Length(MyData));
-  //WriteLn('Encrypt is ' + MyResult);
+ 
 end;
-
+end;
 procedure TTCPThread.ProcessingData(procSock: TSocket; Data: string);
 begin
   if data <> '' then
