@@ -391,6 +391,7 @@ end;
 procedure TTCPThread.ProcessEncryptDecrypt(Data: string);
 {412345678901234567890123456789012:My Secret IV:My Extra Secret AAD:The quick brown The quick brown The quick brown The quick brown The quick brown The quick brown}
 var
+  CC:LongWord;
   Count:Integer;
   Filename:String;
   SearchRec:TSearchRec;
@@ -521,7 +522,7 @@ end;
  WriteLn('');
 {Let's try creating a file and writing some text to it, we'll assign our filename
    to a variable.}
-  Filename:='C:\test0527.txt';
+  Filename:='C:\test0527a.txt';
 
   {We should check if the file exists first before trying to create it}
   WriteLn('Checking to see if ' + Filename + ' exists');
@@ -549,7 +550,13 @@ end;
  StringList.Add(MyAAD);
  StringList.Add(MyData);
  StringList.Add(MyResult);
- SetString(MyResult, PAnsiChar(Crypt), Length(MyData));
+ //SetString(MyResult, PAnsiChar(Crypt), Length(MyData));
+ MyResult:='';
+ for CC:=0 to Length(MyData) - 1 do
+  begin
+   MyResult:=MyResult + HexStr(Crypt[CC],2);
+  end;
+ MyResult:=Lowercase(MyResult); 
  StringList.Add(MyResult);
   {Since TStringList has a SaveToStream method, we can just call that to write
    all the strings to our new file.}

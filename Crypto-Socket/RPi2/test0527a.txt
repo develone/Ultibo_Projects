@@ -1,0 +1,8 @@
+12345678901234567890123456789012
+My Secret IV
+My Extra Secret AAD
+The quick brown The quick brown The quick brown The quick brown The quick brown The quick brown
+
+The quick brown The quick brown The quick brown The quick brown The quick brown The quick brown
+
+0e599f59da22536d4fe2d6bd48c118e5b4daf800a20c815f9b8df374dfb868e525519b7422455605b412f61b4e53357a5938f7cf0c857fddb3558685cfa1cc291a6a2a0ed497beb1096409c0cb6d67668710ae3708911fe4f0cf797cb999e32a35
