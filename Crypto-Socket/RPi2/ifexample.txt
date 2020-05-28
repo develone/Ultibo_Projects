@@ -1,0 +1,31 @@
+For example:
+If exp1 Then  
+  If exp2 then  
+    Stat1  
+else  
+  stat2;
+Despite its appearance, the statement is syntactically equivalent to
+If exp1 Then  
+   begin  
+   If exp2 then  
+      Stat1  
+   else  
+      stat2  
+   end;
+   
+and not to
+{ NOT EQUIVALENT }  
+If exp1 Then  
+   begin  
+   If exp2 then  
+      Stat1  
+   end  
+else  
+   stat2;
+
+If it is this latter construct which is needed, the begin and end keywords must be present. When in doubt, it is better to add them.
+The following is a valid statement:
+If Today in [Monday..Friday] then  
+  WriteLn (’Must work harder’)  
+else  
+  WriteLn (’Take a day off.’);
