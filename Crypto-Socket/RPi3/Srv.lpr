@@ -41,6 +41,7 @@ uses
   synsock,
   uFPGA,
   crypto,
+  APICrypto,
   Ultibo
   { Add additional units here };
 {var
@@ -550,14 +551,12 @@ end;
  StringList.Add(MyAAD);
  StringList.Add(MyData);
  StringList.Add(MyResult);
- //SetString(MyResult, PAnsiChar(Crypt), Length(MyData));
- MyResult:='';
- for CC:=0 to Length(MyData) - 1 do
-  begin
-   MyResult:=MyResult + HexStr(Crypt[CC],2);
-  end;
- MyResult:=Lowercase(MyResult); 
+ SetString(MyResult, PAnsiChar(Crypt), Length(MyData));
  StringList.Add(MyResult);
+  
+ MyResult:=BytesToString(PByte(Crypt),Length(MyData));
+ StringList.Add(MyResult);
+ 
   {Since TStringList has a SaveToStream method, we can just call that to write
    all the strings to our new file.}
   WriteLn('Saving the TStringList to the file');
