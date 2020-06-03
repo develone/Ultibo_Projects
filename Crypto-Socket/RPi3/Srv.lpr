@@ -80,9 +80,9 @@ TTCPThread = class(TManagedThread)
     public
      constructor Create();
      destructor Destroy; override;
-     procedure ProcessingData(procSock: TSocket;Data: string);
-     {procedure ProcessEncryptDecrypt(Data: string;ProgWindow:TWindowHandle);}
-     procedure ProcessEncryptDecrypt(Data: string);
+     procedure ProcessingData(procSock: TSocket;SockData: string);
+     {procedure ProcessEncryptDecrypt(SockData: string;ProgWindow:TWindowHandle);}
+     procedure ProcessEncryptDecrypt(SockData: string);
      Property Number: integer read Fnumber Write FNumber;
 end;
 
@@ -388,17 +388,23 @@ begin
   inherited;
 end;
 
-{procedure TTCPThread.ProcessEncryptDecrypt(Data : string;ProgWindow:TWindowHandle);}
-procedure TTCPThread.ProcessEncryptDecrypt(Data: string);
-{412345678901234567890123456789012:My Secret IV:My Extra Secret AAD:The quick brown The quick brown The quick brown The quick brown The quick brown The quick brown}
+{procedure TTCPThread.ProcessEncryptDecrypt(SockData : string;ProgWindow:TWindowHandle);}
+procedure TTCPThread.ProcessEncryptDecrypt(SockData: string);
+{112345678901234567890123456789012:My Secret IV:My Extra Secret AAD:The quick brown The quick brown The quick brown The quick brown The quick brown The quick brown}
+{212345678901234567890123456789012:My Secret IV:My Extra Secret AAD:}
+
 var
+  mybyte:Byte;
+  lendata:Longword;
+   
   CC:LongWord;
+  off:LongWord;
   Count:Integer;
   Filename:String;
   SearchRec:TSearchRec;
   StringList:TStringList;
   FileStream:TFileStream;
-   
+  cryptstr: AnsiString; 
   newstr: AnsiString;
   teststr: AnsiString;
   DatainLen:LongWord;
@@ -414,81 +420,119 @@ var
   Plain: PByte;
   Crypt: PByte;
   Tag: PByte;
+  testptr:PByte;
 begin
    
-  DatainLen:=Length(Data);
-  newstr:=RightStr(Data,DatainLen-1);
-  teststr:=LeftStr(Data,1);
-  WriteLn(teststr);
-  WriteLn(IntToStr(DatainLen));
-  WriteLn(newstr);
-  if (teststr='4') then
-    begin
+  DatainLen:=Length(SockData);
+  newstr:=RightStr(SockData,DatainLen-1);
+  teststr:=LeftStr(SockData,1);
+  //WriteLn(teststr);
+  //WriteLn(IntToStr(DatainLen));
+  //WriteLn(newstr);
+//chgs planned for Srv.lpr which is the same as Srv.lpr.tmp3
+ 
+
+{**************************encryption**************************}  
+  if (teststr='1') then
+begin  
+  WriteLn('1');   
 WriteLn('Key '+MyKey);
 WriteLn('IV '+MyIV);
 WriteLn('AAD '+MyAAD);
 WriteLn('Data '+MyData);
-comindex:=LastDelimiter('\.:',Data);
-WriteLn(IntToStr(comindex));
-MyData:=RightStr(Data,DatainLen-comindex);
-WriteLn('MyData '+MyData);
-Data:=LeftStr(Data,comindex-1);
-WriteLn(Data);
-DatainLen:=Length(Data);
-WriteLn(IntToStr(DatainLen));
+comindex:=LastDelimiter('\.:',SockData);
+WriteLn('index where data ' +IntToStr(comindex));
+MyData:=RightStr(SockData,DatainLen-comindex);
+WriteLn('EOL ' +InttoStr(Integer(MyData[16]))+' '+InttoStr(Integer(MyData[17])));
+DatainLen:=Length(MyData);
+WriteLn('MyData '+MyData+ 'Length with EOL '+IntToStr(DatainLen));
+{Since MyData has EOL.  The above WriteLn writes the DatainLen on a new line}
+SockData:=LeftStr(SockData,comindex-1);
+ 
+DatainLen:=Length(SockData);
+WriteLn('SockData '+SockData + ' '+IntToStr(DatainLen));
 
-comindex:=LastDelimiter('\.:',Data);
-WriteLn(IntToStr(comindex));
-MyAAD:=RightStr(Data,DatainLen-comindex);
+comindex:=LastDelimiter('\.:',SockData);
+WriteLn('index where AAD ' +IntToStr(comindex));
+MyAAD:=RightStr(SockData,DatainLen-comindex);
 WriteLn('MyAAD '+MyAAD);
-Data:=LeftStr(Data,comindex-1);
-WriteLn(Data);
-DatainLen:=Length(Data);
-
-comindex:=LastDelimiter('\.:',Data);
-WriteLn(IntToStr(comindex));
-MyIV:=RightStr(Data,DatainLen-comindex);
+SockData:=LeftStr(SockData,comindex-1);
+ 
+DatainLen:=Length(SockData);
+WriteLn('SockData '+SockData+ ' '+IntToStr(DatainLen));
+comindex:=LastDelimiter('\.:',SockData);
+WriteLn('index where IV ' +IntToStr(comindex));
+MyIV:=RightStr(SockData,DatainLen-comindex);
 WriteLn('MyIV '+MyIV);
-Data:=LeftStr(Data,comindex-1);
-WriteLn(Data);
-DatainLen:=Length(Data);
-MyKey:=RightStr(Data,DatainLen-1);
+SockData:=LeftStr(SockData,comindex-1);
+
+DatainLen:=Length(SockData);
+WriteLn('SockData '+SockData+ ' '+IntToStr(DatainLen));
+MyKey:=RightStr(SockData,DatainLen-1);
 WriteLn('MyKey '+MyKey);
 
+lendata:=Length(MyData) - 2;
  
+WriteLn('without no EOL lendata ',IntToStr(lendata)); 
   {Allocate buffers}
   Key := AllocMem(Length(MyKey));
   IV := AllocMem(Length(MyIV));
   AAD := AllocMem(Length(MyAAD));
-  Plain := AllocMem(Length(MyData));
-  Crypt := AllocMem(Length(MyData));
+  Plain := AllocMem(lendata);
+  Crypt := AllocMem(lendata);
   Tag := AllocMem(AES_BLOCK_SIZE);
-
+  testptr := AllocMem(lendata);
   {Copy the values}
   Move(MyKey[1], Key^, Length(MyKey));
   Move(MyIV[1], IV^, Length(MyIV));
   Move(MyAAD[1], AAD^, Length(MyAAD));
-  Move(MyData[1], Plain^, Length(MyData));
+  Move(MyData[1], Plain^, lendata);
 
   {Clear the crypt buffer}
-  FillChar(Crypt^, Length(MyData), 0);
+  FillChar(Crypt^, lendata, 0);
   {Encrypt the data}
-  if AESGCMEncryptData(Key, Length(MyKey), IV, AAD, Plain, Crypt, Length(MyIV), Length(MyAAD), Length(MyData), Tag) then
+  if AESGCMEncryptData(Key, Length(MyKey), IV, AAD, Plain, Crypt, Length(MyIV), Length(MyAAD), lendata, Tag) then
   begin
     WriteLn('AES GCM Encrypt Success');
 
     {Clear the plain buffer}
-    FillChar(Plain^, Length(MyData), 0);
-
+    FillChar(Plain^, lendata, 0);
+    for CC:= 0 to lendata - 1 do
+    begin
+    mybyte:=Crypt^;
+    Inc(Crypt);
+    Write(IntToStr(mybyte)+' ');
+    end;
+    Dec(Crypt,lendata);
+    WriteLn('Bytes from Crypt ');
+    //WriteLn(IntToStr(lendata));
+    //SetString(MyResult, PAnsiChar(Tag), AES_BLOCK_SIZE);
+    //WriteLn('Tag ', MyResult);
+    MyResult:=BytesToString(Tag,AES_BLOCK_SIZE);
+    WriteLn('Tag ', MyResult);
     {Decrypt the Data}
-    if AESGCMDecryptData(Key, Length(MyKey), IV, AAD, Crypt, Plain, Length(MyIV), Length(MyAAD), Length(MyData), Tag) then
+    if AESGCMDecryptData(Key, Length(MyKey), IV, AAD, Crypt, Plain, Length(MyIV), Length(MyAAD), lendata, Tag) then
     begin
       WriteLn('AES GCM Decrypt Success');
 
       {Copy the result}
-      SetString(MyResult, PAnsiChar(Plain), Length(MyData));
-
-      WriteLn('MyResult is ' + MyResult);
+      SetString(MyResult, PAnsiChar(Plain), lendata);
+      WriteLn('Ascii MyResult is ' + MyResult);
+      //SetString(MyResult, PAnsiChar(Crypt), lendata);
+    
+      for CC:= 0 to lendata - 1 do
+    begin
+    mybyte:=Plain^;
+    Inc(Plain);
+    Write(IntToStr(mybyte)+' ');
+    end;
+    Dec(Plain,lendata);
+    WriteLn(' ');
+    
+      {Convert Crypt from Bytes to a String}
+      MyResult:=BytesToString(Crypt,lendata);
+      WriteLn('BytesToString Crypt '+ MyResult );
+      
     end
     else
     begin
@@ -499,8 +543,219 @@ WriteLn('MyKey '+MyKey);
   begin
     WriteLn('AES GCM Encrypt Failure');
   end;
- 
+
+FreeMem(Key);
+FreeMem(IV);
+FreeMem(AAD);
+FreeMem(Plain);
+FreeMem(Crypt);
+FreeMem(Tag);
+FreeMem(testptr);
 end;
+{**************************End encryption**************************}
+{**************************decryption**************************}
+if (teststr='2') then
+begin
+  WriteLn('2');
+WriteLn('Key '+MyKey);
+WriteLn('IV '+MyIV);
+WriteLn('AAD '+MyAAD);
+WriteLn('Data '+MyData);
+comindex:=LastDelimiter('\.:',SockData);
+WriteLn('index where data '+IntToStr(comindex));
+MyData:=RightStr(SockData,DatainLen-comindex);
+WriteLn('EOL ' +InttoStr(Integer(MyData[31]))+' '+InttoStr(Integer(MyData[32])));
+DatainLen:=Length(MyData);
+WriteLn('MyData '+MyData+ 'Length with EOL '+IntToStr(DatainLen));
+{Since MyData has EOL.  The above WriteLn writes the DatainLen on a new line} 
+SockData:=LeftStr(SockData,comindex-1);
+ 
+DatainLen:=Length(SockData);
+WriteLn('SockData '+SockData + ' '+IntToStr(DatainLen));
+
+comindex:=LastDelimiter('\.:',SockData);
+WriteLn('index where AAD '+IntToStr(comindex));
+MyAAD:=RightStr(SockData,DatainLen-comindex);
+WriteLn('MyAAD '+MyAAD);
+SockData:=LeftStr(SockData,comindex-1);
+ 
+DatainLen:=Length(SockData);
+WriteLn('SockData '+SockData+ ' '+IntToStr(DatainLen));
+comindex:=LastDelimiter('\.:',SockData);
+WriteLn('index where IV '+IntToStr(comindex));
+MyIV:=RightStr(SockData,DatainLen-comindex);
+WriteLn('MyIV '+MyIV);
+SockData:=LeftStr(SockData,comindex-1);
+
+DatainLen:=Length(SockData);
+WriteLn('SockData '+SockData+ ' '+IntToStr(DatainLen));
+MyKey:=RightStr(SockData,DatainLen-1);
+WriteLn('MyKey '+MyKey);
+
+
+
+cryptstr:=MyData;
+
+{WriteLn('cryptstr '+cryptstr + ' ' + IntToStr(Length(cryptstr)));}
+WriteLn('cryptstr '+cryptstr);
+DatainLen:=Length(cryptstr);
+//WriteLn('DatainLen ' + IntToStr(DatainLen));
+  
+  testptr := AllocMem(lendata);
+  Crypt := AllocMem(lendata);
+StringToBytes(cryptstr,PByte(testptr),lendata);
+MyResult:=BytesToString(testptr,lendata);
+WriteLn('MyResult '+MyResult);
+
+StringToBytes(cryptstr,PByte(Crypt),lendata);
+
+WriteLn('testptr '+Hexstr(@testptr)+ 'Crypt '+Hexstr(@Crypt));
+    for CC:= 0 to lendata - 1 do
+    begin
+    mybyte:=testptr^;
+    Inc(testptr);
+    Write(IntToStr(mybyte)+' ');
+    end;
+    Dec(testptr,lendata);
+    WriteLn(' ');
+    for CC:= 0 to lendata - 1 do
+    begin
+    mybyte:=Crypt^;
+    Inc(Crypt);
+    Write(IntToStr(mybyte)+' ');
+    end;
+    Dec(Crypt,15);
+    WriteLn(' ');
+WriteLn('testptr '+Hexstr(@testptr)+ 'Crypt '+Hexstr(@Crypt));
+lendata:=(Length(MyData) - 2) div 2;
+
+WriteLn('without no EOL lendata ',IntToStr(lendata));
+  Key := AllocMem(Length(MyKey));
+  IV := AllocMem(Length(MyIV));
+  AAD := AllocMem(Length(MyAAD));
+  Plain := AllocMem(lendata);
+  Crypt := AllocMem(lendata);
+  Tag := AllocMem(AES_BLOCK_SIZE);
+  {Copy the values}
+  Move(MyKey[1], Key^, Length(MyKey));
+  Move(MyIV[1], IV^, Length(MyIV));
+  Move(MyAAD[1], AAD^, Length(MyAAD));
+  //Move(MyData[1], Plain^, 34);
+
+  {Clear the plain buffer}
+  FillChar(Plain^, lendata, 0);
+WriteLn('Plain '+Hexstr(@Plain));  
+    for CC:= 0 to lendata - 1 do
+    begin
+    mybyte:=Plain^;
+    Inc(Plain);
+    Write(IntToStr(mybyte)+' ');
+    end;
+    Dec(Plain,lendata);
+    WriteLn(' ');
+WriteLn('Plain '+Hexstr(@Plain));  
+
+WriteLn('IV '+Hexstr(@IV));  
+
+    for CC:= 0 to (Length(MyIV) -1) do
+    begin
+    mybyte:=IV^;
+    Inc(IV);
+    Write(IntToStr(mybyte)+' ');
+    end;
+    Dec(IV,(Length(MyIV) -1));
+    WriteLn(' ');
+WriteLn('IV '+Hexstr(@IV));  
+WriteLn('AAD '+Hexstr(@AAD));  
+
+    for CC:= 0 to (Length(MyAAD) -1) do
+    begin
+    mybyte:=AAD^;
+    Inc(AAD);
+    Write(IntToStr(mybyte)+' ');
+    end;
+    Dec(AAD,(Length(MyAAD) -1));
+    WriteLn(' ');
+WriteLn('AAD '+Hexstr(@AAD)); 
+ 
+WriteLn('Key '+Hexstr(@Key));  
+
+    for CC:= 0 to (Length(MyKey) -1) do
+    begin
+    mybyte:=Key^;
+    Inc(Key);
+    Write(IntToStr(mybyte)+' ');
+    end;
+    Dec(Key,(Length(MyKey) -1));
+    WriteLn(' ');
+WriteLn('Key '+Hexstr(@Key));  
+ 
+  {Decrypt the data first time}
+   
+  if AESGCMDecryptData(Key, Length(MyKey), IV, AAD, Crypt, Plain, Length(MyIV), Length(MyAAD), lendata, Tag) then
+  begin
+      WriteLn('AES GCM Decrypt Success');
+
+      {Copy the result}
+      SetString(MyResult, PAnsiChar(Plain), lendata);
+      WriteLn('Ascii MyResult is ' + MyResult);
+      //SetString(MyResult, PAnsiChar(Crypt), lendata);
+    
+      for CC:= 0 to lendata -1  do
+    begin
+    mybyte:=Plain^;
+    Inc(Plain);
+    Write(IntToStr(mybyte)+' ');
+    end;
+    Dec(Plain,lendata);
+    WriteLn(' ');
+    
+      {Convert Crypt from Bytes to a String}
+      MyResult:=BytesToString(Crypt,lendata);
+      WriteLn('BytesToString Crypt '+ MyResult );
+    end;
+//SetString(MyResult, PAnsiChar(Plain), lendata);
+//WriteLn('Decrypt ' + MyResult);
+FreeMem(Tag);
+Tag := AllocMem(AES_BLOCK_SIZE);
+StringToBytes('7123d4dd382f60ba12f6efa74bf03656',Pbyte(Tag),AES_BLOCK_SIZE);    
+  {Decrypt the data}
+  if AESGCMDecryptData(Key, Length(MyKey), IV, AAD, Crypt, Plain, Length(MyIV), Length(MyAAD), lendata, Tag) then
+  begin
+    WriteLn('AES GCM Decrypt Success');
+    SetString(MyResult, PAnsiChar(Plain), Length(MyData));
+    WriteLn('Decrypt ' + MyResult);
+  end
+  else
+    begin
+    WriteLn('Plain '+Hexstr(@Plain));  
+    for CC:= 0 to lendata -1 do
+    begin
+    mybyte:=Plain^;
+    Inc(Plain);
+    Write(IntToStr(mybyte)+' ');
+    end;
+    Dec(Plain,lendata);
+    WriteLn(' ');
+WriteLn('Plain '+Hexstr(@Plain));
+      WriteLn('AES GCM Decrypt Failure');
+    end;
+SetString(MyResult, PAnsiChar(Plain), lendata);
+WriteLn('Decrypt ' + MyResult);
+FreeMem(Key);
+FreeMem(IV);
+FreeMem(AAD);
+FreeMem(Plain);
+FreeMem(Crypt);
+FreeMem(Tag);
+FreeMem(testptr);
+
+end;
+{**************************end decryption**************************}
+if (teststr='3') then
+  WriteLn('3');
+if (teststr='4') then
+    WriteLn('4');
 
 {First let's list the contents of the SD card. We can guess that it will be C:\
   drive because we didn't include the USB host driver.}
@@ -523,7 +778,7 @@ end;
  WriteLn('');
 {Let's try creating a file and writing some text to it, we'll assign our filename
    to a variable.}
-  Filename:='C:\test0527a.txt';
+  Filename:='C:\test0603.txt';
 
   {We should check if the file exists first before trying to create it}
   WriteLn('Checking to see if ' + Filename + ' exists');
@@ -615,16 +870,16 @@ end;
    WriteLn('Failed to create the file ' + Filename);
   end;
 end;
-procedure TTCPThread.ProcessingData(procSock: TSocket; Data: string);
+procedure TTCPThread.ProcessingData(procSock: TSocket; SockData: string);
 begin
-  if data <> '' then
+  if SockData <> '' then
 
    begin
-   WriteLn(data+#32+'we get it from '+IntToStr(number)+' thread');
+   WriteLn(SockData+#32+'we get it from '+IntToStr(number)+' thread');
    //ProcessFpga(Data,TTCPThread.WindowHandle);
    //WriteLn('Calling ProcessFpga');
-   ProcessEncryptDecrypt(Data);
-   WriteLn(data);
+   ProcessEncryptDecrypt(SockData);
+   //WriteLn(SockData);
    end;
 end;
 
