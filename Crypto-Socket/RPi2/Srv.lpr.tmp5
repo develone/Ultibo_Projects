@@ -396,7 +396,11 @@ procedure TTCPThread.ProcessEncryptDecrypt(SockData: string);
 var
   mybyte:Byte;
   lendata:Longword;
-  EncryptionTag:AnsiString; 
+  EncryptionTagToDecrypt:AnsiString;
+  EncryptionTag:AnsiString;
+  PlainStr:AnsiString;
+  CryptStr1:AnsiString;
+  BinCryptStr1:AnsiString;  
   CC:LongWord;
   off:LongWord;
   Count:Integer;
@@ -443,7 +447,7 @@ WriteLn('Data '+MyData);
 comindex:=LastDelimiter('\.:',SockData);
 WriteLn('index where data ' +IntToStr(comindex));
 MyData:=RightStr(SockData,DatainLen-comindex);
-WriteLn('EOL ' +InttoStr(Integer(MyData[16]))+' '+InttoStr(Integer(MyData[17])));
+ 
 DatainLen:=Length(MyData);
 WriteLn('MyData '+MyData+ 'Length with EOL '+IntToStr(DatainLen));
 {Since MyData has EOL.  The above WriteLn writes the DatainLen on a new line}
@@ -487,14 +491,17 @@ WriteLn('without no EOL lendata ',IntToStr(lendata));
   Move(MyIV[1], IV^, Length(MyIV));
   Move(MyAAD[1], AAD^, Length(MyAAD));
   Move(MyData[1], Plain^, lendata);
-
+  WriteLn('Key '+MyKey+' '+IntToStr(Length(MyKey)));
+  WriteLn('IV '+MyIV+' '+IntToStr(Length(MyIV)));
+  WriteLn('AAD '+MyAAD+' '+IntToStr(Length(MyAAD)));
   {Clear the crypt buffer}
   FillChar(Crypt^, lendata, 0);
   {Encrypt the data}
   if AESGCMEncryptData(Key, Length(MyKey), IV, AAD, Plain, Crypt, Length(MyIV), Length(MyAAD), lendata, Tag) then
   begin
     WriteLn('AES GCM Encrypt Success');
-
+    BinCryptStr1:=BytesToString(Crypt,lendata); 
+    WriteLn('Bytes from Crypt ');
     {Clear the plain buffer}
     FillChar(Plain^, lendata, 0);
     for CC:= 0 to lendata - 1 do
@@ -504,20 +511,26 @@ WriteLn('without no EOL lendata ',IntToStr(lendata));
     Write(IntToStr(mybyte)+' ');
     end;
     Dec(Crypt,lendata);
-    WriteLn('Bytes from Crypt ');
-    //WriteLn(IntToStr(lendata));
-    //SetString(MyResult, PAnsiChar(Tag), AES_BLOCK_SIZE);
-    //WriteLn('Tag ', MyResult);
+    WriteLn(' ');
     EncryptionTag:=BytesToString(Tag,AES_BLOCK_SIZE);
     WriteLn('EncryptionTag ', EncryptionTag);
     {Decrypt the Data}
     if AESGCMDecryptData(Key, Length(MyKey), IV, AAD, Crypt, Plain, Length(MyIV), Length(MyAAD), lendata, Tag) then
     begin
       WriteLn('AES GCM Decrypt Success');
-
+    WriteLn('Tag '+Hexstr(@Tag));  
+    for CC:= 0 to AES_BLOCK_SIZE - 1 do
+    begin
+    mybyte:=Tag^;
+    Inc(Tag);
+    Write(IntToStr(mybyte)+' ');
+    end;
+    Dec(Tag,AES_BLOCK_SIZE);
+    WriteLn(' ');
+WriteLn('Tag '+Hexstr(@Tag));
       {Copy the result}
-      SetString(MyResult, PAnsiChar(Plain), lendata);
-      WriteLn('Ascii MyResult is ' + MyResult);
+      SetString(PlainStr, PAnsiChar(Plain), lendata);
+      WriteLn('Ascii PlainStr is ' + PlainStr);
       //SetString(MyResult, PAnsiChar(Crypt), lendata);
       EncryptionTag:=BytesToString(Tag,AES_BLOCK_SIZE);
     WriteLn('EncryptionTag ', EncryptionTag);
@@ -565,7 +578,7 @@ WriteLn('Data '+MyData);
 comindex:=LastDelimiter('\.:',SockData);
 WriteLn('index where data '+IntToStr(comindex));
 MyData:=RightStr(SockData,DatainLen-comindex);
-WriteLn('EOL ' +InttoStr(Integer(MyData[31]))+' '+InttoStr(Integer(MyData[32])));
+ 
 DatainLen:=Length(MyData);
 WriteLn('MyData '+MyData+ 'Length with EOL '+IntToStr(DatainLen));
 {Since MyData has EOL.  The above WriteLn writes the DatainLen on a new line} 
@@ -676,7 +689,8 @@ WriteLn('Key '+Hexstr(@Key));
     end;
     Dec(Key,(Length(MyKey) -1));
     WriteLn(' ');
-WriteLn('Key '+Hexstr(@Key));  
+WriteLn('Key '+Hexstr(@Key)); 
+ 
   {Clear the plain buffer}
   FillChar(Plain^, lendata, 0);
 WriteLn('Plain '+Hexstr(@Plain));  
@@ -688,14 +702,17 @@ WriteLn('Plain '+Hexstr(@Plain));
     end;
     Dec(Plain,lendata);
     WriteLn(' ');
-WriteLn('Plain '+Hexstr(@Plain));  
+WriteLn('Plain '+Hexstr(@Plain)); 
+
+ 
 {This did not help 
 StringToBytes('d495df0bc8a0f10d5aba11764e898070',PByte(Tag),AES_BLOCK_SIZE);
+
 going to test adding the encryption here}
   WriteLn('Key '+MyKey+' '+IntToStr(Length(MyKey)));
   WriteLn('IV '+MyIV+' '+IntToStr(Length(MyIV)));
   WriteLn('AAD '+MyAAD+' '+IntToStr(Length(MyAAD)));
-
+{
   {Clear the crypt buffer}
   FillChar(Crypt^, lendata, 0);
   StringToBytes('The quick brown',PByte(Plain),lendata);
@@ -706,8 +723,8 @@ going to test adding the encryption here}
     WriteLn('AES GCM Encrypt Success');
     EncryptionTag:=BytesToString(Tag,AES_BLOCK_SIZE);
     WriteLn('EncryptionTag ', EncryptionTag);
-    MyResult:=BytesToString(PByte(Crypt),lendata);
-    WriteLn('Encrypted ' +  MyResult);
+    CryptStr1:=BytesToString(PByte(Crypt),lendata);
+    WriteLn('Encrypted ' +  CryptStr1);
         for CC:= 0 to lendata - 1 do
     begin
     mybyte:=Crypt^;
@@ -718,16 +735,29 @@ going to test adding the encryption here}
     WriteLn(' ');
 
   end; 
+  }
 FillChar(Plain^, lendata, 0);
-StringToBytes(MyResult,PByte(Crypt),lendata); 
+StringToBytes(cryptstr,PByte(Crypt),lendata); 
+StringToBytes('d495df0bc8a0f10d5aba11764e898070',PByte(Tag),AES_BLOCK_SIZE);
+EncryptionTagToDecrypt:=BytesToString(PByte(Tag),AES_BLOCK_SIZE);
+WriteLn('Tag '+Hexstr(@Tag));  
+    for CC:= 0 to AES_BLOCK_SIZE - 1 do
+    begin
+    mybyte:=Tag^;
+    Inc(Tag);
+    Write(IntToStr(mybyte)+' ');
+    end;
+    Dec(Tag,AES_BLOCK_SIZE);
+    WriteLn(' ');
+WriteLn('Tag '+Hexstr(@Tag));
 {Decrypt the Data}
     if AESGCMDecryptData(Key, Length(MyKey), IV, AAD, Crypt, Plain, Length(MyIV), Length(MyAAD), lendata, Tag) then
     begin
       WriteLn('AES GCM Decrypt Success');
 
       {Copy the result}
-      SetString(MyResult, PAnsiChar(Plain), lendata);
-      WriteLn('Ascii MyResult is ' + MyResult);
+      SetString(PlainStr, PAnsiChar(Plain), lendata);
+      WriteLn('Ascii PlainStr is ' + PlainStr);
       //SetString(MyResult, PAnsiChar(Crypt), lendata);
     
       for CC:= 0 to lendata - 1 do
@@ -740,8 +770,8 @@ StringToBytes(MyResult,PByte(Crypt),lendata);
     WriteLn(' ');
     
       {Convert Crypt from Bytes to a String}
-      MyResult:=BytesToString(Crypt,lendata);
-      WriteLn('BytesToString Crypt '+ MyResult );
+      CryptStr:=BytesToString(Crypt,lendata);
+      WriteLn('BytesToString Crypt '+ CryptStr );
       
     end
     else
@@ -785,8 +815,14 @@ if (teststr='4') then
  WriteLn('');
 {Let's try creating a file and writing some text to it, we'll assign our filename
    to a variable.}
-  Filename:='C:\test0603.txt';
-
+  if (teststr='1') then
+  begin 
+  Filename:='C:\test0605encrypt.txt';
+  end;
+  if (teststr='2') then
+  begin 
+  Filename:='C:\test0605decrypt.txt';
+  end;  
   {We should check if the file exists first before trying to create it}
   WriteLn('Checking to see if ' + Filename + ' exists');
   if FileExists(Filename) then
@@ -808,6 +844,9 @@ if (teststr='4') then
    StringList:=TStringList.Create;
 
    {Add some text to our string list}
+   if (teststr='1') then
+   begin
+  StringList.Add('encrypt'); 
  StringList.Add('Key');
  StringList.Add(MyKey);
  StringList.Add('IV');
@@ -815,17 +854,33 @@ if (teststr='4') then
  StringList.Add('AAD');
  StringList.Add(MyAAD);
  StringList.Add('Decrypted');
- StringList.Add(MyData);
- StringList.Add(MyResult);
+ StringList.Add(PlainStr);
+ 
  StringList.Add('EncryptionTag');
  StringList.Add(EncryptionTag);
  StringList.Add('Bytes Crypt');
- SetString(MyResult, PAnsiChar(Crypt), Length(MyData));
- StringList.Add(MyResult);
+  StringList.Add(BinCryptStr1);
   
- MyResult:=BytesToString(PByte(Crypt),Length(MyData));
- StringList.Add(MyResult);
  
+ end;
+ if (teststr='2') then
+   begin
+ StringList.Add('decrypt');  
+ StringList.Add('Key');
+ StringList.Add(MyKey);
+ StringList.Add('IV');
+ StringList.Add(MyIV);
+ StringList.Add('AAD');
+ StringList.Add(MyAAD);
+ StringList.Add('Decrypted');
+ StringList.Add(CryptStr1);
+  
+ StringList.Add('EncryptionTag');
+ StringList.Add(EncryptionTag);
+ StringList.Add('EncryptionTagToDecrypt');
+ StringList.Add(EncryptionTagToDecrypt);
+ 
+   end;
   {Since TStringList has a SaveToStream method, we can just call that to write
    all the strings to our new file.}
   WriteLn('Saving the TStringList to the file');
