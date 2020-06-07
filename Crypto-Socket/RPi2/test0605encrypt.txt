@@ -1,0 +1,21 @@
+encrypt
+112345678901234567890123456789012:My Secret IV:My Extra Secret AAD:The quick brown testing a longer string not dependent on length 15 1234567890 abcdefghijklmnopqrstuvwxyz
+
+GCM1.PlainStr
+The quick brown testing a longer string not dependent on length 15 1234567890 abcdefghijklmnopqrstuvwxyz
+GCM1.EncryptionTag1
+f56c32e2ea3343b31748823b65590a09
+GCM1.EncryptionTag2
+f56c32e2ea3343b31748823b65590a09
+GCM1.MyKey
+12345678901234567890123456789012
+GCM1.MyIV
+My Secret IV
+GCM1.MyAAD
+My Extra Secret AAD
+Decrypted
+The quick brown testing a longer string not dependent on length 15 1234567890 abcdefghijklmnopqrstuvwxyz
+EncryptionTag
+f56c32e2ea3343b31748823b65590a09
+Bytes Crypt
+0e599f59da22536d4fe2d6bd48c118e594d7ee54ba178f1c918dfd69dea863b7514a8a263a5e5846b15de04945412b3f6334f78109d079d0f8198199c7a2ca297f376f1f97d1e3e75473538b943a6824b01cae711e8c1fedf0837660b99efc554ca60904d613420c
