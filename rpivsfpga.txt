@@ -10,6 +10,7 @@ Block RAM (Kbits)	1,800	4,860
 10/100 Mbps Ethernet
 4 PMOD I/O
 Arduino™ R3 Headers
+Arty isn't bound to a single set of processing peripherals; one moment it's a communication powerhouse chock-full of UARTs, SPIs, IICs
 
 Verilog or VHDL
 Requires Xilinx software to create bit file.
