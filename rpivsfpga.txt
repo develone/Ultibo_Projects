@@ -1,0 +1,29 @@
+RPi3B+ vs FPGA
+Arty A7-35T $99.00 When I purchased.
+$129.00 Arty A7-35T $249.00 Arty A7-100T
+					A7-35T	A7-100T
+Logic Cells			32,280	101,440
+Block RAM (Kbits)	1,800	4,860
+Block RAM (Kbits)	1,800	4,860
+
+256MB DDR3L with a 16-bit bus @ 667MHz
+10/100 Mbps Ethernet
+4 PMOD I/O
+Arduino™ R3 Headers
+
+Verilog or VHDL
+Requires Xilinx software to create bit file.
+
+RPi3B+
+Price $35.00
+1.4GHz 64-bit quad-core processor
+wireless LAN, Bluetooth 4.2
+micro SD card
+Full-size HDMI
+1GB LPDDR2 SDRAM
+4 USB 2.0 ports
+Gigabit Ethernet over USB 2.0 (maximum throughput 300 Mbps)
+Micro SD port
+CSI camera port for connecting a Raspberry Pi camera
+DSI display port for connecting a Raspberry Pi touchscreen display
+Size 85mm x 45mm 3.34646in x 1.77165in
