@@ -82,7 +82,7 @@ TTCPThread = class(TManagedThread)
      destructor Destroy; override;
      procedure ProcessingData(procSock: TSocket;SockData: string);
      {procedure ProcessEncryptDecrypt(SockData: string;ProgWindow:TWindowHandle);}
-     procedure ProcessEncryptDecrypt(SockData: string);
+     procedure ProcessEncryptDecrypt(procSock: TSocket;SockData: string);
      Property Number: integer read Fnumber Write FNumber;
 end;
 
@@ -389,7 +389,7 @@ begin
 end;
 
 {procedure TTCPThread.ProcessEncryptDecrypt(SockData : string;ProgWindow:TWindowHandle);}
-procedure TTCPThread.ProcessEncryptDecrypt(SockData: string);
+procedure TTCPThread.ProcessEncryptDecrypt(procSock: TSocket;SockData: string);
 {112345678901234567890123456789012:My Secret IV:My Extra Secret AAD:The quick brown The quick brown The quick brown The quick brown The quick brown The quick brown}
 {212345678901234567890123456789012:My Secret IV:My Extra Secret AAD:}
 type
@@ -444,6 +444,7 @@ var
   MyAAD: AnsiString = 'My Extra Secret AAD';
   MyData: AnsiString = 'The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.';
   MyResult: AnsiString;
+  EOL: AnsiString;
   Key: PByte;
   IV: PByte;
   AAD: PByte;
@@ -452,7 +453,9 @@ var
   Tag: PByte;
   testptr:PByte;
 begin
-   
+  EOL:='  ';
+  EOL[1]:=char(13);
+  EOL[2]:=char(10); 
   DatainLen:=Length(SockData);
   newstr:=RightStr(SockData,DatainLen-1);
   teststr:=LeftStr(SockData,1);
@@ -534,7 +537,9 @@ WriteLn('without no EOL lendata ',IntToStr(lendata));
   if AESGCMEncryptData(Key, Length(MyKey), IV, AAD, Plain, Crypt, Length(MyIV), Length(MyAAD), lendata, Tag) then
   begin
     WriteLn('AES GCM Encrypt Success');
-    BinCryptStr1:=BytesToString(Crypt,lendata); 
+    BinCryptStr1:=BytesToString(Crypt,lendata);
+    fSock.SendString(BinCryptStr1);
+    fSock.SendString(EOL); 
     WriteLn('Bytes from Crypt ');
     {Clear the plain buffer}
     FillChar(Plain^, lendata, 0);
@@ -565,11 +570,15 @@ WriteLn('without no EOL lendata ',IntToStr(lendata));
 WriteLn('Tag '+Hexstr(@Tag));
       {Copy the result}
       SetString(PlainStr, PAnsiChar(Plain), lendata);
+      fSock.SendString(PlainStr);
+      fSock.SendString(EOL);
       WriteLn('Ascii PlainStr is ' + PlainStr);
       GCM1.PlainStr:=PlainStr;
       //SetString(MyResult, PAnsiChar(Crypt), lendata);
       EncryptionTag:=BytesToString(Tag,AES_BLOCK_SIZE);
       GCM1.EncryptionTag2:=EncryptionTag;
+      fSock.SendString(EncryptionTag);
+      fSock.SendString(EOL);
     WriteLn('EncryptionTag ', EncryptionTag);
       for CC:= 0 to lendata - 1 do
     begin
@@ -785,6 +794,8 @@ WriteLn('Tag '+Hexstr(@Tag));
 
       {Copy the result}
       SetString(PlainStr, PAnsiChar(Plain), lendata);
+      fSock.SendString(PlainStr);
+      fSock.SendString(EOL);
       WriteLn('Ascii PlainStr is ' + PlainStr);
       GCM2.PlainStr:=PlainStr;
       //SetString(MyResult, PAnsiChar(Crypt), lendata);
@@ -820,504 +831,17 @@ FreeMem(testptr);
 
 end;
 {**************************end decryption**************************}
-{**************************decryption with encrypt**************************}
+{**************************3**************************}
 if (teststr='3') then
 begin
-  WriteLn('3');
-  GCM3.SockData:=SockData;
-WriteLn('Key '+MyKey);
-WriteLn('IV '+MyIV);
-WriteLn('AAD '+MyAAD);
-WriteLn('Data '+MyData);
-comindex:=LastDelimiter('\.:',SockData);
-WriteLn('index where data '+IntToStr(comindex));
-MyData:=RightStr(SockData,DatainLen-comindex);
- 
-DatainLen:=Length(MyData);
-WriteLn('MyData '+MyData+ 'Length with EOL '+IntToStr(DatainLen));
-{Since MyData has EOL.  The above WriteLn writes the DatainLen on a new line} 
-SockData:=LeftStr(SockData,comindex-1);
-comindex:=LastDelimiter('\.:',SockData); 
-DatainLen:=Length(SockData);
-WriteLn('SockData '+SockData + ' '+IntToStr(DatainLen));
 
-comindex:=LastDelimiter('\.:',SockData);
-WriteLn('index where AAD '+IntToStr(comindex));
-MyAAD:=RightStr(SockData,DatainLen-comindex);
-WriteLn('MyAAD '+MyAAD);
-SockData:=LeftStr(SockData,comindex-1);
- 
-DatainLen:=Length(SockData);
-WriteLn('SockData '+SockData+ ' '+IntToStr(DatainLen));
-comindex:=LastDelimiter('\.:',SockData);
-WriteLn('index where IV '+IntToStr(comindex));
-MyIV:=RightStr(SockData,DatainLen-comindex);
-WriteLn('MyIV '+MyIV);
-SockData:=LeftStr(SockData,comindex-1);
-
-DatainLen:=Length(SockData);
-WriteLn('SockData '+SockData+ ' '+IntToStr(DatainLen));
-MyKey:=RightStr(SockData,DatainLen-2);
-WriteLn('MyKey '+MyKey);
-  GCM3.MyKey:=MyKey;
-  GCM3.MyIV:=MyIV;
-  GCM3.MyAAD:=MyAAD;
-
-
-cryptstr:=MyData;
-
-{WriteLn('cryptstr '+cryptstr + ' ' + IntToStr(Length(cryptstr)));}
-WriteLn('cryptstr '+cryptstr);
-DatainLen:=Length(cryptstr);
- 
-lendata:=(Length(MyData) - 2) div 2;
-WriteLn('without no EOL lendata ',IntToStr(lendata));  
-  testptr := AllocMem(lendata);
-  Crypt := AllocMem(lendata);
-StringToBytes(cryptstr,PByte(testptr),lendata);
-MyResult:=BytesToString(testptr,lendata);
-WriteLn('MyResult '+MyResult);
-
-StringToBytes(cryptstr,PByte(Crypt),lendata);
-
-WriteLn('testptr '+Hexstr(@testptr)+ 'Crypt '+Hexstr(@Crypt));
-    for CC:= 0 to lendata - 1 do
-    begin
-    mybyte:=testptr^;
-    Inc(testptr);
-    Write(IntToStr(mybyte)+' ');
-    end;
-    Dec(testptr,lendata);
-    WriteLn(' ');
-    for CC:= 0 to lendata - 1 do
-    begin
-    mybyte:=Crypt^;
-    Inc(Crypt);
-    Write(IntToStr(mybyte)+' ');
-    end;
-    Dec(Crypt,lendata);
-    WriteLn(' ');
-WriteLn('testptr '+Hexstr(@testptr)+ 'Crypt '+Hexstr(@Crypt));
- 
-  Key := AllocMem(Length(MyKey));
-  IV := AllocMem(Length(MyIV));
-  AAD := AllocMem(Length(MyAAD));
-  Plain := AllocMem(lendata);
-   
-  Tag := AllocMem(AES_BLOCK_SIZE);
-  {Copy the values}
-  Move(MyKey[1], Key^, Length(MyKey));
-  Move(MyIV[1], IV^, Length(MyIV));
-  Move(MyAAD[1], AAD^, Length(MyAAD));
-  
-
-{
-WriteLn('IV '+Hexstr(@IV));  
-
-    for CC:= 0 to (Length(MyIV) -1) do
-    begin
-    mybyte:=IV^;
-    Inc(IV);
-    Write(IntToStr(mybyte)+' ');
-    end;
-    Dec(IV,(Length(MyIV) -1));
-    WriteLn(' ');
-WriteLn('IV '+Hexstr(@IV));  
-WriteLn('AAD '+Hexstr(@AAD));  
-
-    for CC:= 0 to (Length(MyAAD) -1) do
-    begin
-    mybyte:=AAD^;
-    Inc(AAD);
-    Write(IntToStr(mybyte)+' ');
-    end;
-    Dec(AAD,(Length(MyAAD) -1));
-    WriteLn(' ');
-WriteLn('AAD '+Hexstr(@AAD)); 
- 
-WriteLn('Key '+Hexstr(@Key));  
-
-    for CC:= 0 to (Length(MyKey) -1) do
-    begin
-    mybyte:=Key^;
-    Inc(Key);
-    Write(IntToStr(mybyte)+' ');
-    end;
-    Dec(Key,(Length(MyKey) -1));
-    WriteLn(' ');
-WriteLn('Key '+Hexstr(@Key)); 
- 
-  {Clear the plain buffer}
-  FillChar(Plain^, lendata, 0);
-WriteLn('Plain '+Hexstr(@Plain));  
-    for CC:= 0 to lendata - 1 do
-    begin
-    mybyte:=Plain^;
-    Inc(Plain);
-    Write(IntToStr(mybyte)+' ');
-    end;
-    Dec(Plain,lendata);
-    WriteLn(' ');
-WriteLn('Plain '+Hexstr(@Plain)); 
-
-} 
-{This did not help 
-StringToBytes('d495df0bc8a0f10d5aba11764e898070',PByte(Tag),AES_BLOCK_SIZE);
-
-going to test adding the encryption here}
-  WriteLn('Key '+MyKey+' '+IntToStr(Length(MyKey)));
-  WriteLn('IV '+MyIV+' '+IntToStr(Length(MyIV)));
-  WriteLn('AAD '+MyAAD+' '+IntToStr(Length(MyAAD)));
-
-  {Clear the crypt buffer}
-  FillChar(Crypt^, lendata, 0);
-   
-  StringToBytes('The quick brown',PByte(Plain),lendata);
-  
-{Encrypt the data}
-  if AESGCMEncryptData(Key, Length(MyKey), IV, AAD, Plain, Crypt, Length(MyIV), Length(MyAAD), lendata, Tag) then
-  begin
-    WriteLn('AES GCM Encrypt Success');
-    BinCryptStr1:=BytesToString(Crypt,lendata); 
-    WriteLn('Bytes from Crypt ');
-    {Clear the plain buffer}
-    FillChar(Plain^, lendata, 0);
-    for CC:= 0 to lendata - 1 do
-    begin
-    mybyte:=Crypt^;
-    Inc(Crypt);
-    Write(IntToStr(mybyte)+' ');
-    end;
-    Dec(Crypt,lendata);
-    WriteLn(' ');
-    EncryptionTag:=BytesToString(Tag,AES_BLOCK_SIZE);
-    GCM3.EncryptionTag1:=EncryptionTag;
-    WriteLn('EncryptionTag ', EncryptionTag);
-    {Decrypt the Data}
-    if AESGCMDecryptData(Key, Length(MyKey), IV, AAD, Crypt, Plain, Length(MyIV), Length(MyAAD), lendata, Tag) then
-    begin
-      WriteLn('AES GCM Decrypt Success');
-    WriteLn('Tag '+Hexstr(@Tag));  
-    for CC:= 0 to AES_BLOCK_SIZE - 1 do
-    begin
-    mybyte:=Tag^;
-    Inc(Tag);
-    Write(IntToStr(mybyte)+' ');
-    end;
-    Dec(Tag,AES_BLOCK_SIZE);
-    WriteLn(' ');
-WriteLn('Tag '+Hexstr(@Tag));
-      {Copy the result}
-      SetString(PlainStr, PAnsiChar(Plain), lendata);
-      GCM3.PlainStr:=PlainStr;
-      WriteLn('Ascii PlainStr is ' + PlainStr);
-      //SetString(MyResult, PAnsiChar(Crypt), lendata);
-      EncryptionTag:=BytesToString(Tag,AES_BLOCK_SIZE);
-      GCM3.EncryptionTag2:=EncryptionTag;
-    WriteLn('EncryptionTag ', EncryptionTag);
-      for CC:= 0 to lendata - 1 do
-    begin
-    mybyte:=Plain^;
-    Inc(Plain);
-    Write(IntToStr(mybyte)+' ');
-    end;
-    Dec(Plain,lendata);
-    WriteLn(' ');
-    
-      {Convert Crypt from Bytes to a String}
-      MyResult:=BytesToString(Crypt,lendata);
-      WriteLn('BytesToString Crypt '+ MyResult );
-      
-    end
-    else
-    begin
-      WriteLn('AES GCM Decrypt Failure');
-    end;
-  end
-  else
-  begin
-    WriteLn('AES GCM Encrypt Failure');
-  end;
-  
-FillChar(Plain^, lendata, 0);
-StringToBytes(cryptstr,PByte(Crypt),lendata); 
-//StringToBytes('d495df0bc8a0f10d5aba11764e898070',PByte(Tag),AES_BLOCK_SIZE);
-EncryptionTagToDecrypt:=BytesToString(PByte(Tag),AES_BLOCK_SIZE);
-WriteLn('Tag '+Hexstr(@Tag));  
-    for CC:= 0 to AES_BLOCK_SIZE - 1 do
-    begin
-    mybyte:=Tag^;
-    Inc(Tag);
-    Write(IntToStr(mybyte)+' ');
-    end;
-    Dec(Tag,AES_BLOCK_SIZE);
-    WriteLn(' ');
-WriteLn('Tag '+Hexstr(@Tag));
-{Decrypt the Data}
-    if AESGCMDecryptData(Key, Length(MyKey), IV, AAD, Crypt, Plain, Length(MyIV), Length(MyAAD), lendata, Tag) then
-    begin
-      WriteLn('AES GCM Decrypt Success');
-
-      {Copy the result}
-      SetString(PlainStr, PAnsiChar(Plain), lendata);
-      WriteLn('Ascii PlainStr is ' + PlainStr);
-      //SetString(MyResult, PAnsiChar(Crypt), lendata);
-    
-      for CC:= 0 to lendata - 1 do
-    begin
-    mybyte:=Plain^;
-    Inc(Plain);
-    Write(IntToStr(mybyte)+' ');
-    end;
-    Dec(Plain,lendata);
-    WriteLn(' ');
-    
-      {Convert Crypt from Bytes to a String}
-      CryptStr:=BytesToString(Crypt,lendata);
-      WriteLn('BytesToString Crypt '+ CryptStr );
-      
-    end
-    else
-    begin
-      WriteLn('AES GCM Decrypt Failure');
-    end;
- 
-FreeMem(Key);
-FreeMem(IV);
-FreeMem(AAD);
-FreeMem(Plain);
-FreeMem(Crypt);
-FreeMem(Tag);
-FreeMem(testptr);
 
 end;
-{**************************end decryption with encrypt**************************}
+{**************************end 3**************************}
 if (teststr='4') then
     WriteLn('4');
 
-{First let's list the contents of the SD card. We can guess that it will be C:\
-  drive because we didn't include the USB host driver.}
- WriteLn('Contents of drive C:\');
 
- {To list the contents we need to use FindFirst/FindNext, start with FindFirst}
- if FindFirst('C:\*.*',faAnyFile,SearchRec) = 0 then
-  begin
-   {If FindFirst succeeds it will return 0 and we can proceed with the search}
-   repeat
-    {Print the file found to the screen}
-    //WriteLn('Filename is ' + SearchRec.Name + ' - Size is ' + IntToStr(SearchRec.Size) + ' - Time is ' + DateTimeToStr(FileDateToDateTime(SearchRec.Time)));
-
-   {We keep calling FindNext until there are no more files to find}
-   until FindNext(SearchRec) <> 0;
-  end;
-
-{After any call to FindFirst, you must call FindClose or else memory will be leaked}
- FindClose(SearchRec);
- WriteLn('');
-{Let's try creating a file and writing some text to it, we'll assign our filename
-   to a variable.}
-  if (teststr='1') then
-  begin 
-  Filename:='C:\test0605encrypt.txt';
-  end;
-  if (teststr='2') then
-  begin 
-  Filename:='C:\test0605decrypt.txt';
-  end;
-    if (teststr='3') then
-  begin 
-  Filename:='C:\test0606.txt';
-  end;  
-  
-  {We should check if the file exists first before trying to create it}
-  WriteLn('Checking to see if ' + Filename + ' exists');
-  if FileExists(Filename) then
-   begin
-    {If it does exist we can delete it}
-    WriteLn('Deleting the file ' + Filename);
-    DeleteFile(PChar(Filename));
-   end;
-
-  {Now create the file, let's use a TFileStream class to do this. We pass both the
-   filename and the mode to TFileStream. fmCreate tells it to create a new file.}
-  WriteLn('Creating a new file ' + Filename);
-  {TFileStream will raise an exception if creating the file fails}
-  try
-   FileStream:=TFileStream.Create(Filename,fmCreate);
-
-   {We've created the file, now we need to write some content to it, we can use
-    a TStringList for that but there are many other ways as well.}
-   StringList:=TStringList.Create;
-
-   {Add some text to our string list}
-   if (teststr='1') then
-   begin
-  StringList.Add('encrypt'); 
-  StringList.Add(GCM1.SockData);
-  StringList.Add('GCM1.PlainStr');
-  StringList.Add(GCM1.PlainStr);
-  StringList.Add('GCM1.EncryptionTag1'); 
-  StringList.Add(GCM1.EncryptionTag1);
-  StringList.Add('GCM1.EncryptionTag2'); 
-  StringList.Add(GCM1.EncryptionTag2);
-  StringList.Add('GCM1.MyKey');
-  StringList.Add(GCM1.MyKey);
-  StringList.Add('GCM1.MyIV');
-  StringList.Add(GCM1.MyIV);
-  StringList.Add('GCM1.MyAAD');
-  StringList.Add(GCM1.MyAAD);
-  {
- StringList.Add('Key');
- StringList.Add(MyKey);
- StringList.Add('IV');
- StringList.Add(MyIV);
- StringList.Add('AAD');
- StringList.Add(MyAAD);
- }
- StringList.Add('Decrypted');
- StringList.Add(PlainStr);
- 
- StringList.Add('EncryptionTag');
- StringList.Add(EncryptionTag);
- StringList.Add('Bytes Crypt');
-  StringList.Add(BinCryptStr1);
-  
- 
- end;
- if (teststr='2') then
-   begin
- StringList.Add('decrypt');
- StringList.Add(GCM2.SockData);
- StringList.Add('GCM2.tagstr');
- StringList.Add(GCM2.tagstr);
- StringList.Add('GCM2.PlainStr');
- StringList.Add(GCM2.PlainStr);
- StringList.Add('GCM2.EncryptionTag2'); 
- StringList.Add(GCM2.EncryptionTag2);
-   StringList.Add('GCM2.MyKey');
-  StringList.Add(GCM2.MyKey);
-  StringList.Add('GCM2.MyIV');
-  StringList.Add(GCM2.MyIV);
-  StringList.Add('GCM2.MyAAD');
-  StringList.Add(GCM2.MyAAD);
-
- StringList.Add('GCM2.EncryptionTagToDecrypt');
- StringList.Add(GCM2.EncryptionTagToDecrypt);
-  StringList.Add('MyKey');
-  StringList.Add(GCM2.MyKey);
-  StringList.Add('MyIV');
-  StringList.Add(GCM2.MyIV);
-  StringList.Add('MyAAD');
-  StringList.Add(GCM2.MyAAD);
-  {
- StringList.Add('Key');
- StringList.Add(MyKey);
- StringList.Add('IV');
- StringList.Add(MyIV);
- StringList.Add('AAD');
- StringList.Add(MyAAD);
- }
- StringList.Add('Decrypted');
- StringList.Add(CryptStr1);
-  
- StringList.Add('EncryptionTag');
- StringList.Add(EncryptionTag);
- StringList.Add('EncryptionTagToDecrypt');
- StringList.Add(EncryptionTagToDecrypt);
- 
-   end;
-   if (teststr='3') then
-   begin
-  StringList.Add('encrypt/decrypt decrypt');
-  StringList.Add(GCM3.SockData);
-    StringList.Add('GCM3.PlainStr');
-  StringList.Add(GCM3.PlainStr);
-  StringList.Add('GCM3.EncryptionTag1'); 
-  StringList.Add(GCM3.EncryptionTag1);
-  StringList.Add('GCM3.EncryptionTag2'); 
-  StringList.Add(GCM3.EncryptionTag2);
-  StringList.Add('GCM3.MyKey');
-  StringList.Add(GCM3.MyKey);
-  StringList.Add('GCM3.MyIV');
-  StringList.Add(GCM3.MyIV);
-  StringList.Add('GCM3.MyAAD');
-  StringList.Add(GCM3.MyAAD);
- {
- StringList.Add('Key');
- StringList.Add(MyKey);
- StringList.Add('IV');
- StringList.Add(MyIV);
- StringList.Add('AAD');
- StringList.Add(MyAAD);
- }
- StringList.Add('Decrypted');
- StringList.Add(PlainStr);
- 
- StringList.Add('EncryptionTag');
- StringList.Add(EncryptionTag);
- StringList.Add('Bytes Crypt');
-  StringList.Add(BinCryptStr1);
-  
- 
- end;
-   
-  {Since TStringList has a SaveToStream method, we can just call that to write
-   all the strings to our new file.}
-  WriteLn('Saving the TStringList to the file');
-  StringList.SaveToStream(FileStream);
- {Iterate the strings and print them to the screen}
-    WriteLn('The contents of the file are:');
-    for Count:=0 to StringList.Count - 1 do
-     begin
-      WriteLn(StringList.Strings[Count]);
-     end;
-  {With that done we can close the file and free the string list}
-   WriteLn('Closing the file');
-   WriteLn('');
-   FileStream.Free;
-   StringList.Free;
-
-   {Did it work? Let's open the file and display it on screen to see.}
-   WriteLn('Opening the file ' + Filename);
-   try
-    FileStream:=TFileStream.Create(Filename,fmOpenReadWrite);
-
-    {Recreate our string list}
-    StringList:=TStringList.Create;
-    StringList.Add('ASC & Hex key');
-    StringList.Add(MyResult);
-    SetString(MyResult, PAnsiChar(Crypt), Length(MyData));
-    StringList.Add(MyResult);
-    
-    {And use LoadFromStream to read it}
-    WriteLn('Loading the TStringList from the file');
-    StringList.LoadFromStream(FileStream);
-
-    {Iterate the strings and print them to the screen}
-    {
-    WriteLn('The contents of the file are:');
-    for Count:=0 to StringList.Count - 1 do
-     begin
-      WriteLn(StringList.Strings[Count]);
-     end;
-    }
-    {Close the file and free the string list again}
-    WriteLn('Closing the file');
-    WriteLn('');
-    FileStream.Free;
-    StringList.Free;
-
-    {If you remove the SD card and put in back in your computer, you should see the
-     file "Example 08 File Handling.txt" on it. If you open it in a notepad you should
-     see the contents exactly as they appeared on screen.}
-   except
-    {TFileStream couldn't open the file}
-    WriteLn('Failed to open the file ' + Filename);
-   end;
-  except
-   {Something went wrong creating the file}
-   WriteLn('Failed to create the file ' + Filename);
-  end;
 end;
 procedure TTCPThread.ProcessingData(procSock: TSocket; SockData: string);
 begin
@@ -1327,7 +851,7 @@ begin
    WriteLn(SockData+#32+'we get it from '+IntToStr(number)+' thread');
    //ProcessFpga(Data,TTCPThread.WindowHandle);
    //WriteLn('Calling ProcessFpga');
-   ProcessEncryptDecrypt(SockData);
+   ProcessEncryptDecrypt(procSock,SockData);
    //WriteLn(SockData);
    end;
 end;

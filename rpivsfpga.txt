@@ -28,3 +28,29 @@ Micro SD port
 CSI camera port for connecting a Raspberry Pi camera
 DSI display port for connecting a Raspberry Pi touchscreen display
 Size 85mm x 45mm 3.34646in x 1.77165in
+
+
+ZipCPU: Can you take a look with a critical eye at these two PDFs. and give a fair opinion.
+<develonepi3> "https://github.com/develone/Ultibo_Projects/blob/master/rpi3b%2Ba7fpga.pdf" and 
+<develonepi3> "https://github.com/develone/Ultibo_Projects/blob/master/Crypto-Socket/doc/Crypto-Socker.pdf" I am interested in both FPGA and Bare Metal RPi.Just trying to determine where to invest my time. 
+<ZipCPU> What is your goal?
+<develonepi3> Not time but my money.  Lost a lot time with CATBoard since, this was one of kind that Dave just drift into the realm of unsupported hardware.
+<ZipCPU> If you are trying to compare/contrast which is better, an RPi or an FPGA, my answer would be: it depends.  It depends upon what you are trying to do.
+<ZipCPU> Are you trying to become a good FGPA designer?  That's one goal.  Are you trying to accomplish a particular problem, such as JPEG2K or encryption/decryption?  That would be another goal
+<ZipCPU> If your goal was JPEG2K, the CATBoard ... wasn't really ready for the task.  It couldn't support the I/O bandwidth you needed in order to beat the RPI
+<develonepi3> My Goal was at one point data compression with jpeg 2000 and KLT or SVD for numerical data.  This was running on a PC many years ago.
+<ZipCPU> You managed to get that running on an RPI quite nicely, right?
+<develonepi3> Only as 2 not integrated code.  Not like I had with Java.  I only have the a demo software.  The Java and C JPEG are very different.  Java appears seem to be loosing support.  Bare Metal RPi is in Pascal with C routines. 
+<ZipCPU> So is your goal then to still do JPEG2K?
+If I had a customer other than myself. 
+<ZipCPU> So, is your goal instead to learn about the tools well enough to be prepared then for having such a customer?
+<ZipCPU> I ask because you have the two options in front of you--if your goal is to learn about the tools, you might be able to select between the two
+<ZipCPU> Which tool set do you want to learn?  There's a lot you could do going bare metal with the RPi.  There's no reason why you need to stick with either Java or Pascal
+<ZipCPU> There's also a lot you could do with Xilinx boards, such as the Arty
+<ZipCPU> I think in general the JPEG2K problem will remain limited by memory bandwidth
+<ZipCPU> I know the ZipCPU didn't use it's memory bandwidth very well on the Arty--it could do a lot better.  The RPi did a much nicer job with its memory bandwidth, but not nearly as nice when also running Linux (if I recall correctly)
+<ZipCPU> I have an upgrade to the ZipCPU that would do a better job with its memory bandwidth, but its currently an (unfunded) work in progress.
+<ZipCPU> Xilinx has also tried to play into this space by creating Zynq designs.  Imagine a Zynq to be like an RPi, but with the FPGA logic hanging right off of the core bus.  You could easily get the best of both works.
+<ZipCPU> That said, I'm not sure I'd recommend it to you at all.
+<ZipCPU> Zynq's are ... more challenging to work with, and most of Xilinx's demos are broken in one way or another
+ZipCPU I do have a Zedboard that is collecting dust. It uses a very old version of Yocto "https://github.com/develone/zedboard_yocto/blob/master/doc/Zedboard_Yocto_test.pdf"
