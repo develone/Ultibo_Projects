@@ -2,4 +2,17 @@
 #echo $PATH
 #export PATH=/home/devel/ultibo/core/fpc/bin:$PATH
 #echo $PATH
+
+cd Ultibo_Projects/test_crypto/RPi3/
+
+To compile 
+
+fpc -vi -B -Tultibo -Parm -CpARMV7A -WpRPI3B @/home/devel/ultibo/core/fpc/bin/RPI3.CFG -O2 test_crypto.lpr
+
 fpc -vi -B -Tultibo -Parm -CpARMV7A -WpRPI2B @/home/devel/ultibo/core/fpc/bin/RPI2.CFG -O2 test_crypto.lpr
+
+To transfer kernel7.img
+tftp 192.168.1.245 < cmdstftp 
+tftp> tftp> Sent 2701996 bytes in 5.3 seconds
+
+ 
