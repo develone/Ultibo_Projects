@@ -1,0 +1,17 @@
+this are the models used for
+the flying cubes that emit light
+
+"cube_constant_red_01.cob",
+"cube_constant_green_01.cob",
+"cube_constant_blue_01.cob",
+"cube_constant_yellow_01.cob",
+"cube_constant_white_01.cob",
+//-----------------
+"height_grass_40_40_01.bmp" // filename of height bitmap encoded in 256 colors
+"stone256_256_01.bmp" // "grass256_256_01.bmp", //"checker2562562.bmp", // filename of texture map
+//-----------------
+"sunset800_600_03.bmp" // load background image that scrolls
+//-----------------
+Quake game models format
+"md2\\q2mdl-tekkblade\\tris.md2" //the .MD2 model
+"md2\\q2mdl-tekkblade\\blade_black.bmp" // the texture for the mode
