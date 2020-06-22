@@ -1,4 +1,4 @@
-this are the models used for
+these are the models used for
 the flying cubes that emit light
 
 "cube_constant_red_01.cob",
