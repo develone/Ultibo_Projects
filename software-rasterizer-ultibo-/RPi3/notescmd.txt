@@ -1,0 +1,18 @@
+Press
+- 'w' wireframe mode
+- 'b' backface removal
+- 'l' toggle lighting engine completely
+- 'a' - ambient light
+- 'i' - infinite light
+- 'p' - point light
+- 'z' z sorting
+-'1' previous animation
+-'2' next animation
+-'3' replay animation
+-'4' loop animation
+following keys have delay (press longer)
+- up forward
+- down backward
+-left left
+-right right
+
