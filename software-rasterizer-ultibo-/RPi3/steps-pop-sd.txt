@@ -1,0 +1,98 @@
+cp -R ~/Ultibo_Projects/software-rasterizer-ultibo-/RPi3/sdfiles/* .
+tree
+.
+├── config.txt
+├── cube_constant_blue_01.cob
+├── cube_constant_green_01.cob
+├── cube_constant_red_01.cob
+├── cube_constant_white_01.cob
+├── cube_constant_yellow_01.cob
+├── height_grass_40_40_01.bmp
+├── md2
+│   └── q2mdl-tekkblade
+│       ├── blade_black.bmp
+│       └── tris.md2
+├── stone256_256_01.bmp
+└── sunset800_600_03.bmp
+
+2 directories, 11 files
+
+cp ~/firmwar_for_ultibo/022720/* .
+tree
+.
+├── bootcode.bin
+├── config.txt
+├── cube_constant_blue_01.cob
+├── cube_constant_green_01.cob
+├── cube_constant_red_01.cob
+├── cube_constant_white_01.cob
+├── cube_constant_yellow_01.cob
+├── fixup.dat
+├── fixup_x.dat
+├── height_grass_40_40_01.bmp
+├── md2
+│   └── q2mdl-tekkblade
+│       ├── blade_black.bmp
+│       └── tris.md2
+├── start.elf
+├── start_x.elf
+├── stone256_256_01.bmp
+└── sunset800_600_03.bmp
+
+2 directories, 16 files
+
+cp -R ~/Ultibo_Projects/software-rasterizer-ultibo-/RPi3/kernel7.img .
+tree
+.
+├── bootcode.bin
+├── config.txt
+├── cube_constant_blue_01.cob
+├── cube_constant_green_01.cob
+├── cube_constant_red_01.cob
+├── cube_constant_white_01.cob
+├── cube_constant_yellow_01.cob
+├── fixup.dat
+├── fixup_x.dat
+├── height_grass_40_40_01.bmp
+├── kernel7.img
+├── md2
+│   └── q2mdl-tekkblade
+│       ├── blade_black.bmp
+│       └── tris.md2
+├── start.elf
+├── start_x.elf
+├── stone256_256_01.bmp
+└── sunset800_600_03.bmp
+
+2 directories, 17 files
+ 
+telnet 192.168.1.245
+Trying 192.168.1.245...
+Connected to 192.168.1.245.
+Escape character is '^]'.
+
+Ultibo Core (Release: Beetroot Version: 2.0.745 Date: 29 September 2019)
+ (Type HELP for a list of available commands)
+  Directory of C:\
+
+ 24-6-20 10:37:20                1301  config.txt
+ 24-6-20 10:37:20                4598  cube_constant_blue_01.cob
+ 24-6-20 10:37:20                4694  cube_constant_green_01.cob
+ 24-6-20 10:37:20                4709  cube_constant_red_01.cob
+ 24-6-20 10:37:20                4584  cube_constant_white_01.cob
+ 24-6-20 10:37:20                4694  cube_constant_yellow_01.cob
+ 24-6-20 10:37:20                2678  height_grass_40_40_01.bmp
+ 24-6-20 10:37:20       <DIR>          md2
+ 24-6-20 10:37:20              196662  stone256_256_01.bmp
+ 24-6-20 10:37:22             1440054  sunset800_600_03.bmp
+ 24-6-20 10:38:26               52304  bootcode.bin
+ 24-6-20 10:38:28                6745  fixup.dat
+ 24-6-20 10:38:28                9817  fixup_x.dat
+ 24-6-20 10:38:28             2884420  start.elf
+ 24-6-20 10:38:28             3798568  start_x.elf
+ 24-6-20 10:40:06             3754928  kernel7.img
+ 30-12-99 00:00:07                  0  MD2ERROR.TXT
+          16 file(s) 12170756 bytes
+          1 dir(s)
+
+C:\>
