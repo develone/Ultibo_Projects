@@ -397,7 +397,9 @@ static VECTOR4D vp = {0,0,0,1};
 
 // load the md2 object
 Load_Object_MD2(&obj_md2,                            // the loaded md2 file placed in container
-     "md2\\q2mdl-tekkblade\\tris.md2", //  "D:/Games/quakeII/baseq2/players/male/tris.md2",    // the filename of the .MD2 model
+     //"md2\\q2mdl-tekkblade\\tris.md2", //  "D:/Games/quakeII/baseq2/players/male/tris.md2",    // the filename of the .MD2 model
+     "md2\\q2mdl-droideka\\droideka\\tris.md2", //  "D:/Games/quakeII/baseq2/players/male/tris.md2",    // the filename of the .MD2 model
+     //"md2\\q2mdl-wham\\tris.md2", //  "D:/Games/quakeII/baseq2/players/male/tris.md2",    // the filename of the .MD2 model
      &vs, 
      &vp,
      NULL,          
