@@ -27,8 +27,12 @@
 #include <wchar.h>
 
 //#include <ddraw.h>      // needed for defs in T3DLIB1.H 
+/*
 #include "T3DLIB1.H"    // T3DLIB4 is based on some defs in this 
 #include "T3DLIB4.H"
+*/
+#include "t3dlib1.h"    // T3DLIB4 is based on some defs in this 
+#include "t3dlib4.h"
 
 // DEFINES ////////////////////////////////////////////////
 
