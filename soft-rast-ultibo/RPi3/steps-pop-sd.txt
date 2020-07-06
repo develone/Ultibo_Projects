@@ -1,0 +1,174 @@
+cd to-where-micro-sd-card-is-mounted
+
+cp -R ~/Ultibo_Projects/soft-raster-ultibo/RPi3/sdfiles/* .
+tree
+.
+├── bootcode.bin
+├── config.txt
+├── cube_constant_blue_01.cob
+├── cube_constant_green_01.cob
+├── cube_constant_red_01.cob
+├── cube_constant_white_01.cob
+├── cube_constant_yellow_01.cob
+├── fixup.dat
+├── fixup_x.dat
+├── height_grass_40_40_01.bmp
+├── md2
+│   ├── q2mdl-droideka
+│   │   └── droideka
+│   │       ├── bump1.wav
+│   │       ├── ctf_b.bmp
+│   │       ├── ctf_b_i.pcx
+│   │       ├── ctf_b.pcx
+│   │       ├── ctf_r.bmp
+│   │       ├── ctf_r_i.pcx
+│   │       ├── ctf_r.pcx
+│   │       ├── death1.wav
+│   │       ├── death2.wav
+│   │       ├── death3.wav
+│   │       ├── death4.wav
+│   │       ├── droideka_i.pcx
+│   │       ├── droideka.pcx
+│   │       ├── droideka.txt
+│   │       ├── drown.wav
+│   │       ├── fall1.wav
+│   │       ├── fall2.wav
+│   │       ├── gurp1.wav
+│   │       ├── gurp2.wav
+│   │       ├── jump1.wav
+│   │       ├── pain100_1.wav
+│   │       ├── pain100_2.wav
+│   │       ├── pain25_1.wav
+│   │       ├── pain25_2.wav
+│   │       ├── pain50_1.wav
+│   │       ├── pain50_2.wav
+│   │       ├── pain75_1.wav
+│   │       ├── pain75_2.wav
+│   │       ├── pspbrwse.jbf
+│   │       ├── tris.MD2
+│   │       ├── WEAPON.MD2
+│   │       └── WEAPON.PCX
+│   ├── q2mdl-tekkblade
+│   │   ├── blade_black.bmp
+│   │   └── tris.md2
+│   └── q2mdl-wham
+│       ├── bwidow_i.pcx
+│       ├── bwidow.pcx
+│       ├── camo2_i.pcx
+│       ├── camo2.pcx
+│       ├── camo3_i.pcx
+│       ├── camo3.pcx
+│       ├── camodark_i.pcx
+│       ├── camodark.pcx
+│       ├── camo_i.pcx
+│       ├── camo.pcx
+│       ├── ctf_b_i.pcx
+│       ├── ctf_b.pcx
+│       ├── ctf_r.bmp
+│       ├── ctf_r_i.pcx
+│       ├── ctf_r.pcx
+│       ├── desert.bmp
+│       ├── desert_i.pcx
+│       ├── desert.pcx
+│       ├── md2text.txt
+│       ├── pspbrwse.jbf
+│       ├── Readme.txt
+│       ├── tris.MD2
+│       ├── tundra.bmp
+│       ├── tundra_i.pcx
+│       ├── tundra.pcx
+│       ├── weapon.md2
+│       └── weapon.pcx
+├── start.elf
+├── start_x.elf
+├── stone256_256_01.bmp
+└── sunset800_600_03.bmp
+
+5 directories, 75 files 
+
+cp -R ~/Ultibo_Projects/soft-raster-ultibo/RPi3/kernel7.img .
+tree
+.
+├── bootcode.bin
+├── config.txt
+├── cube_constant_blue_01.cob
+├── cube_constant_green_01.cob
+├── cube_constant_red_01.cob
+├── cube_constant_white_01.cob
+├── cube_constant_yellow_01.cob
+├── fixup.dat
+├── fixup_x.dat
+├── height_grass_40_40_01.bmp
+├── kernel7.img
+├── md2
+│   ├── q2mdl-droideka
+│   │   └── droideka
+│   │       ├── bump1.wav
+│   │       ├── ctf_b.bmp
+│   │       ├── ctf_b_i.pcx
+│   │       ├── ctf_b.pcx
+│   │       ├── ctf_r.bmp
+│   │       ├── ctf_r_i.pcx
+│   │       ├── ctf_r.pcx
+│   │       ├── death1.wav
+│   │       ├── death2.wav
+│   │       ├── death3.wav
+│   │       ├── death4.wav
+│   │       ├── droideka_i.pcx
+│   │       ├── droideka.pcx
+│   │       ├── droideka.txt
+│   │       ├── drown.wav
+│   │       ├── fall1.wav
+│   │       ├── fall2.wav
+│   │       ├── gurp1.wav
+│   │       ├── gurp2.wav
+│   │       ├── jump1.wav
+│   │       ├── pain100_1.wav
+│   │       ├── pain100_2.wav
+│   │       ├── pain25_1.wav
+│   │       ├── pain25_2.wav
+│   │       ├── pain50_1.wav
+│   │       ├── pain50_2.wav
+│   │       ├── pain75_1.wav
+│   │       ├── pain75_2.wav
+│   │       ├── pspbrwse.jbf
+│   │       ├── tris.MD2
+│   │       ├── WEAPON.MD2
+│   │       └── WEAPON.PCX
+│   ├── q2mdl-tekkblade
+│   │   ├── blade_black.bmp
+│   │   └── tris.md2
+│   └── q2mdl-wham
+│       ├── bwidow_i.pcx
+│       ├── bwidow.pcx
+│       ├── camo2_i.pcx
+│       ├── camo2.pcx
+│       ├── camo3_i.pcx
+│       ├── camo3.pcx
+│       ├── camodark_i.pcx
+│       ├── camodark.pcx
+│       ├── camo_i.pcx
+│       ├── camo.pcx
+│       ├── ctf_b_i.pcx
+│       ├── ctf_b.pcx
+│       ├── ctf_r.bmp
+│       ├── ctf_r_i.pcx
+│       ├── ctf_r.pcx
+│       ├── desert.bmp
+│       ├── desert_i.pcx
+│       ├── desert.pcx
+│       ├── md2text.txt
+│       ├── pspbrwse.jbf
+│       ├── Readme.txt
+│       ├── tris.MD2
+│       ├── tundra.bmp
+│       ├── tundra_i.pcx
+│       ├── tundra.pcx
+│       ├── weapon.md2
+│       └── weapon.pcx
+├── start.elf
+├── start_x.elf
+├── stone256_256_01.bmp
+└── sunset800_600_03.bmp
+
+5 directories, 76 files 

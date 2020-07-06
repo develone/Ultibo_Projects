@@ -21,11 +21,25 @@ uses
   Framebuffer,
   Ultibo,
   Math,
+uTFTP,Winsock2,
+Shell,
+     ShellFilesystem,
+     ShellUpdate,
+     RemoteShell;
+{ needed for telnet }
+
   Syscalls;
    }
 RaspberryPi3, GlobalConst, GlobalTypes, GlobalConfig, Platform, HeapManager,
-Console, SysUtils, Threads, VC4, Syscalls, Mouse, keyboard, DWCOTG, Framebuffer;
+Console, SysUtils, Threads, VC4, Syscalls, Mouse, keyboard, DWCOTG,
 
+HTTP, WebStatus,uTFTP,Winsock2, Shell, ShellFilesystem, ShellUpdate,
+RemoteShell,       
+  
+
+
+
+Framebuffer;
 {$linklib Testnanogl}
 {$linklib t3dlib1}
 {$linklib t3dlib4}
@@ -55,8 +69,58 @@ var
 
 
   GfxWidth, GfxHeight   : Integer;
+  LeftWindow:TWindowHandle;
+  HTTPListener:THTTPListener;
+ { needed to use ultibo-tftp  }
+ TCP : TWinsock2TCPClient;
+ IPAddress : string;
 
 
+  function WaitForIPComplete : string;
+
+ var
+
+   TCP : TWinsock2TCPClient;
+
+ begin
+
+   TCP := TWinsock2TCPClient.Create;
+
+   Result := TCP.LocalAddress;
+
+   if (Result = '') or (Result = '0.0.0.0') or (Result = '255.255.255.255') then
+
+     begin
+
+       while (Result = '') or (Result = '0.0.0.0') or (Result = '255.255.255.255') do
+
+         begin
+
+           sleep (1500);
+
+           Result := TCP.LocalAddress;
+
+         end;
+
+     end;
+
+   TCP.Free;
+
+ end;
+  procedure Msg (Sender : TObject; s : string);
+
+ begin
+
+   ConsoleWindowWriteLn (LeftWindow, s);
+
+ end;
+  procedure WaitForSDDrive;
+
+ begin
+
+   while not DirectoryExists ('C:\') do sleep (500);
+
+ end;
 
 
   {$IFDEF PLATFORM_QEMU}
@@ -102,6 +166,16 @@ end;
 
 
 begin
+ LeftWindow:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_LEFT,True);
+ WaitForSDDrive;
+ IPAddress := WaitForIPComplete;
+ {Create and start the HTTP Listener for our web status page}
+ {Create and start the HTTP Listener for our web status page}
+ HTTPListener:=THTTPListener.Create;
+ HTTPListener.Active:=True;
+
+ {Register the web status page, the "Thread List" page will allow us to see what is happening in the example}
+ WebStatusRegister(HTTPListener,'','',True);
   { Add your program code here }
   ThreadSetCPU(ThreadGetCurrent, CPU_ID_3);
   Sleep(RUNDELAY);

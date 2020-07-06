@@ -29,16 +29,16 @@
 //#include <ctype.h>
 
 //#include <ddraw.h>      // needed for defs in T3DLIB1.H 
-#include "T3DLIB1.H"
-#include "T3DLIB4.H"
-#include "T3DLIB5.H"
-#include "T3DLIB6.H"
-#include "T3DLIB7.H"
-#include "T3DLIB8.H"
-#include "T3DLIB9.H"
-#include "T3DLIB10.H"
-#include "T3DLIB11.H"
-#include "T3DLIB12.H"
+#include "t3dlib1.h"
+#include "t3dlib4.h"
+#include "t3dlib5.h"
+#include "t3dlib6.h"
+#include "t3dlib7.h"
+#include "t3dlib8.h"
+#include "t3dlib9.h"
+#include "t3dlib10.h"
+#include "t3dlib11.h"
+#include "t3dlib12.h"
 
 
 

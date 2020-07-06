@@ -30,8 +30,8 @@
 
 
 //#include <ddraw.h>    // directX includes
-/*#include "T3DLIB1.H"*/
 #include "t3dlib1.h"
+
 
 // DEFINES ////////////////////////////////////////////////
 
@@ -3187,7 +3187,7 @@ else
    } // end else
 } // end scroll on x-axis
 
-
+Destroy_Bitmap(&temp_image);
 // return success
 return(1);
 
