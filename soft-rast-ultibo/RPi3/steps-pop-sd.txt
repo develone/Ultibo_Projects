@@ -1,6 +1,6 @@
 cd to-where-micro-sd-card-is-mounted
 
-cp -R ~/Ultibo_Projects/soft-raster-ultibo/RPi3/sdfiles/* .
+cp -R ~/Ultibo_Projects/soft-rast-ultibo/RPi3/sdfiles/* .
 tree
 .
 ├── bootcode.bin
@@ -86,7 +86,7 @@ tree
 
 5 directories, 75 files 
 
-cp -R ~/Ultibo_Projects/soft-raster-ultibo/RPi3/kernel7.img .
+cp -R ~/Ultibo_Projects/soft-rast-ultibo/RPi3/kernel7.img .
 tree
 .
 ├── bootcode.bin
