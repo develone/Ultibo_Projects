@@ -34,9 +34,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "opt/vc/include/GLES/gl.h"
-#include "opt/vc/include/GLES/glext.h"
-//#include "opt/vc/include/GLES2/gl2.h"
+#include "/opt/vc/include/GLES/gl.h"
+#include "/opt/vc/include/GLES/glext.h"
+//#include "/opt/vc/include/GLES2/gl2.h"
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
