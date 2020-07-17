@@ -1,0 +1,23 @@
+create a new folder 
+HelloTiger	HelloTriangle		HelloTriangle2
+cp -R /home/devel/ultibo/core/examples/VideoCoreIV/HelloPi/HelloTriangle/RPi2 .
+git add HelloTriangle.lpi HelloTriangle.lpr README.txt libhello_triangle.a
+cp ../../HelloTeapot/RPi2/cmdstftp .
+cp ../../HelloTeapot/RPi2/uTFTP.pas .
+Djenne_128_128.raw  Lucca_128_128.raw Gaudi_128_128.raw
+~/Ultibo_Projects/HelloTriangle/RPi2 $ tftp 192.168.1.245 < cmdstftp
+tftp> tftp> Sent 3054236 bytes in 12.0 seconds
+
+cp -R /home/devel/ultibo/core/examples/VideoCoreIV/HelloPi/HelloTriangle/RPi2 .
+git add HelloTiger.lpi HelloTiger.lpr README.txt libhello_tiger.a
+cp ../../HelloTeapot/RPi2/cmdstftp .
+cp ../../HelloTeapot/RPi2/uTFTP.pas .
+~/Ultibo_Projects/HelloTiger/RPi2 $ tftp 192.168.1.245 < cmdstftp
+tftp> tftp> Sent 3332836 bytes in 15.8 seconds
+
+cp -R /home/devel/ultibo/core/examples/VideoCoreIV/HelloPi/HelloTriangle2/RPi2 .
+git add HelloTriangle2.lpi HelloTriangle2.lpr README.txt libhello_triangle2.a
+cp ../../HelloTeapot/RPi2/cmdstftp .
+cp ../../HelloTeapot/RPi2/uTFTP.pas .
+~/Ultibo_Projects/HelloTriangle2/RPi2 $ tftp 192.168.1.245 < cmdstftp
+tftp> tftp> Sent 3263148 bytes in 8.2 seconds
