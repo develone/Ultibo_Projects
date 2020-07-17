@@ -24,7 +24,11 @@ Width: 272 Height: 185 Output Color Format: 0x7f000001 Buffer Size: 208896
 No EOS event on image resizer -1
 Completed Hello JPEG
 
+https://github.com/develone/Ultibo_Projects/blob/master/HelloJPEG/RPi2/ultibo.jpeg
+
 Used GIMP to create ultibo.jpg at 90 Q from ultibo.jpeg from original from camera on phone.
+
+telnet xx.xx.xx.xx
 Testing ultibo.jpg
 C:\>del Beetroot.jpg
 C:\ultibo.jpgbo.jpg Beetroot.jpg
@@ -35,6 +39,9 @@ No EOS event on image decoder -1
 No EOS event on image resizer -1
 Completed Hello JPEG
 Do the above results indicate that it failed.
+
+https://github.com/develone/Ultibo_Projects/blob/master/HelloJPEG/RPi2/ultibo1.jpeg
+
 
 create a new folder 
 HelloTiger	HelloTriangle		HelloTriangle2	HelloJPEG
