@@ -1,5 +1,43 @@
+Adding additional projects to  https://github.com/develone/Ultibo_Projects
+Now these projects provide the following.
+1. no need to power down
+2. remove the micro sd card
+3. transfer the  new kernel7.img
+4. replace the micro sd card
+5. power up.
+In addition a web server provides important information about the running Ultibo system.
+
+diff config.txt/nanovg/config.txt config.txt/nanovg-128/config.txt 
+1,2c1,2
+< # uncomment if you get no picture on HDMI for a default "safe" mode
+< #hdmi_safe=1
+---
+> start_x=1
+> gpu_mem=128
+-rw-r--r-- 1 devel devel   61785 Jul 17 11:16 ultibo.jpeg	original from camera on phone.
+-rw-r--r-- 1 devel devel   93018 Jul 17 12:57 ultibo.jpg	90 Q
+-rw-r--r-- 1 devel devel   41576 Jul 17 12:58 ultibo1.jpg	35 
+
+Testing Beetroot.jpg
+Did not receive executing stat -1
+Width: 272 Height: 185 Output Color Format: 0x7f000001 Buffer Size: 208896
+No EOS event on image resizer -1
+Completed Hello JPEG
+
+Used GIMP to create ultibo.jpg at 90 Q from ultibo.jpeg from original from camera on phone.
+Testing ultibo.jpg
+C:\>del Beetroot.jpg
+C:\ultibo.jpgbo.jpg Beetroot.jpg
+C:\>restart
+Result on screen 
+Did not receive executing stat -1
+No EOS event on image decoder -1
+No EOS event on image resizer -1
+Completed Hello JPEG
+Do the above results indicate that it failed.
+
 create a new folder 
-HelloTiger	HelloTriangle		HelloTriangle2
+HelloTiger	HelloTriangle		HelloTriangle2	HelloJPEG
 cp -R /home/devel/ultibo/core/examples/VideoCoreIV/HelloPi/HelloTriangle/RPi2 .
 git add HelloTriangle.lpi HelloTriangle.lpr README.txt libhello_triangle.a
 cp ../../HelloTeapot/RPi2/cmdstftp .
@@ -21,3 +59,11 @@ cp ../../HelloTeapot/RPi2/cmdstftp .
 cp ../../HelloTeapot/RPi2/uTFTP.pas .
 ~/Ultibo_Projects/HelloTriangle2/RPi2 $ tftp 192.168.1.245 < cmdstftp
 tftp> tftp> Sent 3263148 bytes in 8.2 seconds
+
+cp -R /home/devel/ultibo/core/examples/VideoCoreIV/HelloPi/HelloJPEG/RPi2 HelloJPEG/ .
+git add Beetroot.jpg  HelloJPEG.lpi HelloJPEG.lpr README.txt libhello_jpeg.a
+cp ../../HelloTeapot/RPi2/cmdstftp .
+cp ../../HelloTeapot/RPi2/uTFTP.pas .
+git add cmdstftp uTFTP.pas
+~/Ultibo_Projects/HelloJPEG/RPi2 $ tftp 192.168.1.245 < cmdstftp 
+tftp> tftp> Sent 3070744 bytes in 13.6 seconds
