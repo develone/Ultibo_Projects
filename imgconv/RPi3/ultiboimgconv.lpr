@@ -15,17 +15,93 @@ uses
   GlobalTypes,
   Platform,
   Threads,
+  Console,
   SysUtils,
+  UltiboUtils,  {Include Ultibo utils for some command line manipulation}
+  HTTP,         {Include HTTP and WebStatus so we can see from a web browser what is happening}
+  WebStatus,
   Classes,
   Ultibo,
   FPImage, FPWriteXPM, FPWritePNG, FPWriteBMP, FPReadXPM, FPReadPNG, FPReadBMP, fpreadjpeg, fpwritejpeg, fpreadtga, fpwritetga,
-  fpreadpnm, fpwritepnm
+  fpreadpnm, fpwritepnm,
+  uTFTP,
+  Winsock2,
+  { needed to use ultibo-tftp  }
+  { needed for telnet }
+  Shell,
+  ShellFilesystem,
+  ShellUpdate,
+  RemoteShell,
+  { needed for telnet }
+  Logging,
+  Syscalls     {Include the Syscalls unit to provide C library support}
+
   { Add additional units here };
 
 var img : TFPMemoryImage;
-    reader : TFPCustomImageReader;
+     reader : TFPCustomImageReader;
+    //Reader: TFPReaderPNG;
+    //Writer: TFPWriterPNG;
     Writer : TFPCustomimageWriter;
     ReadFile, WriteFile, WriteOptions : string;
+
+    WindowHandle:TWindowHandle;
+    MyPLoggingDevice : ^TLoggingDevice;
+     HTTPListener:THTTPListener;
+    { needed to use ultibo-tftp  }
+    TCP : TWinsock2TCPClient;
+    IPAddress : string;
+
+    function WaitForIPComplete : string;
+
+   var
+
+     TCP : TWinsock2TCPClient;
+
+   begin
+
+     TCP := TWinsock2TCPClient.Create;
+
+     Result := TCP.LocalAddress;
+
+     if (Result = '') or (Result = '0.0.0.0') or (Result = '255.255.255.255') then
+
+       begin
+
+         while (Result = '') or (Result = '0.0.0.0') or (Result = '255.255.255.255') do
+
+           begin
+
+             sleep (1500);
+
+             Result := TCP.LocalAddress;
+
+           end;
+
+       end;
+
+     TCP.Free;
+
+   end;
+
+procedure Msg (Sender : TObject; s : string);
+
+begin
+
+  ConsoleWindowWriteLn (WindowHandle, s);
+
+end;
+
+
+
+procedure WaitForSDDrive;
+
+begin
+
+  while not DirectoryExists ('C:\') do sleep (500);
+
+end;
+
 
 procedure Init;
 var t : char;
@@ -146,5 +222,44 @@ end;
 
 begin
   { Add your program code here }
+
+  {Create a console window as usual}
+  WindowHandle:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_FULL,True);
+
+  ConsoleWindowWriteLn(WindowHandle,'Starting FPImage');
+
+  {Wait a couple of seconds for C:\ drive to be ready}
+  ConsoleWindowWriteLn(WindowHandle,'Waiting for drive C:\');
+  while not DirectoryExists('C:\') do
+   begin
+    {Sleep for a second}
+    Sleep(1000);
+   end;
+  // wait for IP address and SD Card to be initialised.
+  WaitForSDDrive;
+  IPAddress := WaitForIPComplete;
+  {Wait a few seconds for all initialization (like filesystem and network) to be done}
+  Sleep(5000);
+  ConsoleWindowWriteLn(WindowHandle,'C:\ drive is ready');
+  ConsoleWindowWriteLn(WindowHandle,'');
+
+
+  ConsoleWindowWriteLn (WindowHandle, 'Local Address ' + IPAddress);
+  SetOnMsg (@Msg);
+  {Create and start the HTTP Listener for our web status page}
+  {HTTPListener:=THTTPListener.Create;
+  HTTPListener.Active:=True;
+  {Register the web status page, the "Thread List" page will allow us to see what is happening in the example}
+  WebStatusRegister(HTTPListener,'','',True);}
+   ConsoleWindowWriteLn(WindowHandle,'Completed setting up WebStatus & IP');
+ HTTPListener:=THTTPListener.Create;
+ HTTPListener.Active:=True;
+ {Register the web status page, the "Thread List" page will allow us to see what is happening in the example}
+ WebStatusRegister(HTTPListener,'','',True);
+ Reader := TFPReaderPNG.create;
+ //reader =: ImageRead (Str:TStream; Img:TFPCustomImage);
+ {Halt the main thread here}
+ ThreadHalt(0);
+
 end.
 
