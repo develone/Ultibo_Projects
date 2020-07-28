@@ -258,8 +258,8 @@ begin
  ConsoleWindowWriteLn(WindowHandle,'Initing');
  Reader := TFPReaderBMP.create;
  ConsoleWindowWriteLn(WindowHandle,'Reader bmp');
- Writer := TFPWriterPNG.Create;
- ConsoleWindowWriteLn(WindowHandle,'Writer png');
+ Writer := TFPWriterJPEG.Create;
+ ConsoleWindowWriteLn(WindowHandle,'Writer jpg');
  ReadFile := 'lena_rgb_2048.bmp';
  img := TFPMemoryImage.Create(0,0);
  img.UsePalette:=false;
@@ -270,10 +270,10 @@ begin
  else
     ConsoleWindowWriteLn(WindowHandle,'reader is not assigned');
  ReadImage;
- WriteFile := 'lena_rgb_2048.png';
- WriteOptions := 'P';
+ WriteFile := 'lena_rgb_2048.jpg';
+ WriteOptions := 'J';
 
- ConsoleWindowWriteLn(WindowHandle,'Calling WriteImage WriteFile '+'lena_rgb_2048.png WriteOption P');
+ ConsoleWindowWriteLn(WindowHandle,'Calling WriteImage WriteFile '+'lena_rgb_2048.png WriteOption J');
 
 
  WriteImage;
