@@ -7,7 +7,7 @@ program ultiboimgconv;
 {  required and create new units by selecting File, New Unit from the menu.    }
 {                                                                              }
 {  To compile your program select Run, Compile (or Run, Build) from the menu.  }
-
+{_$define UseFile}
 uses
   RaspberryPi3,
   GlobalConfig,
@@ -39,11 +39,9 @@ uses
   { Add additional units here };
 
 var img : TFPMemoryImage;
-     reader : TFPCustomImageReader;
-    //Reader: TFPReaderPNG;
-    //Writer: TFPWriterPNG;
-    Writer : TFPCustomimageWriter;
-    ReadFile, WriteFile, WriteOptions : string;
+reader : TFPCustomImageReader;
+Writer : TFPCustomimageWriter;
+ReadFile, WriteFile, WriteOptions : string;
 
     WindowHandle:TWindowHandle;
     MyPLoggingDevice : ^TLoggingDevice;
@@ -226,7 +224,7 @@ begin
   {Create a console window as usual}
   WindowHandle:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_FULL,True);
 
-  ConsoleWindowWriteLn(WindowHandle,'Starting FPImage');
+  ConsoleWindowWriteLn(WindowHandle,'Starting FPImage Imgconv');
 
   {Wait a couple of seconds for C:\ drive to be ready}
   ConsoleWindowWriteLn(WindowHandle,'Waiting for drive C:\');
@@ -251,13 +249,36 @@ begin
   HTTPListener.Active:=True;
   {Register the web status page, the "Thread List" page will allow us to see what is happening in the example}
   WebStatusRegister(HTTPListener,'','',True);}
-   ConsoleWindowWriteLn(WindowHandle,'Completed setting up WebStatus & IP');
- HTTPListener:=THTTPListener.Create;
- HTTPListener.Active:=True;
+  ConsoleWindowWriteLn(WindowHandle,'Completed setting up WebStatus & IP');
+  HTTPListener:=THTTPListener.Create;
+  HTTPListener.Active:=True;
  {Register the web status page, the "Thread List" page will allow us to see what is happening in the example}
  WebStatusRegister(HTTPListener,'','',True);
- Reader := TFPReaderPNG.create;
- //reader =: ImageRead (Str:TStream; Img:TFPCustomImage);
+
+ ConsoleWindowWriteLn(WindowHandle,'Initing');
+ Reader := TFPReaderBMP.create;
+ ConsoleWindowWriteLn(WindowHandle,'Reader bmp');
+ Writer := TFPWriterPNG.Create;
+ ConsoleWindowWriteLn(WindowHandle,'Writer png');
+ ReadFile := 'lena_rgb_2048.bmp';
+ img := TFPMemoryImage.Create(0,0);
+ img.UsePalette:=false;
+ ConsoleWindowWriteLn(WindowHandle,'  img create & UsePalette false');
+ ConsoleWindowWriteLn(WindowHandle,'Calling ReadImage ReadFile '+'lena_rgb_2048.bmp');
+ if assigned (reader) then
+    ConsoleWindowWriteLn(WindowHandle,'reader is assigned')
+ else
+    ConsoleWindowWriteLn(WindowHandle,'reader is not assigned');
+ ReadImage;
+ WriteFile := 'lena_rgb_2048.png';
+ WriteOptions := 'P';
+
+ ConsoleWindowWriteLn(WindowHandle,'Calling WriteImage WriteFile '+'lena_rgb_2048.png WriteOption P');
+
+
+ WriteImage;
+ Clean;
+ //28-7-20 01:40:22            12583034  lena_rgb_2048.bmp
  {Halt the main thread here}
  ThreadHalt(0);
 
