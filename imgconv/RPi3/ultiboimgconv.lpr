@@ -42,7 +42,8 @@ var img : TFPMemoryImage;
 reader : TFPCustomImageReader;
 Writer : TFPCustomimageWriter;
 ReadFile, WriteFile, WriteOptions : string;
-
+   INPUTFILETYPE,OUTPUTFILETYPE: String;
+   INPUTFILE,OUTPUTFILE: String;
     WindowHandle:TWindowHandle;
     MyPLoggingDevice : ^TLoggingDevice;
      HTTPListener:THTTPListener;
@@ -225,7 +226,17 @@ begin
   WindowHandle:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_FULL,True);
 
   ConsoleWindowWriteLn(WindowHandle,'Starting FPImage Imgconv');
-
+    // Prompt for file type
+ {ConsoleWindowWrite(WindowHandle,'Enter Input file type (X for XPM, P for PNG, B for BMP, J for JPEG, T for TGA): ');
+ ConsoleWindowReadLn(WindowHandle,INPUTFILEType);
+ ConsoleWindowWrite(WindowHandle,'Enter Output file type (X for XPM, P for PNG, B for BMP, J for JPEG, T for TGA): ');
+ ConsoleWindowReadLn(WindowHandle,OUTPUTFILEType);
+ ConsoleWindowWrite(WindowHandle,'Enter Input file ');
+ ConsoleWindowReadLn(WindowHandle,INPUTFILE);
+ ConsoleWindowWrite(WindowHandle,'Enter Output file ');
+ ConsoleWindowReadLn(WindowHandle,OUTPUTFILE);
+ ConsoleWindowWriteln(WindowHandle,  INPUTFILEType+' '+INPUTFILE);
+ ConsoleWindowWriteln(WindowHandle,  OUTPUTFILEType+' '+OUTPUTFILE);}
   {Wait a couple of seconds for C:\ drive to be ready}
   ConsoleWindowWriteLn(WindowHandle,'Waiting for drive C:\');
   while not DirectoryExists('C:\') do
@@ -260,25 +271,28 @@ begin
  ConsoleWindowWriteLn(WindowHandle,'Reader bmp');
  Writer := TFPWriterJPEG.Create;
  ConsoleWindowWriteLn(WindowHandle,'Writer jpg');
+
  ReadFile := 'lena_rgb_2048.bmp';
+ WriteFile := 'lena_rgb_2048.jpg';
+ WriteOptions := 'J';
+
  img := TFPMemoryImage.Create(0,0);
  img.UsePalette:=false;
+
  ConsoleWindowWriteLn(WindowHandle,'  img create & UsePalette false');
- ConsoleWindowWriteLn(WindowHandle,'Calling ReadImage ReadFile '+'lena_rgb_2048.bmp');
+ ConsoleWindowWriteLn(WindowHandle,'Calling ReadImage ReadFile '+ReadFile);
  if assigned (reader) then
     ConsoleWindowWriteLn(WindowHandle,'reader is assigned')
  else
     ConsoleWindowWriteLn(WindowHandle,'reader is not assigned');
  ReadImage;
- WriteFile := 'lena_rgb_2048.jpg';
- WriteOptions := 'J';
 
- ConsoleWindowWriteLn(WindowHandle,'Calling WriteImage WriteFile '+'lena_rgb_2048.png WriteOption J');
+ ConsoleWindowWriteLn(WindowHandle,'Calling WriteImage WriteFile '+WriteFile +' ' + WriteOptions);
 
 
  WriteImage;
  Clean;
- //28-7-20 01:40:22            12583034  lena_rgb_2048.bmp
+
  {Halt the main thread here}
  ThreadHalt(0);
 
