@@ -381,9 +381,12 @@ typedef struct opj_cparameters {
     OPJ_UINT32 numpocs;
     /** number of layers */
     int tcp_numlayers;
-    /** rates of layers - might be subsequently limited by the max_cs_size field */
+    /** rates of layers - might be subsequently limited by the max_cs_size field.
+     * Should be decreasing. 1 can be
+     * used as last value to indicate the last layer is lossless. */
     float tcp_rates[100];
-    /** different psnr for successive layers */
+    /** different psnr for successive layers. Should be increasing. 0 can be
+     * used as last value to indicate the last layer is lossless. */
     float tcp_distoratio[100];
     /** number of resolutions */
     int numresolution;
@@ -545,7 +548,7 @@ typedef struct opj_dparameters {
     /** Verbose mode */
     OPJ_BOOL m_verbose;
 
-    /** tile number ot the decoded tile*/
+    /** tile number of the decoded tile */
     OPJ_UINT32 tile_index;
     /** Nb of tile to decode */
     OPJ_UINT32 nb_tile_to_decode;
@@ -1175,7 +1178,8 @@ OPJ_API void OPJ_CALLCONV opj_stream_set_skip_function(opj_stream_t* p_stream,
         opj_stream_skip_fn p_function);
 
 /**
- * Sets the given function to be used as a seek function, the stream is then seekable.
+ * Sets the given function to be used as a seek function, the stream is then seekable,
+ * using SEEK_SET behavior.
  * @param       p_stream    the stream to modify
  * @param       p_function  the function to use a skip function.
 */
@@ -1310,6 +1314,9 @@ OPJ_API OPJ_BOOL OPJ_CALLCONV opj_setup_decoder(opj_codec_t *p_codec,
  * number, or "ALL_CPUS". If OPJ_NUM_THREADS is set and this function is called,
  * this function will override the behaviour of the environment variable.
  *
+ * Currently this function must be called after opj_setup_decoder() and
+ * before opj_read_header().
+ *
  * Note: currently only has effect on the decompressor.
  *
  * @param p_codec       decompressor handler
@@ -1333,11 +1340,52 @@ OPJ_API OPJ_BOOL OPJ_CALLCONV opj_read_header(opj_stream_t *p_stream,
         opj_codec_t *p_codec,
         opj_image_t **p_image);
 
+
+/** Restrict the number of components to decode.
+ *
+ * This function should be called after opj_read_header().
+ *
+ * This function enables to restrict the set of decoded components to the
+ * specified indices.
+ * Note that the current implementation (apply_color_transforms == OPJ_FALSE)
+ * is such that neither the multi-component transform at codestream level,
+ * nor JP2 channel transformations will be applied.
+ * Consequently the indices are relative to the codestream.
+ *
+ * Note: opj_decode_tile_data() should not be used together with opj_set_decoded_components().
+ *
+ * @param   p_codec         the jpeg2000 codec to read.
+ * @param   numcomps        Size of the comps_indices array.
+ * @param   comps_indices   Array of numcomps values representing the indices
+ *                          of the components to decode (relative to the
+ *                          codestream, starting at 0)
+ * @param   apply_color_transforms Whether multi-component transform at codestream level
+ *                                 or JP2 channel transformations should be applied.
+ *                                 Currently this parameter should be set to OPJ_FALSE.
+ *                                 Setting it to OPJ_TRUE will result in an error.
+ *
+ * @return OPJ_TRUE         in case of success.
+ */
+OPJ_API OPJ_BOOL OPJ_CALLCONV opj_set_decoded_components(opj_codec_t *p_codec,
+        OPJ_UINT32 numcomps,
+        const OPJ_UINT32* comps_indices,
+        OPJ_BOOL apply_color_transforms);
+
 /**
  * Sets the given area to be decoded. This function should be called right after opj_read_header and before any tile header reading.
  *
+ * The coordinates passed to this function should be expressed in the reference grid,
+ * that is to say at the highest resolution level, even if requesting the image at lower
+ * resolution levels.
+ *
+ * Generally opj_set_decode_area() should be followed by opj_decode(), and the
+ * codec cannot be re-used.
+ * In the particular case of an image made of a single tile, several sequences of
+ * calls to opoj_set_decode_area() and opj_decode() are allowed, and will bring
+ * performance improvements when reading an image by chunks.
+ *
  * @param   p_codec         the jpeg2000 codec.
- * @param   p_image         the decoded image previously setted by opj_read_header
+ * @param   p_image         the decoded image previously set by opj_read_header
  * @param   p_start_x       the left position of the rectangle to decode (in image coordinates).
  * @param   p_end_x         the right position of the rectangle to decode (in image coordinates).
  * @param   p_start_y       the up position of the rectangle to decode (in image coordinates).
@@ -1438,6 +1486,8 @@ OPJ_API OPJ_BOOL OPJ_CALLCONV opj_read_tile_header(opj_codec_t *p_codec,
 /**
  * Reads a tile data. This function is compulsory and allows one to decode tile data. opj_read_tile_header should be called before.
  * The user may need to refer to the image got by opj_read_header to understand the size being taken by the tile.
+ *
+ * Note: opj_decode_tile_data() should not be used together with opj_set_decoded_components().
  *
  * @param   p_codec         the jpeg2000 codec.
  * @param   p_tile_index    the index of the tile being decoded, this should be the value set by opj_read_tile_header.

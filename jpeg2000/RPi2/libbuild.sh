@@ -12,5 +12,5 @@ arm-none-eabi-ar rcs libopenjp2.a dwtlift.o
 
 cp libopenjp2.a libdwtlift.a
 arm-none-eabi-ar t libdwtlift.a > libdwtlift_obj.txt
-arm-none-eabi-objdump -d libdwtlift.a > libdwtlift.txt 
-
+echo "when ./libbuild.sh is executed should be 23"
+wc libdwtlift_obj.txt
