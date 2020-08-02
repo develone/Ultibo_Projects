@@ -1,7 +1,7 @@
-diff --git a/svgTessellator.c b/svgTessellator.c
+diff --git a/Tesselator/RPi3/svgTessellator.c b/Tesselator/RPi3/svgTessellator.c
 index 026ed45..bc90e8b 100644
---- a/svgTessellator.c
-+++ b/svgTessellator.c
+--- a/Tesselator/RPi3/svgTessellator.c
++++ b/Tesselator/RPi3/svgTessellator.c
 @@ -7,8 +7,8 @@
   
  #include <stdio.h>
