@@ -1,0 +1,24 @@
+diff --git a/svgTessellator.c b/svgTessellator.c
+index 026ed45..bc90e8b 100644
+--- a/svgTessellator.c
++++ b/svgTessellator.c
+@@ -7,8 +7,8 @@
+  
+ #include <stdio.h>
+ 
+-#include "opt/vc/include/GLES/gl.h"
+-#include "opt/vc/include/GLES2/gl2.h"
++#include "/opt/vc/include/GLES/gl.h"
++#include "/opt/vc/include/GLES2/gl2.h"
+ 
+ 
+ #define NK_INCLUDE_FIXED_TYPES
+@@ -252,7 +252,7 @@ void svgTessellator_main()
+     {struct nk_font_atlas *atlas;
+     nk_gen_font_stash_begin(&atlas);   //left here you can test more fonts
+     /*struct nk_font *droid = nk_font_atlas_add_from_file(atlas, "../../../extra_font/DroidSans.ttf", 14, 0);*/
+-    struct nk_font *roboto = nk_font_atlas_add_from_file(atlas, "Nuklear\\extra_font\\Roboto-Regular.ttf", 16, 0);
++    struct nk_font *roboto = nk_font_atlas_add_from_file(atlas, "nuklear\\extra_font\\Roboto-Regular.ttf", 16, 0);
+     //struct nk_font *future = nk_font_atlas_add_from_file(atlas, "Nuklear/extra_font/kenvector_future_thin.ttf", 13, 0);
+     /*struct nk_font *clean = nk_font_atlas_add_from_file(atlas, "../../../extra_font/ProggyClean.ttf", 12, 0);*/
+     /*struct nk_font *tiny = nk_font_atlas_add_from_file(atlas, "../../../extra_font/ProggyTiny.ttf", 10, 0);*/
