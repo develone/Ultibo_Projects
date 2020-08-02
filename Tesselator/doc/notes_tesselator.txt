@@ -1,0 +1,114 @@
+Hello All,
+
+    Adding additional projects to  https://github.com/develone/Ultibo_Projects
+    Now these projects provide the following.
+    1. no need to power down
+    2. remove the micro sd card
+    3. transfer the  new kernel7.img
+    4. replace the micro sd card
+    5. power up.
+    In addition a web server provides important information about the running Ultibo system.
+
+Waiting to determine if ulitibo member JRsamayoa changes the location of 
+
+#include "opt/vc/include/GLES/gl.h"
+#include "opt/vc/include/GLES2/gl2.h"
+
+and
+    struct nk_font *roboto = nk_font_atlas_add_from_file(atlas, "Nuklear\\extra_font\\Roboto-Regular.ttf", 16, 0);
+
+Steps to get a working kernel7.img
+
+1. git clone https://github.com/develone/Ultibo_Projects.git
+
+2. cd Ultibo_Projects/Tesselator/RPi3
+
+3. patch --dry-run --verbose < patchfile 
+Hmm...  Looks like a unified diff to me...
+The text leading up to this was:
+--------------------------
+|diff --git a/Tesselator/RPi3/svgTessellator.c b/Tesselator/RPi3/svgTessellator.c
+|index 026ed45..bc90e8b 100644
+|--- a/Tesselator/RPi3/svgTessellator.c
+|+++ b/Tesselator/RPi3/svgTessellator.c
+--------------------------
+checking file svgTessellator.c
+Using Plan A...
+Hunk #1 succeeded at 7.
+Hunk #2 succeeded at 252.
+done
+
+4. patch  --verbose < patchfile Hmm...  Looks like a unified diff to me...
+The text leading up to this was:
+--------------------------
+|diff --git a/Tesselator/RPi3/svgTessellator.c b/Tesselator/RPi3/svgTessellator.c
+|index 026ed45..bc90e8b 100644
+|--- a/Tesselator/RPi3/svgTessellator.c
+|+++ b/Tesselator/RPi3/svgTessellator.c
+--------------------------
+patching file svgTessellator.c
+Using Plan A...
+Hunk #1 succeeded at 7.
+Hunk #2 succeeded at 252.
+done
+
+5. Transfer the folder & files to micro sd.
+
+In additon to the Linux firmware and config.txt the two folders are required.
+├── example
+│   ├── 23f.svg
+│   ├── 23fTCenter.svg	<---This is the default image displayed.
+│   ├── 23fT.svg
+│   ├── 23.svg
+│   ├── dialCrownWhite.svg
+│   ├── drawing-2.svg
+│   ├── drawing3 - Copy.svg
+│   ├── drawing3.svg
+│   ├── drawing4.svg
+│   ├── drawing5.svg
+│   ├── drawingLines.svg
+│   ├── drawing.svg
+│   ├── draw.svg
+│   ├── Letters1.svg
+│   ├── Letters2.svg
+│   ├── Letters3.svg
+│   ├── Letters4.svg
+│   ├── Letters5flatten.svg
+│   ├── Letters6flatten.svg
+│   ├── Letters.svg
+│   ├── nano.svg
+│   ├── needle.svg
+│   ├── tessell.svg
+│   └── Test.svg
+|
+└── nuklear
+    └── extra_font
+        ├── Roboto-Light.ttf
+        └── Roboto-Regular.ttf
+
+./compile.sh
+
+6. Using Lazarus IDE (Ultibo Edition) 
+
+
+tftp 192.168.1.245 < cmdstftp 
+tftp> tftp> Sent 3362692 bytes in 7.6 seconds
+
+Ultibo Core (Release: Beetroot Version: 2.0.745 Date: 29 September 2019)
+ (Type HELP for a list of available commands)
+
+>cd example
+C:\example>
+
+C:\example>del 23fTCenter.svg
+
+C:\example\>copy 23f.svgf.svg 23fTCenter.svg
+          1 file(s) copied
+
+C:\example\>restart          
+Restarting in 1000 milliseconds
+
+C:\example\>logout
+Goodbye!le>logout
+Connection closed by foreign host.
+
