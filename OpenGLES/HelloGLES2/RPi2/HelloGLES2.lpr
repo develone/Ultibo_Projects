@@ -12,7 +12,9 @@ program HelloGLES2;
 { Once compiled copy the kernel7.img file to an SD card along with the         }
 { firmware files and use it to boot your Raspberry Pi.                         }
 {                                                                              }
-{ This version is for Raspberry Pi 2B and will also work on a 3B/3B+/3A+.      }
+{ Make sure you also copy the Logo.bmp file to your SD card.                   }
+{                                                                              }
+{ This version is for Raspberry Pi 2B and will also work on a 3B.              }
 { To create a version for the A/B/A+/B+/Zero simply create a new project and   }
 { copy this code into it.                                                      }
 
@@ -23,12 +25,52 @@ uses
   Threads,
   Console,
   SysUtils,
-  GLES2Unit,    {To keep things clearer all the code for this example is in the separate GLES2Unit}
-  VC4;          {Include the VC4 unit to enable access to the GPU}
-
+  GLES2Unit,     {To keep things clearer all the code for this example is in the separate GLESUnit}
+  VC4,          {Include the VC4 unit to enable access to the GPU}
+  uTFTP,
+  Winsock2,
+  { needed to use ultibo-tftp  }
+  { needed for telnet }
+      Shell,
+     ShellFilesystem,
+     ShellUpdate,
+     RemoteShell;
+  { needed for telnet }
 var
  WindowHandle:TWindowHandle;
- 
+
+ function WaitForIPComplete : string;
+
+  var
+
+    TCP : TWinsock2TCPClient;
+
+  begin
+
+    TCP := TWinsock2TCPClient.Create;
+
+    Result := TCP.LocalAddress;
+
+    if (Result = '') or (Result = '0.0.0.0') or (Result = '255.255.255.255') then
+
+      begin
+
+        while (Result = '') or (Result = '0.0.0.0') or (Result = '255.255.255.255') do
+
+          begin
+
+            sleep (1500);
+
+            Result := TCP.LocalAddress;
+
+          end;
+
+      end;
+
+    TCP.Free;
+
+  end;
+
 begin
  {Create a console window as usual}
  WindowHandle:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_FULL,True);
