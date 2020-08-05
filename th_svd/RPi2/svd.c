@@ -18,7 +18,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "include/defs_and_types.h"
+#include "../include/defs_and_types.h"
  
 static double PYTHAG(double a, double b)
 {
