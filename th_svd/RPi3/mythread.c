@@ -170,7 +170,7 @@ void *mysvd(void *strptr) {
 			//create the S diagonal matrix from w
 			th0.j=0;
 			for(th0.i=0;th0.i<th0.m;th0.i++) { 
-				if (th0.i <= 63) th0.ppds[th0.i][th0.j] = th0.w[th0.i];
+				th0.ppds[th0.i][th0.j] = th0.w[th0.i];
 				th0.j++;
 			}
 			
@@ -333,7 +333,7 @@ void *mysvd(void *strptr) {
 			//create the S diagonal matrix from w
 			th1.j=0;
 			for(th1.i=0;th1.i<th1.m;th1.i++) { 
-				if (th1.i <= 128) th1.ppds[th1.i][th1.j] = th1.w[th1.i];
+				th1.ppds[th1.i][th1.j] = th1.w[th1.i];
 				th1.j++;
 			}
 			
@@ -496,7 +496,7 @@ void *mysvd(void *strptr) {
 			//create the S diagonal matrix from w
 			th2.j=0;
 			for(th2.i=0;th2.i<th2.m;th2.i++) { 
-				if (th2.i <= 255) th2.ppds[th2.i][th2.j] = th2.w[th2.i];
+				th2.ppds[th2.i][th2.j] = th2.w[th2.i];
 				th2.j++;
 			}
 			
