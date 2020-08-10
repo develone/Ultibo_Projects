@@ -1,0 +1,59 @@
+Trying to add drawEyes to the example.
+
+My code is found at https://github.com/develone/Ultibo_Projects
+https://github.com/develone/Ultibo_Projects/tree/master/nano-vg-svg-nuk
+
+devel@mypi3-20:~/Ultibo_Projects/nano-vg-svg-nuk/RPi2 $ cd libnanovg/
+devel@mypi3-20:~/Ultibo_Projects/nano-vg-svg-nuk/RPi2/libnanovg $ ./compilelib.sh 
+devel@mypi3-20:~/Ultibo_Projects/nano-vg-svg-nuk/RPi2/libnanovg $ cd ../
+
+Using Lazarus IDE (Ultibo Edition) Run/Clean up and Build
+
+~/Ultibo_Projects/nano-vg-svg-nuk/RPi2/HelloGLES.lpr
+
+devel@mypi3-20:~/Ultibo_Projects/nano-vg-svg-nuk/RPi2 $ ls -la
+total 7772
+drwxr-xr-x 7 devel devel    4096 Aug 10 11:02 .
+drwxr-xr-x 4 devel devel    4096 Jul 25 17:18 ..
+drwxr-xr-x 2 devel devel    4096 Aug  9 18:48 backup
+-rw-r--r-- 1 devel devel      29 Jul 25 17:18 cmdstftp
+-rw-r--r-- 1 devel devel   32505 Jul 25 17:18 demo.c
+-rw-r--r-- 1 devel devel    3955 Aug  8 10:28 example_gl2.c
+-rw-r--r-- 1 devel devel   13340 Jul 25 17:18 GLESUnit.pas
+-rwxr-xr-x 1 devel devel 4489304 Aug 10 11:02 HelloGLES.elf
+-rw-r--r-- 1 devel devel    2202 Jul 25 17:18 HelloGLES.lpi
+-rw-r--r-- 1 devel devel    3366 Jul 25 17:18 HelloGLES.lpr
+-rw-r--r-- 1 devel devel     828 Aug  9 18:48 HelloGLES.lps
+-rwxr-xr-x 1 devel devel 3197712 Aug 10 11:02 kernel7.img
+drwxr-xr-x 3 devel devel    4096 Aug  8 06:25 lib
+drwxr-xr-x 2 devel devel    4096 Aug 10 11:01 libnanovg
+-rw-r--r-- 1 devel devel  178140 Aug 10 11:01 libTestnanogl.a
+drwxr-xr-x 2 devel devel    4096 Aug 10 10:42 moved-to-libnanovg
+drwxr-xr-x 2 devel devel    4096 Jul 25 17:18 sdfiles
+-rw-r--r-- 1 devel devel   15742 Jul 25 17:18 uTFTP.pas
+devel@mypi3-20:~/Ultibo_Projects/nano-vg-svg-nuk/RPi2 $ tftp 192.168.1.245 < cmdstftp 
+tftp> tftp> Sent 3197712 bytes in 12.4 seconds
+
+Moving the mouse with Center press the image appears on the screen.
+Pressing the right button the file dump.png is created.
+moved to dump0.png
+tftp 192.168.1.245
+tftp> binary 
+tftp> get dump.png
+Received 18806 bytes in 0.1 seconds
+tftp> quit
+Pressing the left button the screen clears.
+
+dump.png was moved to dump0.png
+
+Moving the mouse with Center press the image appears on the screen.
+Pressing the right button the file dump.png is created.
+moved to dump0.png
+tftp 192.168.1.245
+tftp> binary 
+tftp> get dump.png
+Received 18806 bytes in 0.1 seconds
+tftp> quit
+Pressing the left button the screen clears.
+
+dump.png was moved to dump1.png
