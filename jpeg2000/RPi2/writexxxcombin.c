@@ -6,7 +6,7 @@ int a, *pa;
 FILE *ptr;
 
 printf("%x\n",ptr);
-ptr = fopen("640320com","wb");
+ptr = fopen("640480com","wb");
 pa=&(a);
 printf("pa = 0x%x \n", pa);
 a = 25;
@@ -24,7 +24,7 @@ fwrite(pa,1,sizeof(int),ptr);
 a = 640;
 printf("Width a = 0x%x a = %d \n", a,a);
 fwrite(pa,1,sizeof(int),ptr);
-a = 360;
+a = 480;
 printf("Height a = 0x%x a = %d \n", a,a);
 fwrite(pa,1,sizeof(int),ptr);
 return 0;

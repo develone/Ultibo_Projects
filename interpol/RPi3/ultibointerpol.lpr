@@ -22,8 +22,8 @@ uses
 
   FPimage,
   FPImgCanv,
-  FPReadPNG,
-  FPWritePNG,
+  FPReadBMP,
+  FPWriteBMP,
   uTFTP,
   Winsock2,
   { needed to use ultibo-tftp  }
@@ -40,8 +40,8 @@ var
   ImOriginal: TFPMemoryImage;
   ImScaled: TFPMemoryImage;
   CanvScaled: TFPImageCanvas;
-  Reader: TFPReaderPNG;
-  Writer: TFPWriterPNG;
+  Reader: TFPReaderBMP;
+  Writer: TFPWriterBMP;
   WindowHandle:TWindowHandle;
   MyPLoggingDevice : ^TLoggingDevice;
    HTTPListener:THTTPListener;
@@ -138,15 +138,15 @@ begin
 
   ImOriginal := TFPMemoryImage.Create(0, 0);
   ImScaled := TFPMemoryImage.Create(640, 480);
-  Reader := TFPReaderPNG.create;
-  Writer := TFPWriterPNG.create;
-  Writer.UseAlpha := True;
-  ImOriginal.LoadFromFile('lena_rgb_2048.png', Reader);
+  Reader := TFPReaderBMP.create;
+  Writer := TFPWriterBMP.create;
+  //Writer.UseAlpha := True;
+  ImOriginal.LoadFromFile('lena_rgb_1024.bmp', Reader);
 
   CanvScaled := TFPImageCanvas.create(ImScaled);
   CanvScaled.StretchDraw(0,0,639,479, ImOriginal);
 
-  ImScaled.SaveToFile('lena640480.png', Writer);
+  ImScaled.SaveToFile('lena640480.bmp', Writer);
   Reader.Free;
   Writer.Free;
   ImOriginal.Free;

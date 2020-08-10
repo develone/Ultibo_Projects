@@ -267,14 +267,14 @@ begin
  WebStatusRegister(HTTPListener,'','',True);
 
  ConsoleWindowWriteLn(WindowHandle,'Initing');
- Reader := TFPReaderBMP.create;
+ Reader := TFPReaderPNG.create;
  ConsoleWindowWriteLn(WindowHandle,'Reader bmp');
- Writer := TFPWriterJPEG.Create;
- ConsoleWindowWriteLn(WindowHandle,'Writer jpg');
+ Writer := TFPWriterBMP.Create;
+ ConsoleWindowWriteLn(WindowHandle,'Writer png');
 
- ReadFile := 'lena_rgb_2048.bmp';
- WriteFile := 'lena_rgb_2048.jpg';
- WriteOptions := 'J';
+ ReadFile := 'lena640480.png';
+ WriteFile := 'lena640480.bmp';
+ WriteOptions := 'B';
 
  img := TFPMemoryImage.Create(0,0);
  img.UsePalette:=false;
