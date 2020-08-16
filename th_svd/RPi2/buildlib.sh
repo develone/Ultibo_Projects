@@ -1,5 +1,5 @@
 #!/bin/bash
-#export PATH=/home/pi/ultibo/core/fpc/bin:$PATH
+#export PATH=/home/devel/ultibo/core/fpc/bin:$PATH
 rm -f *.o
 rm -f libsvd.a
 
@@ -13,10 +13,10 @@ arm-none-eabi-gcc -I../include -O3 -mabi=aapcs -marm -march=armv7-a -mfpu=vfpv3-
  
  
 echo "Compiling example ultibo_th_svd "
-arm-none-eabi-gcc -D_POSIX_THREADS -lpthread -I../include -O3 -mabi=aapcs -marm -march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=hard -c ultibo_th_svd.c -o ultibo_th_svd.o
+arm-none-eabi-gcc -DUltibo -D_POSIX_THREADS -lpthread -I../include -O3 -mabi=aapcs -marm -march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=hard -c master.c -o ultibo_th_svd.o
 
 	
 #gcc test_svd.c svd.o disp_mat.o -lm -o test_svd
 arm-none-eabi-ar rcs libsvd.a *.o
 arm-none-eabi-ar -t libsvd.a > libsvd_obj.txt
-#fpc -vi -B -Tultibo -Parm -CpARMV7A -WpRPI2B @/home/pi/ultibo/core/fpc/bin/RPI2.CFG -O4 svd_FS_RPi2.lpr
+#fpc -vi -B -Tultibo -Parm -CpARMV7A -WpRPI3B @/home/devel/ultibo/core/fpc/bin/RPI3.CFG -O4 svd_FS_RPi3.lpr

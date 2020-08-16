@@ -13,7 +13,7 @@ arm-none-eabi-gcc -I../include -O3 -mabi=aapcs -marm -march=armv7-a -mfpu=vfpv3-
  
  
 echo "Compiling example ultibo_th_svd "
-arm-none-eabi-gcc -D_POSIX_THREADS -lpthread -I../include -O3 -mabi=aapcs -marm -march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=hard -c ultibo_th_svd.c -o ultibo_th_svd.o
+arm-none-eabi-gcc -DUltibo -D_POSIX_THREADS -lpthread -I../include -O3 -mabi=aapcs -marm -march=armv7-a -mfpu=vfpv3-d16 -mfloat-abi=hard -c master.c -o ultibo_th_svd.o
 
 	
 #gcc test_svd.c svd.o disp_mat.o -lm -o test_svd

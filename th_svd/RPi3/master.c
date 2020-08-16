@@ -2,11 +2,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include<unistd.h>
-#include "master_slave.h"
+#include "../include/master_slave.h"
 
 
-int main() {
-	
+#ifdef Ultibo
+void test_svd() {
+#else
+void main() {
+#endif	
 	
 	
 	char *inp1, *inp2, *inp3;
@@ -14,25 +17,13 @@ int main() {
     struct FILEs *files2 = (struct FILEs *)malloc(sizeof(struct FILEs));
     struct FILEs *files3 = (struct FILEs *)malloc(sizeof(struct FILEs));
     
-    /*
-    inp1 = "red.bin";
-    inp2 = "grn.bin";
-    inp3 = "blu.bin";
-    */
-
     inp1 = "red.pgm";
     inp2 = "grn.pgm";
     inp3 = "blu.pgm";
-        
+    
     files1->input_file = inp1;
     files2->input_file = inp2;
     files3->input_file = inp3;
-
-	/*
-    files1->pgm1 = "red.pgm";
-    files2->pgm2 = "grn.pgm";
-    files3->pgm3 = "blu.pgm";
-    */
 
     inp1 = "Sred.bin";
     inp2 = "Sgrn.bin";
@@ -110,5 +101,4 @@ int main() {
     
     free(Allen);
     
-    return 0;
 }
