@@ -7,8 +7,8 @@
  
 #include <stdio.h>
 
-#include "opt/vc/include/GLES/gl.h"
-#include "opt/vc/include/GLES2/gl2.h"
+#include "/opt/vc/include/GLES/gl.h"
+#include "/opt/vc/include/GLES2/gl2.h"
 
 #define NK_INCLUDE_FIXED_TYPES
 #define NK_INCLUDE_STANDARD_IO

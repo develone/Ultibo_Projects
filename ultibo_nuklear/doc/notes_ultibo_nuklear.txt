@@ -1,0 +1,39 @@
+08/18/20
+forked https://github.com/cejasmasmas/ultibo_nuklear
+git clone https://github.com/develone/ultibo_nuklear.git
+
+Created a script compile.sh to compile ultiboCgeneric.c to libultiboCgeneric.a
+
+Started a new project https://github.com/develone/Ultibo_Projects/tree/master/ultibo_nuklear/RPi3
+
+diff ../RPi3/ultiboCgeneric.c ~/ultibo_nuklear/ultiboCgeneric.c
+10,11c10,11
+< #include "/opt/vc/include/GLES/gl.h"
+< #include "/opt/vc/include/GLES2/gl2.h"
+---
+> #include "opt/vc/include/GLES/gl.h"
+> #include "opt/vc/include/GLES2/gl2.h"
+
+Added the ultibo_nuklear/ultiboCgenericImage/extra_font to micro sd card
+Ultibo Core (Release: Beetroot Version: 2.0.783 Date: 25 June 2020)
+ (Type HELP for a list of available commands)
+>cd extra_font
+  Directory of C:\extra_font\
+
+ 18-8-20 20:00:54       <DIR>          .
+ 18-8-20 20:00:54       <DIR>          ..
+ 18-8-20 20:00:54               43912  Cousine-Regular.ttf
+ 18-8-20 20:00:56              190044  DroidSans.ttf
+ 18-8-20 20:00:56               16848  Karla-Regular.ttf
+ 18-8-20 20:00:56               41208  ProggyClean.ttf
+ 18-8-20 20:00:56               35656  ProggyTiny.ttf
+ 18-8-20 20:00:56              176280  Raleway-Bold.ttf
+ 18-8-20 20:00:58              135820  Roboto-Bold.ttf
+ 18-8-20 20:00:58              140276  Roboto-Light.ttf
+ 18-8-20 20:00:58              145348  Roboto-Regular.ttf
+ 18-8-20 20:00:58               34136  kenvector_future.ttf
+ 18-8-20 20:00:58               34100  kenvector_future_thin.ttf
+          11 file(s) 993628 bytes
+          2 dir(s)
+With the added feature of remote shell this can be done with a telnet to xx.xx.xx.xx 
+of the Ultibo System.
