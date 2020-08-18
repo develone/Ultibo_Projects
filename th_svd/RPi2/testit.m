@@ -1,6 +1,6 @@
 %Comaparing red.pgm with rcred.bin
-for J = 1:256
-	for I = 1:256
+for J = 1:512
+	for I = 1:512
 		a=im1(J,I);
 		b=A(J,I);
 		c = a - b;
@@ -14,8 +14,8 @@ for J = 1:256
 	endfor
 endfor
 %Comaparing grn.pgm with rcgrn.bin
-for J = 1:256
-	for I = 1:256
+for J = 1:512
+	for I = 1:512
 		a=im2(J,I);
 		b=B(J,I);
 		c = a - b;
@@ -29,8 +29,8 @@ for J = 1:256
 	endfor
 endfor
 %Comaparing blu.pgm with rcblu.bin
-for J = 1:256
-	for I = 1:256
+for J = 1:512
+	for I = 1:512
 		a=im3(J,I);
 		b=C(J,I);
 		c = a - b;

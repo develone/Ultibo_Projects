@@ -1,0 +1,41 @@
+Using a RPi4 4gB running Lazarus IDE (Ultibo Edition) installed with
+https://github.com/develone/Tools/blob/master/Installer/Core/Linux/ultiboinstaller.sh
+
+{Global constants}
+const
+ {Version constants}
+ ULTIBO_RELEASE_DATE             = '25 June 2020';
+ ULTIBO_RELEASE_NAME             = 'Beetroot';
+ ULTIBO_RELEASE_VERSION          = '2.0.783';
+ ULTIBO_RELEASE_VERSION_MAJOR    = 2;
+ ULTIBO_RELEASE_VERSION_MINOR    = 0;
+ ULTIBO_RELEASE_VERSION_REVISION = 783;
+
+
+Starting with Ultibo member JRsamayoa
+https://github.com/cejasmasmas/ultiboTessellator
+
+steps to make svgTessellator.c like glfw_opengl2/main.c
+ 
+Commenting lines 51, 246, 300, 302, 316, and 328 related to loading svg.
+Added code from the nuklear/demo/calcutor.c.
+
+svgTessellator.lpi --> TestGUI.lpi 
+svgTessellator.lpr --> TestGUI.lpr
+
+./compile.sh creates libsvgTessellator.a
+Lazarus IDE (Ultibo Edition) is used to compile the kernel7.img
+A micro sd card with files & folder from https://github.com/develone/Ultibo_Projects/tree/master/sd-card
+RPi3 with connection to a DHCP server.
+"tftp xx.xx.xx.xx < cmdstftp" transfer kernel7.img to Ultibo RPi3.
+
+Now these projects provide the following.
+    1. no need to power down
+    2. remove the micro sd card
+    3. transfer the  new kernel7.img
+    4. replace the micro sd card
+    5. power up.
+    In addition a web server provides important information about the running Ultibo system.
+Now the tessellate Tiger can be 
+https://github.com/develone/Ultibo_Projects/tree/master/Tesselator
+transformed to 
