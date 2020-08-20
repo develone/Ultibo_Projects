@@ -22,7 +22,7 @@ uses
   Threads,
   Console,
   SysUtils,
-  GLES2Unit,    {To keep things clearer all the code for this example is in the separate GLES2Unit}
+  ultiboGLES2C,    {To keep things clearer all the code for this example is in the separate GLES2Unit}
   HTTP,         {Include HTTP and WebStatus so we can see from a web browser what is happening}
   WebStatus,
   
@@ -101,7 +101,6 @@ begin
   while not DirectoryExists ('C:\') do sleep (500);
 
 end;
-
 begin
  {Create a console window as usual}
  WindowHandle:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_FULL,True);

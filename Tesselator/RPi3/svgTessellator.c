@@ -34,7 +34,10 @@
 #define MAX(a,b) ((a) < (b) ? (b) : (a))
 #define LEN(a) (sizeof(a)/sizeof(a)[0])
 
+
+#define NK_ULTIBO_GLES2_IMPLEMENTATION
 #include "nuklear/nuklear.h"
+#include "nuklear_ultibo_gles2.h"
 
 #define NANOSVG_ALL_COLOR_KEYWORDS	// Include full list of color keywords.
 #define NANOSVG_IMPLEMENTATION		// Expands implementation
@@ -82,59 +85,6 @@ int BUTTON_RIGHT  = 0;
 int BUTTON_MIDDLE = 0;
 
 //------------------------------------------
-struct nk_gen_device {
-    struct nk_buffer cmds;
-    struct nk_draw_null_texture null;
-    GLuint vbo, ebo;
-    GLuint prog;
-    GLuint vert_shdr;
-    GLuint frag_shdr;
-    GLint attrib_pos;
-    GLint attrib_uv;
-    GLint attrib_col;
-    GLint uniform_tex;
-    GLint uniform_proj;
-    GLuint font_tex;
-    GLsizei vs;
-    size_t vp, vt, vc;
-};
-
-struct nk_gen_vertex {
-    GLfloat position[2];
-    GLfloat uv[2];
-    nk_byte col[4];
-};
-
-static struct nk_gen {
-    //SDL_Window *win;
-    struct nk_gen_device ogl;
-    struct nk_context ctx;
-    struct nk_font_atlas atlas;
-} gen;
-
-NK_API void
-nk_gen_device_create(void);
-
-NK_API void
-nk_gen_device_destroy(void);
-
-NK_INTERN void
-nk_gen_device_upload_atlas(const void *image, int width, int height);
-
-NK_API void
-nk_gen_render(enum nk_anti_aliasing AA, int max_vertex_buffer, int max_element_buffer, int rwidth, int rheight);
-
-NK_API struct nk_context*
-nk_gen_init();
-
-NK_API void
-nk_gen_font_stash_begin(struct nk_font_atlas **atlas);
-
-NK_API void
-nk_gen_font_stash_end(void);
-
-NK_API
-void nk_gen_shutdown(void);
 
 // gui context, manages, input , drawing 
 // everything
@@ -143,8 +93,9 @@ char CoordBuufer[10] = {0};
 char buf[256] = {0};
 
 // gui code
-static void
-MainLoop(void* loopArg);
+//static void
+//MainLoop(void* loopArg);
+static void nuklear_MainLoop(void* loopArg);
 //-------------------------------------------------------------------------------------------------
 
 
@@ -172,7 +123,7 @@ const GLchar *vertexShaderSource =
 GLuint VBO1,VBO2, EBO1;
 int shaderProgram ;
 
-void svgTessellator_main()
+void ultibo_C_main()
 {
     getScreenSize(&ScreenWidth, &ScreenHeight);
 	
@@ -246,18 +197,18 @@ void svgTessellator_main()
     LoadsvgFile( &svgFileLoadTest, VBO1, VBO2, EBO1, "example\\23ftCenter.svg" );
      ///--------------------------------------------nuklear init
 	 
-    ctx = nk_gen_init();
+    ctx = nk_ultibo_init();
     /* Load Fonts: if none of these are loaded a default font will be used  */
     /* Load Cursor: if you uncomment cursor loading please hide the cursor */
     {struct nk_font_atlas *atlas;
-    nk_gen_font_stash_begin(&atlas);   //left here you can test more fonts
+    nk_ultibo_font_stash_begin(&atlas);   //left here you can test more fonts
     /*struct nk_font *droid = nk_font_atlas_add_from_file(atlas, "../../../extra_font/DroidSans.ttf", 14, 0);*/
     struct nk_font *roboto = nk_font_atlas_add_from_file(atlas, "nuklear\\extra_font\\Roboto-Regular.ttf", 16, 0);
     //struct nk_font *future = nk_font_atlas_add_from_file(atlas, "Nuklear/extra_font/kenvector_future_thin.ttf", 13, 0);
     /*struct nk_font *clean = nk_font_atlas_add_from_file(atlas, "../../../extra_font/ProggyClean.ttf", 12, 0);*/
     /*struct nk_font *tiny = nk_font_atlas_add_from_file(atlas, "../../../extra_font/ProggyTiny.ttf", 10, 0);*/
     /*struct nk_font *cousine = nk_font_atlas_add_from_file(atlas, "../../../extra_font/Cousine-Regular.ttf", 13, 0);*/
-    nk_gen_font_stash_end();
+    nk_ultibo_font_stash_end();
     /*nk_style_load_all_cursors(ctx, atlas->cursors);*/
     nk_style_set_font(ctx, &roboto->handle);}	 
 	 
@@ -284,8 +235,10 @@ GLfloat rotate[4][4] = {
         //glClear(GL_COLOR_BUFFER_BIT);
 		glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT|GL_STENCIL_BUFFER_BIT);
 		
-	    getMouseXY(&PanelMouseX, &PanelMouseY, &ButtonsMouse);
-        MainLoop((void*)ctx); // here is the gui code		
+	  getMouseXY(&PanelMouseX, &PanelMouseY, &ButtonsMouse);
+
+    nuklear_MainLoop((void*)ctx); // here is the gui code			
+
 		
 		if(ButtonsMouse == 2)
 		{	
@@ -337,7 +290,7 @@ GLfloat rotate[4][4] = {
  
 	}
 	
-    nk_gen_shutdown(); // not needed but to show where it goes
+    nk_ultibo_shutdown(); // not needed but to show where it goes
  
 }
 
@@ -505,8 +458,8 @@ int resetsvgCont(svgContainer *svgFileContainer)
 //------------------------------------------------------------------------------------------------
 
 
-static void
-MainLoop(void* loopArg){
+
+static void nuklear_MainLoop(void* loopArg){
     
 	struct nk_context *ctx = (struct nk_context *)loopArg;
 
@@ -621,260 +574,10 @@ MainLoop(void* loopArg){
      * defaults everything back into a default state.
      * Make sure to either a.) save and restore or b.) reset your own state after
      * rendering the UI. */
-    nk_gen_render(NK_ANTI_ALIASING_ON, MAX_VERTEX_MEMORY, MAX_ELEMENT_MEMORY, ScreenWidth, ScreenHeight);
+    nk_ultibo_render(NK_ANTI_ALIASING_ON, MAX_VERTEX_MEMORY, MAX_ELEMENT_MEMORY, ScreenWidth, ScreenHeight);
 
     
 	
 }
 
-#define NK_SHADER_VERSION "#version 100\n"
 
-
-NK_API void
-nk_gen_device_create(void)
-{
-    GLint status;
-    static const GLchar *vertex_shader =
-        NK_SHADER_VERSION
-        "uniform mat4 ProjMtx;\n"
-        "attribute vec2 Position;\n"
-        "attribute vec2 TexCoord;\n"
-        "attribute vec4 Color;\n"
-        "varying vec2 Frag_UV;\n"
-        "varying vec4 Frag_Color;\n"
-        "void main() {\n"
-        "   Frag_UV = TexCoord;\n"
-        "   Frag_Color = Color;\n"
-        "   gl_Position = ProjMtx * vec4(Position.xy, 0, 1);\n"
-        "}\n";
-    static const GLchar *fragment_shader =
-        NK_SHADER_VERSION
-        "precision mediump float;\n"
-        "uniform sampler2D Texture;\n"
-        "varying vec2 Frag_UV;\n"
-        "varying vec4 Frag_Color;\n"
-        "void main(){\n"
-        "   gl_FragColor = Frag_Color * texture2D(Texture, Frag_UV);\n"
-        "}\n";
-
-    struct nk_gen_device *dev = &gen.ogl;
-    
-    nk_buffer_init_default(&dev->cmds);
-    dev->prog = glCreateProgram();
-    dev->vert_shdr = glCreateShader(GL_VERTEX_SHADER);
-    dev->frag_shdr = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(dev->vert_shdr, 1, &vertex_shader, 0);
-    glShaderSource(dev->frag_shdr, 1, &fragment_shader, 0);
-    glCompileShader(dev->vert_shdr);
-    glCompileShader(dev->frag_shdr);
-    glGetShaderiv(dev->vert_shdr, GL_COMPILE_STATUS, &status);
-    assert(status == GL_TRUE);
-    glGetShaderiv(dev->frag_shdr, GL_COMPILE_STATUS, &status);
-    assert(status == GL_TRUE);
-    glAttachShader(dev->prog, dev->vert_shdr);
-    glAttachShader(dev->prog, dev->frag_shdr);
-    glLinkProgram(dev->prog);
-    glGetProgramiv(dev->prog, GL_LINK_STATUS, &status);
-    assert(status == GL_TRUE);
-
-
-    dev->uniform_tex = glGetUniformLocation(dev->prog, "Texture");
-    dev->uniform_proj = glGetUniformLocation(dev->prog, "ProjMtx");
-    dev->attrib_pos = glGetAttribLocation(dev->prog, "Position");
-    dev->attrib_uv = glGetAttribLocation(dev->prog, "TexCoord");
-    dev->attrib_col = glGetAttribLocation(dev->prog, "Color");
-    {
-        dev->vs = sizeof(struct nk_gen_vertex);
-        dev->vp = offsetof(struct nk_gen_vertex, position);
-        dev->vt = offsetof(struct nk_gen_vertex, uv);
-        dev->vc = offsetof(struct nk_gen_vertex, col);
-        
-        /* Allocate buffers */
-        glGenBuffers(1, &dev->vbo);
-        glGenBuffers(1, &dev->ebo);
-    }
-    glBindTexture(GL_TEXTURE_2D, 0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-}
-
-NK_INTERN void
-nk_gen_device_upload_atlas(const void *image, int width, int height)
-{
-    struct nk_gen_device *dev = &gen.ogl;
-    glGenTextures(1, &dev->font_tex);
-    glBindTexture(GL_TEXTURE_2D, dev->font_tex);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, (GLsizei)width, (GLsizei)height, 0,
-                GL_RGBA, GL_UNSIGNED_BYTE, image);
-}
-
-NK_API void
-nk_gen_device_destroy(void)
-{
-    struct nk_gen_device *dev = &gen.ogl;
-    glDetachShader(dev->prog, dev->vert_shdr);
-    glDetachShader(dev->prog, dev->frag_shdr);
-    glDeleteShader(dev->vert_shdr);
-    glDeleteShader(dev->frag_shdr);
-    glDeleteProgram(dev->prog);
-    glDeleteTextures(1, &dev->font_tex);
-    glDeleteBuffers(1, &dev->vbo);
-    glDeleteBuffers(1, &dev->ebo);
-    nk_buffer_free(&dev->cmds);
-}
-
-NK_API void
-nk_gen_render(enum nk_anti_aliasing AA, int max_vertex_buffer, int max_element_buffer, int rwidth, int rheight)
-{
-    struct nk_gen_device *dev = &gen.ogl;    
-    int display_width= rwidth, display_height = rheight;
-    struct nk_vec2 scale;
-    GLfloat ortho[4][4] = {
-        {2.0f, 0.0f, 0.0f, 0.0f},
-        {0.0f,-2.0f, 0.0f, 0.0f},
-        {0.0f, 0.0f,-1.0f, 0.0f},
-        {-1.0f,1.0f, 0.0f, 1.0f},
-    };
-
-    ortho[0][0] /= (GLfloat)rwidth;
-    ortho[1][1] /= (GLfloat)rheight;
-
-    scale.x = (float)display_width/(float)rwidth;    //seems redundant but I thing its for high dpi devices
-    scale.y = (float)display_height/(float)rheight;
-
-    /* setup global state */
-    glViewport(0,0,display_width,display_height);
-    glEnable(GL_BLEND);
-    glBlendEquation(GL_FUNC_ADD);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glDisable(GL_CULL_FACE);
-    glDisable(GL_DEPTH_TEST);
-    glEnable(GL_SCISSOR_TEST);
-    glActiveTexture(GL_TEXTURE0);
-
-    /* setup program */
-    glUseProgram(dev->prog);
-    glUniform1i(dev->uniform_tex, 0);
-    glUniformMatrix4fv(dev->uniform_proj, 1, GL_FALSE, &ortho[0][0]);
-    {
-        /* convert from command queue into draw list and draw to screen */
-        const struct nk_draw_command *cmd;
-        void *vertices, *elements;
-        const nk_draw_index *offset = NULL;
-
-        /* Bind buffers */
-        glBindBuffer(GL_ARRAY_BUFFER, dev->vbo);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, dev->ebo);
-        
-        {
-            /* buffer setup */
-            glEnableVertexAttribArray((GLuint)dev->attrib_pos);
-            glEnableVertexAttribArray((GLuint)dev->attrib_uv);
-            glEnableVertexAttribArray((GLuint)dev->attrib_col);
-
-            glVertexAttribPointer((GLuint)dev->attrib_pos, 2, GL_FLOAT, GL_FALSE, dev->vs, (void*)dev->vp);
-            glVertexAttribPointer((GLuint)dev->attrib_uv, 2, GL_FLOAT, GL_FALSE, dev->vs, (void*)dev->vt);
-            glVertexAttribPointer((GLuint)dev->attrib_col, 4, GL_UNSIGNED_BYTE, GL_TRUE, dev->vs, (void*)dev->vc);
-        }
-
-        glBufferData(GL_ARRAY_BUFFER, max_vertex_buffer, NULL, GL_STREAM_DRAW);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, max_element_buffer, NULL, GL_STREAM_DRAW);
-
-        /* load vertices/elements directly into vertex/element buffer */
-        vertices = malloc((size_t)max_vertex_buffer);
-        elements = malloc((size_t)max_element_buffer);
-        {
-            /* fill convert configuration */
-            struct nk_convert_config config;
-            static const struct nk_draw_vertex_layout_element vertex_layout[] = {
-                {NK_VERTEX_POSITION, NK_FORMAT_FLOAT, NK_OFFSETOF(struct nk_gen_vertex, position)},
-                {NK_VERTEX_TEXCOORD, NK_FORMAT_FLOAT, NK_OFFSETOF(struct nk_gen_vertex, uv)},
-                {NK_VERTEX_COLOR, NK_FORMAT_R8G8B8A8, NK_OFFSETOF(struct nk_gen_vertex, col)},
-                {NK_VERTEX_LAYOUT_END}
-            };
-            NK_MEMSET(&config, 0, sizeof(config));
-            config.vertex_layout = vertex_layout;
-            config.vertex_size = sizeof(struct nk_gen_vertex);
-            config.vertex_alignment = NK_ALIGNOF(struct nk_gen_vertex);
-            config.null = dev->null;
-            config.circle_segment_count = 22;
-            config.curve_segment_count = 22;
-            config.arc_segment_count = 22;
-            config.global_alpha = 1.0f;
-            config.shape_AA = AA;
-            config.line_AA = AA;
-
-            /* setup buffers to load vertices and elements */
-            {struct nk_buffer vbuf, ebuf;
-            nk_buffer_init_fixed(&vbuf, vertices, (nk_size)max_vertex_buffer);
-            nk_buffer_init_fixed(&ebuf, elements, (nk_size)max_element_buffer);
-            nk_convert(&gen.ctx, &dev->cmds, &vbuf, &ebuf, &config);}
-        }
-        glBufferSubData(GL_ARRAY_BUFFER, 0, (size_t)max_vertex_buffer, vertices);
-        glBufferSubData(GL_ELEMENT_ARRAY_BUFFER, 0, (size_t)max_element_buffer, elements);
-        free(vertices);
-        free(elements);
-
-        /* iterate over and execute each draw command */
-        nk_draw_foreach(cmd, &gen.ctx, &dev->cmds) {
-            if (!cmd->elem_count) continue;
-            glBindTexture(GL_TEXTURE_2D, (GLuint)cmd->texture.id);
-            glScissor((GLint)(cmd->clip_rect.x * scale.x),
-                (GLint)((rheight - (GLint)(cmd->clip_rect.y + cmd->clip_rect.h)) * scale.y),
-                (GLint)(cmd->clip_rect.w * scale.x),
-                (GLint)(cmd->clip_rect.h * scale.y));
-            glDrawElements(GL_TRIANGLES, (GLsizei)cmd->elem_count, GL_UNSIGNED_SHORT, offset);
-            offset += cmd->elem_count;
-        }
-        nk_clear(&gen.ctx);
-        nk_buffer_clear(&dev->cmds);
-    }
-
-    glUseProgram(0);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-    glDisable(GL_BLEND);
-    glDisable(GL_SCISSOR_TEST);
-}
-
-
-NK_API struct nk_context*
-nk_gen_init()
-{    
-    nk_init_default(&gen.ctx, 0);
-    nk_gen_device_create();
-    return &gen.ctx;
-}
-
-NK_API void
-nk_gen_font_stash_begin(struct nk_font_atlas **atlas)
-{
-    nk_font_atlas_init_default(&gen.atlas);
-    nk_font_atlas_begin(&gen.atlas);
-    *atlas = &gen.atlas;
-}
-
-NK_API void
-nk_gen_font_stash_end(void)
-{
-    const void *image; int w, h;
-    image = nk_font_atlas_bake(&gen.atlas, &w, &h, NK_FONT_ATLAS_RGBA32);
-    nk_gen_device_upload_atlas(image, w, h);
-    nk_font_atlas_end(&gen.atlas, nk_handle_id((int)gen.ogl.font_tex), &gen.ogl.null);
-    if (gen.atlas.default_font)
-        nk_style_set_font(&gen.ctx, &gen.atlas.default_font->handle);
-
-}
-
-
-NK_API
-void nk_gen_shutdown(void)
-{
-    nk_font_atlas_clear(&gen.atlas);
-    nk_free(&gen.ctx);
-    nk_gen_device_destroy();
-    memset(&gen, 0, sizeof(gen));
-}
