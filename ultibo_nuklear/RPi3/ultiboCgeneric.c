@@ -6,6 +6,14 @@
  */
  
 #include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <stdarg.h>
+#include <string.h>
+#include <math.h>
+#include <assert.h>
+#include <limits.h>
+#include <time.h>
 
 #include "/opt/vc/include/GLES/gl.h"
 #include "/opt/vc/include/GLES2/gl2.h"
@@ -42,7 +50,7 @@
  * and the corresponding function. */
 #include "style.c"
 #include "calculator.c"
-//#include "overview.c" //this needs a few extra functions to be implemented or redirected from ultibo
+#include "overview.c" //this needs a few extra functions to be implemented or redirected from ultibo
 #include "node_editor.c"
 
 //***** From ultibo
@@ -105,9 +113,9 @@ void ultibo_C_main()
 
     /* style.c */
     /*set_style(ctx, THEME_WHITE);*/
-    set_style(ctx, THEME_RED);
+    /*set_style(ctx, THEME_RED);*/
     /*set_style(ctx, THEME_BLUE);*/
-    /*set_style(ctx, THEME_DARK);*/	
+    /*set_style(ctx, THEME_DARK);	*/
 	 
  
 	while(1)
@@ -136,8 +144,7 @@ nuklear_MainLoop(void* loopArg){
 	
     
 	/*Mouse*/
-	// needs a much better code
-	// works for now
+
 	switch(ButtonsMouse)
 	{
 		case 1 : BUTTON_LEFT   = 1; break;
@@ -160,7 +167,7 @@ nuklear_MainLoop(void* loopArg){
 
     /* -------------- EXAMPLES ---------------- */
     calculator(ctx);
-    //overview(ctx); //this needs a few extra functions to be implemented  or redirected from ultibo
+    overview(ctx); 
     node_editor(ctx);
     /* ----------------------------------------- */	
 
