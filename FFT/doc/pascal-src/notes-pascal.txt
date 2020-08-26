@@ -1,0 +1,3 @@
+http://free-pascal-general.1045716.n5.nabble.com/attachment/5728171/0/fourier.pas
+
+https://gitlab.com/mseide-msegui/mseide-msegui/blob/master/lib/common/math/msefft.pas
