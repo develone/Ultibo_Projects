@@ -1,3 +1,60 @@
 http://free-pascal-general.1045716.n5.nabble.com/attachment/5728171/0/fourier.pas
 
 https://gitlab.com/mseide-msegui/mseide-msegui/blob/master/lib/common/math/msefft.pas
+
+export PATH=/home/devel/ultibo/core/fpc/bin:$PATH
+
+fpc -B -Tlinux -Parm @/home/devel/ultibo/core/fpc/bin/fpc.cfg -O2 fourier
+
+fpc -B -Tlinux -Parm @/home/devel/ultibo/core/fpc/bin/fpc.cfg -O2 fourier
+Free Pascal Compiler version 3.1.1 [2020/08/10] for arm
+Copyright (c) 1993-2015 by Florian Klaempfl and others
+Target OS: Linux for ARMHF
+Compiling fourier.pas
+fourier.pas(153,5) Error: Identifier not found "Result"
+fourier.pas(156,13) Error: Identifier not found "Result"
+fourier.pas(367) Fatal: There were 2 errors compiling module, stopping
+Fatal: Compilation aborted
+Error: /home/devel/ultibo/core/fpc/bin/ppcarm returned an error exitcode
+
+git diff fourier.pas
+diff --git a/FFT/doc/pascal-src/fourier.pas b/FFT/doc/pascal-src/fourier.pas
+index ddcc44c..f59dee1 100644
+--- a/FFT/doc/pascal-src/fourier.pas
++++ b/FFT/doc/pascal-src/fourier.pas
+@@ -149,6 +149,7 @@ end;
+ 
+ function NumberOfBitsNeeded ( PowerOfTwo: word ): word;
+ var     i: word;
++Result : word;^M
+ begin
+     Result:=1;
+     for i
+      := 0 to 16 do begin
+@@ -157,6 +158,7 @@ begin
+             exit;
+         end;
+     end;
++    NumberOfBitsNeeded := Result;^M
+ end;
+
+fpc -B -Tlinux -Parm @/home/devel/ultibo/core/fpc/bin/fpc.cfg -O2 fourier
+Free Pascal Compiler version 3.1.1 [2020/08/10] for arm
+Copyright (c) 1993-2015 by Florian Klaempfl and others
+Target OS: Linux for ARMHF
+Compiling fourier.pas
+368 lines compiled, 0.1 sec
+
+fpc -DdFPC -B -Tlinux -Parm @/home/devel/ultibo/core/fpc/bin/fpc.cfg -O2 msefft
+
+http://www.fftw.org/fftw-3.3.8.tar.gz
+tar xvfz fftw-3.3.8.tar.gz
+cd fftw-3.3.8/
+mkdir ../fftw-bin
+./configure --prefix=/home/devel/fftw-bin
+make
+make install
+
+export PATH=/home/devel/fftw-bin/bin:$PATH
+
+
