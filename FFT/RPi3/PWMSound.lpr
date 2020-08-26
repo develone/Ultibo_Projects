@@ -43,6 +43,21 @@ uses
   Console,
   Classes,
   SysUtils,
+  HTTP,         {Include HTTP and WebStatus so we can see from a web browser what is happening}
+  WebStatus,
+  
+  uTFTP,
+  Winsock2,
+  { needed to use ultibo-tftp  }
+  { needed for telnet }
+      Shell,
+     ShellFilesystem,
+     ShellUpdate,
+     RemoteShell,
+  { needed for telnet }
+  Logging,
+  Syscalls,     {Include the Syscalls unit to provide C library support}
+
   PWM,          {Include the PWM unit to allow access to the functions}
   BCM2710,      {Include the BCM2710 and BCM2837 units for access to the PWM device}
   BCM2837;      {and PWM register values and constants.}
@@ -52,7 +67,11 @@ var
  Handle:THandle;
  PWM0Device:PPWMDevice;
  PWM1Device:PPWMDevice;
- 
+  MyPLoggingDevice : ^TLoggingDevice;
+  HTTPListener:THTTPListener;
+ { needed to use ultibo-tftp  }
+ TCP : TWinsock2TCPClient;
+ IPAddress : string;
 const
  PWMSOUND_PWM_OSC_CLOCK = 19200000;   
  PWMSOUND_PWM_PLLD_CLOCK = 500000000; 
@@ -477,12 +496,73 @@ const
  SOUND_CHANNELS = 2;
  SAMPLE_RATE = 44100;
  CLOCK_RATE = 250000000;
- 
+
+
+ function WaitForIPComplete : string;
+
+var
+
+  TCP : TWinsock2TCPClient;
+
+begin
+
+  TCP := TWinsock2TCPClient.Create;
+
+  Result := TCP.LocalAddress;
+
+  if (Result = '') or (Result = '0.0.0.0') or (Result = '255.255.255.255') then
+
+    begin
+
+      while (Result = '') or (Result = '0.0.0.0') or (Result = '255.255.255.255') do
+
+        begin
+
+          sleep (1500);
+
+          Result := TCP.LocalAddress;
+
+        end;
+
+    end;
+
+  TCP.Free;
+
+end;
+
+
+
+procedure Msg (Sender : TObject; s : string);
+
+begin
+
+  ConsoleWindowWriteLn (Handle, s);
+
+end;
+
+
+
+procedure WaitForSDDrive;
+
+begin
+
+  while not DirectoryExists ('C:\') do sleep (500);
+
+end;
 begin
  {Create a console window and display a welcome message}
  Handle:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_FULL,True);
  ConsoleWindowWriteLn(Handle,'Welcome to Example 20 PWM Sound');
  ConsoleWindowWriteLn(Handle,'Make sure you have a the Raspberry Pi audio jack connected to the AUX input of an amplifier, TV or other audio device');
+ IPAddress := WaitForIPComplete;
+ {Wait a few seconds for all initialization (like filesystem and network) to be done}
+ Sleep(5000);
+ ConsoleWindowWriteLn(Handle,'C:\ drive is ready');
+ ConsoleWindowWriteLn(Handle,'');
+
+
+ ConsoleWindowWriteLn (Handle, 'Local Address ' + IPAddress);
+ SetOnMsg (@Msg);
 
  {First locate the PWM devices
  
