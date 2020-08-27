@@ -15,3 +15,25 @@ ffmpeg -i filename.mp3 newfilename.wav
 
 ffmpeg -i Crash.mp3 Crash.wav
 ffmpeg -i Crash.wav -f s16le -acodec pcm_s16le Crash.pcm
+
+function PWMSoundClockStart(PWM:PPWMDevice;Frequency:LongWord):LongWord; 
+function PWMSoundStart(PWM:PPWMDevice):LongWord; 
+function PWMSoundSetFrequency(PWM:PPWMDevice;Frequency:LongWord):LongWord;
+function PWMSoundPlaySample(PWM:PPWMDevice;Data:Pointer;Size,ChannelCount,BitCount:LongWord):LongWord;
+function PWMSoundPlayFile(PWM:PPWMDevice;const Filename: String;ChannelCount,BitCount:LongWord):LongWord;
+
+
+https://gist.github.com/ghedo/963382/815c98d1ba0eda1b486eb9d80d9a91a81d995283
+sound_playback.c
+gcc -o play sound_playback.c -lasound
+
+./play 44100 2 360 < ~/Examples/20-PWMSound/Crash.pcm
+PCM name: 'default'
+PCM state: PREPARED
+channels: 2 (stereo)
+rate: 44100 bps
+seconds: 360
+/home/devel/Ultibo_Projects/FFT/doc/fft-tests
+./play 44100 2 30  < ../../../sd-card/a2002011001-e02.pcm
+./play 44100 2 30  < ../../../sd-card/a2002011001-e02.pcm.orig
+./play 44100 2 30  < ../../../sd-card/Crash.pcm.orig
