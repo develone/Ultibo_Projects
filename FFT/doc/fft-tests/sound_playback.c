@@ -95,10 +95,18 @@ int main(int argc, char **argv) {
 
 	/* Allocate buffer to hold single period */
 	snd_pcm_hw_params_get_period_size(params, &frames, 0);
-
+	
+	printf("frames: %d\n", frames);
+	
 	buff_size = frames * channels * 2 /* 2 -> sample size */;
+	
+	printf("buff_size: %d\n", buff_size);
+	
+	
 	buff = (char *) malloc(buff_size);
 
+	printf("buff addr: 0x%x\n", buff);
+	
 	snd_pcm_hw_params_get_period_time(params, &tmp, NULL);
 
 	for (loops = (seconds * 1000000) / tmp; loops > 0; loops--) {
