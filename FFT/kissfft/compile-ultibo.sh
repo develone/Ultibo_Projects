@@ -6,4 +6,4 @@ data_processor.c data_processor_test.c
 arm-none-eabi-ar rcs libkissfft.a *.o
 arm-none-eabi-ar t libkissfft.a
 arm-none-eabi-objdump -d libkissfft.a > kissfft-obj.txt
-cp libkissfft.a ../RPi3
+cp libkissfft.a RPi3
