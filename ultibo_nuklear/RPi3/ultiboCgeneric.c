@@ -30,11 +30,11 @@
 #define WINDOW_WIDTH ScreenWidth
 #define WINDOW_HEIGHT ScreenHeight
 
-//#define MAX_VERTEX_MEMORY 512 * 1024
-//#define MAX_ELEMENT_MEMORY 128 * 1024
+#define MAX_VERTEX_MEMORY 512 * 1024
+#define MAX_ELEMENT_MEMORY 128 * 1024
 
-#define MAX_VERTEX_MEMORY 256 * 1024
-#define MAX_ELEMENT_MEMORY 64 * 1024
+//#define MAX_VERTEX_MEMORY 256 * 1024
+//#define MAX_ELEMENT_MEMORY 64 * 1024
 
 #define UNUSED(a) (void)a
 #define MIN(a,b) ((a) < (b) ? (a) : (b))
@@ -50,8 +50,11 @@
  * and the corresponding function. */
 #include "style.c"
 #include "calculator.c"
-#include "overview.c" //this needs a few extra functions to be implemented or redirected from ultibo
+#include "overview.c" 
 #include "node_editor.c"
+#include "extended.c"
+#include "canvas.c"
+#include "skinning.c"
 
 //***** From ultibo
 #ifdef __cplusplus
@@ -93,7 +96,10 @@ static void nuklear_MainLoop(void* loopArg);
 
 void ultibo_C_main()
 {
-    getScreenSize(&ScreenWidth, &ScreenHeight);	
+    getScreenSize(&ScreenWidth, &ScreenHeight);
+
+    struct nk_font_config cfg = nk_font_config(0);
+    cfg.oversample_h = 3; cfg.oversample_v = 2;	
 
 	 
     ctx = nk_ultibo_init();
@@ -102,20 +108,32 @@ void ultibo_C_main()
     {struct nk_font_atlas *atlas;
     nk_ultibo_font_stash_begin(&atlas);   //left here you can test more fonts
     /*struct nk_font *droid = nk_font_atlas_add_from_file(atlas, "../../../extra_font/DroidSans.ttf", 14, 0);*/
-    struct nk_font *roboto = nk_font_atlas_add_from_file(atlas, "extra_font\\Roboto-Regular.ttf", 16, 0);
+    //struct nk_font *roboto = nk_font_atlas_add_from_file(atlas, "extra_font\\Roboto-Regular.ttf", 16, 0);
     //struct nk_font *future = nk_font_atlas_add_from_file(atlas, "extra_font/kenvector_future_thin.ttf", 13, 0);
     /*struct nk_font *clean = nk_font_atlas_add_from_file(atlas, "../../../extra_font/ProggyClean.ttf", 12, 0);*/
     /*struct nk_font *tiny = nk_font_atlas_add_from_file(atlas, "../../../extra_font/ProggyTiny.ttf", 10, 0);*/
     /*struct nk_font *cousine = nk_font_atlas_add_from_file(atlas, "../../../extra_font/Cousine-Regular.ttf", 13, 0);*/
+    media.font_14 = nk_font_atlas_add_from_file(atlas, "extra_font\\Roboto-Regular.ttf", 14.0f, &cfg);
+    media.font_18 = nk_font_atlas_add_from_file(atlas, "extra_font\\Roboto-Regular.ttf", 18.0f, &cfg);
+    media.font_20 = nk_font_atlas_add_from_file(atlas, "extra_font\\Roboto-Regular.ttf", 20.0f, &cfg);
+    media.font_22 = nk_font_atlas_add_from_file(atlas, "extra_font\\Roboto-Regular.ttf", 22.0f, &cfg);	
+	
+	
     nk_ultibo_font_stash_end();
     nk_style_load_all_cursors(ctx, atlas->cursors);
-    nk_style_set_font(ctx, &roboto->handle);}
-
+	
+    //nk_style_set_font(ctx, &roboto->handle);}
+    nk_style_set_font(ctx, &media.font_18->handle);}
+	
+	load_extended_icons();
+	
+	apply_skin(ctx);
     /* style.c */
     /*set_style(ctx, THEME_WHITE);*/
     /*set_style(ctx, THEME_RED);*/
     /*set_style(ctx, THEME_BLUE);*/
     /*set_style(ctx, THEME_DARK);	*/
+	
 	 
  
 	while(1)
@@ -123,7 +141,9 @@ void ultibo_C_main()
 
 		
 	  getMouseXY(&PanelMouseX, &PanelMouseY, &ButtonsMouse);
-      nuklear_MainLoop((void*)ctx); // here is the gui code			
+      nuklear_MainLoop((void*)ctx); // here is the gui code
+
+      	  
         
 	  glSwapBuffer();
  
@@ -166,9 +186,14 @@ nuklear_MainLoop(void* loopArg){
 
 
     /* -------------- EXAMPLES ---------------- */
-    calculator(ctx);
+    //drawCanvas(ctx,ScreenWidth, ScreenHeight,media.font_18);  
+	calculator(ctx);
     overview(ctx); 
     node_editor(ctx);
+	
+    basic_demo(ctx, &media);
+    button_demo(ctx, &media);
+    grid_demo(ctx, &media);	
     /* ----------------------------------------- */	
 
     /* GUI */
