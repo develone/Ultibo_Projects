@@ -7,6 +7,31 @@
 #include <stdio.h>
 #include <unistd.h>
 #include "data_processor.h"
+#include<math.h>
+#define pi 3.14159265
+
+static int gensindata(kiss_fft_cpx *cin)
+{
+ int i,freq=1000,L=2048;
+ float t[L],T; 
+ double sample;
+ //T=1/freq;
+ T=.001;
+ //t = (0:L-1)*T;
+ for(i=0;i<L;i++) t[i] = i*T;
+ 
+    for (i=0;i<(L-1);i++)
+    {
+		 
+       //sample = 1000*sin(2*pi*200*t[i])+2000;
+       sample = 5*sin(2*pi*200*t[i]);
+       cin[i].r = (int)sample;
+       cin[i].i = 0;
+       //printf("%f,",cin[i].r);  
+    }
+     
+    return 0;
+ }
 
 static int read_data(const char *filename, kiss_fft_cpx *cin, int n) {
 	int i = 0;
@@ -25,15 +50,20 @@ static int read_data(const char *filename, kiss_fft_cpx *cin, int n) {
 			continue;
 		cin[i].i = 0;
 		cin[i++].r = atoi(p + 4);
+		//printf("(%f,%f)\n",cin[i-1].r,cin[i].i);
+		printf("%f,",cin[i-1].r);
 		if (i >= n)
 			break;
-		//printf("i=%d, %s, (%f)", i, p+4, in[i-1]);
+		//printf("%d %12f, %12f\n",i,cin[i].r, cin[i-1].i);	
+		//printf("i=%d, %s, (%f)", i, p+4, cin[i-1].r);
+		//printf("i=%d,  (%f)", i,  cin[i-1].r);
 	}
 	while (i < n) {
 		cin[i].i = 0;
 		cin[i++].r = 0;
 	}
 	fclose(fp);
+	//for(i = 0;i < n;n++) printf("(%f,%f)\n",cin[i].r,cin[i].i);
 	return 0;
 }
 
@@ -52,6 +82,20 @@ static int write_data(const char *filename, const kiss_fft_cpx *cout, int n) {
 	return 0;
 }
 
+static int transfer_out_in(kiss_fft_cpx *cin, const kiss_fft_cpx *cout, int n) {
+	int i = 0;
+	while (i < n) {
+		//printf("%d %12f, %12f\n",i,cout[i].r, cout[i].i);
+		
+		cin[i].r = cout[i].r;
+		cin[i].i = cout[i].i;
+		
+		printf("%d %12f, %12f\n",i,cin[i].r, cin[i].i);
+		i++;
+	}
+	return 0;
+}
+
 void test(void) {
 	const char *infile = "dump-raw-3.txt";
 	const char *outfile = "test-output.txt";
@@ -63,13 +107,14 @@ void test(void) {
 	*/
 	float hz = 0;
 	data_processor_t dfft = NULL;
-	dfft = data_processor_init(2048, 214000);
+	dfft = data_processor_init(2048, 1000);
+	//dfft = data_processor_init(2048, 214000);
 	if (!dfft) {
 		fprintf(stderr, "data_processor_init error\n");
 		//return -1;
 	}
-
-	read_data(infile, dfft->cin, dfft->nfft);
+	gensindata(dfft->cin);
+	//read_data(infile, dfft->cin, dfft->nfft);
 
 	int i = 100;
 	while (i-- > 0) {
@@ -78,9 +123,24 @@ void test(void) {
 	}
 
 	write_data(outfile, dfft->cout, dfft->nfft);
-
+	/*
+	data_processor_inverse_t ifft = NULL;
+	ifft = data_processor_inverse_init(2048, 1000);
+	
+	transfer_out_in(ifft->cin,dfft->cout, dfft->nfft);
+	hz = data_processor_inverse_run(ifft);
+	
+	for (i=0; i< ifft->nfft; i++) {
+		printf("%f ,",  ifft->cout[i].r);
+	}
+	
+	printf("hz = %12f\n", hz);
 	data_processor_close(dfft);
 	dfft = NULL;
+	
+	data_processor_inverse_close(ifft);
+	ifft = NULL;
 	//return 0;
+	*/
 }
 
