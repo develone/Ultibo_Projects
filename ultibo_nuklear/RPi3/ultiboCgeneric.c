@@ -55,6 +55,7 @@
 #include "extended.c"
 #include "canvas.c"
 #include "skinning.c"
+#include "file_browser.c"
 
 //***** From ultibo
 #ifdef __cplusplus
@@ -126,8 +127,9 @@ void ultibo_C_main()
     nk_style_set_font(ctx, &media.font_18->handle);}
 	
 	load_extended_icons();
+	load_fb_icons_init();
 	
-	apply_skin(ctx);
+	//apply_skin(ctx);
     /* style.c */
     /*set_style(ctx, THEME_WHITE);*/
     /*set_style(ctx, THEME_RED);*/
@@ -193,10 +195,14 @@ nuklear_MainLoop(void* loopArg){
 	
     basic_demo(ctx, &media);
     button_demo(ctx, &media);
-    grid_demo(ctx, &media);	
+    grid_demo(ctx, &media);
+
+    file_browser_run(&browser, ctx);
+	
     /* ----------------------------------------- */	
 
     /* GUI */
+	/*
     if (nk_begin(ctx, "Demo", nk_rect(50, 50, 200, 260),
         NK_WINDOW_BORDER|NK_WINDOW_MOVABLE|NK_WINDOW_SCALABLE|
         NK_WINDOW_CLOSABLE|NK_WINDOW_MINIMIZABLE|NK_WINDOW_TITLE))
@@ -246,7 +252,7 @@ nuklear_MainLoop(void* loopArg){
         if (nk_button_label (ctx, "Done"))
 	        printf ("%s\n", buf);
 
-        /* custom widget pixel width */
+        // custom widget pixel width 
         nk_layout_row_begin(ctx, NK_STATIC, 30, 2);
         {
           nk_layout_row_push(ctx, 50);
@@ -259,15 +265,16 @@ nuklear_MainLoop(void* loopArg){
     }
     nk_end(ctx);
 
-
+     
     if (nk_begin(ctx, "Demo02", nk_rect(260, 50, 200, 200),
-        /*NK_WINDOW_BORDER|*/NK_WINDOW_MOVABLE|NK_WINDOW_SCALABLE|
-        /*NK_WINDOW_CLOSABLE|*/NK_WINDOW_MINIMIZABLE|NK_WINDOW_TITLE))
+        NK_WINDOW_MOVABLE|NK_WINDOW_SCALABLE|
+        /NK_WINDOW_MINIMIZABLE|NK_WINDOW_TITLE))
     {
 
     }
     nk_end(ctx);
-
+    */
+	
     /* Draw */
     float bg[4];
     int win_width, win_height;
