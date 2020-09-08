@@ -17,7 +17,7 @@ uses GlobalConst,GlobalTypes,GlobalConfig,Platform,HeapManager,Console,SysUtils,
 procedure ultibo_C_main; cdecl; external 'libultiboCgeneric' name 'ultibo_C_main';
 
 procedure glSwapBuffer;export; cdecl;
-procedure getMouseXY(var cx: integer; var cy: integer; var btc: integer);export; cdecl;
+procedure getMouseXY(var cx: integer; var cy: integer; var btc: integer; var mwh: integer);export; cdecl;
 procedure getScreenSize(var scrWidth: LongWord ;  var scrHeight: LongWord);export; cdecl;
 procedure getKey(var value : integer); export; cdecl;
 
@@ -52,6 +52,7 @@ type
   mouseCX: integer = 0;
   mouseCY: integer = 0;
   mouseBt: integer = 0;
+  mouseWh: integer = 0;
 
 
 {The main functions of our GLES2 example} 
@@ -81,11 +82,12 @@ begin
     value := -1;
 end;
 
-procedure getMouseXY(var cx: integer; var cy: integer; var btc: integer);
+procedure getMouseXY(var cx: integer; var cy: integer; var btc: integer;  var mwh: integer);
 begin
  cx  := mouseCX;
  cy  := mouseCY;
  btc := mouseBt;
+ mwh := mouseWh;
 end;
 
 procedure getScreenSize(var scrWidth: LongWord ;  var scrHeight: LongWord);
@@ -100,6 +102,7 @@ var
   count : LongWord;
   ScalingX:Double;
   ScalingY:Double;
+  ScalingW:Double;
   ScreenWidth:LongWord;
   ScreenHeight:LongWord;
 begin
@@ -174,6 +177,24 @@ begin
           end;
          if mouseCY < 0 then mouseCY:=0;
          if mouseCY > (ScreenHeight - 1) then mouseCY:=ScreenHeight - 1;
+
+         {start wheel}
+         if (MouseData.Buttons and MOUSE_ABSOLUTE_WHEEL) = MOUSE_ABSOLUTE_WHEEL then
+          begin
+           {Use maximum Wheel to scale the wheel value to the screen}
+           ScalingW:=MouseData.MaximumWheel / ScreenHeight;
+           if ScalingW <= 0 then ScalingW:=1.0;
+
+           mouseWh:= Trunc(MouseData.OffsetWheel / ScalingW);
+          end
+         else
+          begin
+           mouseWh:= mouseWh + MouseData.OffsetWheel;
+          end;
+         {if mouseWh < 0 then mouseWh:=0;}
+         {if mouseWh > (ScreenHeight - 1) then mouseWh:=ScreenHeight - 1;}
+
+         {end wheel}
 
 end;
 end;

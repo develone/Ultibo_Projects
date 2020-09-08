@@ -62,7 +62,7 @@
 extern "C" {
 #endif
   void glSwapBuffer();
-  void getMouseXY(int *cx, int *cy, int *btc);
+  void getMouseXY(int *cx, int *cy, int *btc, int *mwh);
   void getScreenSize(unsigned long int *scrWidth, unsigned long int *scrHeight);
   void getKey(int *value);
 
@@ -73,6 +73,8 @@ extern "C" {
 int PanelMouseX = 0;
 int PanelMouseY = 0;
 int ButtonsMouse = 0;
+int MouseWheel = 0;
+int Key = 0;
 
 unsigned long int ScreenWidth = 800;
 unsigned long int ScreenHeight = 480;
@@ -142,11 +144,8 @@ void ultibo_C_main()
 	{
 
 		
-	  getMouseXY(&PanelMouseX, &PanelMouseY, &ButtonsMouse);
-      nuklear_MainLoop((void*)ctx); // here is the gui code
-
-      	  
-        
+	  getMouseXY(&PanelMouseX, &PanelMouseY, &ButtonsMouse, &MouseWheel);
+      nuklear_MainLoop((void*)ctx); // here is the gui code    	          
 	  glSwapBuffer();
  
 	}
@@ -166,7 +165,6 @@ nuklear_MainLoop(void* loopArg){
 	
     
 	/*Mouse*/
-
 	switch(ButtonsMouse)
 	{
 		case 1 : BUTTON_LEFT   = 1; break;
@@ -184,9 +182,61 @@ nuklear_MainLoop(void* loopArg){
     nk_input_button(ctx, NK_BUTTON_LEFT, (int)PanelMouseX, (int)PanelMouseY, BUTTON_LEFT);
     nk_input_button(ctx, NK_BUTTON_RIGHT, (int)PanelMouseX,(int)PanelMouseY, BUTTON_RIGHT);
     nk_input_button(ctx, NK_BUTTON_MIDDLE, (int)PanelMouseX,(int)PanelMouseY, BUTTON_MIDDLE);
+	//--------------- Mouse Wheel ---------------------
+	//if( MouseWheel != 0)
+	  //nk_input_scroll(ctx,nk_vec2( 0,(float)MouseWheel));	
+	//--------------- Keyboard Input ------------------
+    getKey(&Key);
+    if(Key != -1) 
+    { 
+      if (Key != 0)
+      {
+         // Standard keys
+         if(Key == 0x08)
+           nk_input_key(ctx, NK_KEY_BACKSPACE, 1);         
+         else if(Key == 0x09)
+           nk_input_key(ctx, NK_KEY_TAB, 1);         
+         else if(Key == 0x0D)
+           nk_input_key(ctx, NK_KEY_ENTER, 1);
+         else if(Key == 0x18)
+           nk_input_key(ctx, NK_KEY_CUT, 1);	   
+         else if(Key == 0x03)
+           nk_input_key(ctx, NK_KEY_COPY, 1);	   	   
+         else if(Key == 0x16)
+           nk_input_key(ctx, NK_KEY_PASTE, 1);	   	   	   
+         else 	 
+           nk_input_char(ctx, (char)Key);      	   
+      }
+      else
+      {
+       // Extended keys
+       getKey(&Key);
+       if(Key == 0x53)
+		 nk_input_key(ctx, NK_KEY_DEL, 1);
+	   else if(Key == 0x48)
+         nk_input_key(ctx, NK_KEY_UP, 1); 
+       else if(Key == 0x50)
+         nk_input_key(ctx, NK_KEY_DOWN, 1);	     
+       else if(Key == 0x4B)
+         nk_input_key(ctx, NK_KEY_LEFT, 1);
+       else if(Key == 0x4D)
+         nk_input_key(ctx, NK_KEY_RIGHT, 1);
+       else if(Key == 0x47) // HOME
+       {
+         nk_input_key(ctx, NK_KEY_TEXT_LINE_START, 1);
+         //nk_input_key(ctx, NK_KEY_SCROLL_START, 1);  //Moves the scroll bar    
+       }
+       else if(Key == 0x4F) // END
+       {
+         nk_input_key(ctx, NK_KEY_TEXT_LINE_END, 1);
+         //nk_input_key(ctx, NK_KEY_SCROLL_END, 1);  //Moves the scroll bar  
+       }
+      }	  
+    }              	
+    //--------------- Keyboard Input end	
     nk_input_end(ctx);
 
-
+	
     /* -------------- EXAMPLES ---------------- */
     //drawCanvas(ctx,ScreenWidth, ScreenHeight,media.font_18);  
 	calculator(ctx);
@@ -202,7 +252,7 @@ nuklear_MainLoop(void* loopArg){
     /* ----------------------------------------- */	
 
     /* GUI */
-	/*
+	
     if (nk_begin(ctx, "Demo", nk_rect(50, 50, 200, 260),
         NK_WINDOW_BORDER|NK_WINDOW_MOVABLE|NK_WINDOW_SCALABLE|
         NK_WINDOW_CLOSABLE|NK_WINDOW_MINIMIZABLE|NK_WINDOW_TITLE))
@@ -264,7 +314,7 @@ nuklear_MainLoop(void* loopArg){
 
     }
     nk_end(ctx);
-
+    /*
      
     if (nk_begin(ctx, "Demo02", nk_rect(260, 50, 200, 200),
         NK_WINDOW_MOVABLE|NK_WINDOW_SCALABLE|
