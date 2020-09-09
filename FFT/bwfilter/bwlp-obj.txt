@@ -855,16 +855,16 @@ Disassembly of section .text:
  cd0:	e92d47f0 	push	{r4, r5, r6, r7, r8, r9, sl, lr}
  cd4:	e3a00006 	mov	r0, #6
  cd8:	ed2d8b02 	vpush	{d8}
- cdc:	ed9f0b69 	vldr	d0, [pc, #420]	; e88 <test+0x1b8>
+ cdc:	ed9f0b87 	vldr	d0, [pc, #540]	; f00 <test+0x230>
  ce0:	ebfffffe 	bl	230 <dcof_bwlp>
  ce4:	e2508000 	subs	r8, r0, #0
- ce8:	0a000056 	beq	e48 <test+0x178>
+ ce8:	0a000074 	beq	ec0 <test+0x1f0>
  cec:	e3a00006 	mov	r0, #6
  cf0:	ebfffffe 	bl	748 <ccof_bwlp>
  cf4:	e2507000 	subs	r7, r0, #0
- cf8:	0a000059 	beq	e64 <test+0x194>
+ cf8:	0a000077 	beq	edc <test+0x20c>
  cfc:	e3a00006 	mov	r0, #6
- d00:	ed9f0b60 	vldr	d0, [pc, #384]	; e88 <test+0x1b8>
+ d00:	ed9f0b7e 	vldr	d0, [pc, #504]	; f00 <test+0x230>
  d04:	ebfffffe 	bl	998 <sf_bwlp>
  d08:	e3001000 	movw	r1, #0
  d0c:	e3000000 	movw	r0, #0
@@ -872,16 +872,16 @@ Disassembly of section .text:
  d14:	e3400000 	movt	r0, #0
  d18:	eeb08b40 	vmov.f64	d8, d0
  d1c:	ebfffffe 	bl	0 <fopen>
- d20:	e2504000 	subs	r4, r0, #0
- d24:	0a000052 	beq	e74 <test+0x1a4>
- d28:	e1a03004 	mov	r3, r4
+ d20:	e2505000 	subs	r5, r0, #0
+ d24:	0a000070 	beq	eec <test+0x21c>
+ d28:	e1a03005 	mov	r3, r5
  d2c:	e3a0202b 	mov	r2, #43	; 0x2b
  d30:	e3a01001 	mov	r1, #1
  d34:	e3000000 	movw	r0, #0
  d38:	e3400000 	movt	r0, #0
  d3c:	e3006000 	movw	r6, #0
  d40:	ebfffffe 	bl	0 <fwrite>
- d44:	e1a03004 	mov	r3, r4
+ d44:	e1a03005 	mov	r3, r5
  d48:	e3a02014 	mov	r2, #20
  d4c:	e3a01001 	mov	r1, #1
  d50:	e3000000 	movw	r0, #0
@@ -889,7 +889,7 @@ Disassembly of section .text:
  d58:	ebfffffe 	bl	0 <fwrite>
  d5c:	e3a02006 	mov	r2, #6
  d60:	e3001000 	movw	r1, #0
- d64:	e1a00004 	mov	r0, r4
+ d64:	e1a00005 	mov	r0, r5
  d68:	e3401000 	movt	r1, #0
  d6c:	e3406000 	movt	r6, #0
  d70:	ebfffffe 	bl	0 <fprintf>
@@ -898,69 +898,99 @@ Disassembly of section .text:
  d7c:	e3401000 	movt	r1, #0
  d80:	e3432333 	movt	r2, #13107	; 0x3333
  d84:	e3033333 	movw	r3, #13107	; 0x3333
- d88:	e1a00004 	mov	r0, r4
+ d88:	e1a00005 	mov	r0, r5
  d8c:	e3433fe3 	movt	r3, #16355	; 0x3fe3
  d90:	ebfffffe 	bl	0 <fprintf>
  d94:	ec532b18 	vmov	r2, r3, d8
  d98:	e3001000 	movw	r1, #0
- d9c:	e1a00004 	mov	r0, r4
+ d9c:	e1a00005 	mov	r0, r5
  da0:	e3401000 	movt	r1, #0
- da4:	e2475004 	sub	r5, r7, #4
+ da4:	e2474004 	sub	r4, r7, #4
  da8:	ebfffffe 	bl	0 <fprintf>
- dac:	e3001000 	movw	r1, #0
- db0:	e3a02007 	mov	r2, #7
- db4:	e3401000 	movt	r1, #0
- db8:	e1a00004 	mov	r0, r4
- dbc:	e2879018 	add	r9, r7, #24
- dc0:	ebfffffe 	bl	0 <fprintf>
- dc4:	e5b53004 	ldr	r3, [r5, #4]!
- dc8:	e1a01006 	mov	r1, r6
- dcc:	e1a00004 	mov	r0, r4
- dd0:	ee073a10 	vmov	s14, r3
- dd4:	eeb87bc7 	vcvt.f64.s32	d7, s14
- dd8:	ee277b08 	vmul.f64	d7, d7, d8
- ddc:	ec532b17 	vmov	r2, r3, d7
- de0:	ebfffffe 	bl	0 <fprintf>
- de4:	e1590005 	cmp	r9, r5
- de8:	1afffff5 	bne	dc4 <test+0xf4>
- dec:	e3001000 	movw	r1, #0
- df0:	e3a02007 	mov	r2, #7
- df4:	e3401000 	movt	r1, #0
- df8:	e1a00004 	mov	r0, r4
- dfc:	ebfffffe 	bl	0 <fprintf>
- e00:	e3006000 	movw	r6, #0
- e04:	e2889038 	add	r9, r8, #56	; 0x38
- e08:	e3406000 	movt	r6, #0
- e0c:	e1a05008 	mov	r5, r8
- e10:	e0c520d8 	ldrd	r2, [r5], #8
- e14:	e1a01006 	mov	r1, r6
- e18:	e1a00004 	mov	r0, r4
- e1c:	ebfffffe 	bl	0 <fprintf>
- e20:	e1590005 	cmp	r9, r5
- e24:	1afffff9 	bne	e10 <test+0x140>
- e28:	e1a00004 	mov	r0, r4
- e2c:	ebfffffe 	bl	0 <fclose>
- e30:	e1a00008 	mov	r0, r8
- e34:	ebfffffe 	bl	0 <free>
- e38:	ecbd8b02 	vpop	{d8}
- e3c:	e1a00007 	mov	r0, r7
- e40:	e8bd47f0 	pop	{r4, r5, r6, r7, r8, r9, sl, lr}
- e44:	eafffffe 	b	0 <free>
- e48:	e3000000 	movw	r0, #0
- e4c:	e3400000 	movt	r0, #0
- e50:	ebfffffe 	bl	0 <perror>
- e54:	e3a00006 	mov	r0, #6
- e58:	ebfffffe 	bl	748 <ccof_bwlp>
- e5c:	e2507000 	subs	r7, r0, #0
- e60:	1affffa5 	bne	cfc <test+0x2c>
- e64:	e3000000 	movw	r0, #0
- e68:	e3400000 	movt	r0, #0
- e6c:	ebfffffe 	bl	0 <perror>
- e70:	eaffffa1 	b	cfc <test+0x2c>
- e74:	e3000000 	movw	r0, #0
- e78:	e3400000 	movt	r0, #0
- e7c:	ebfffffe 	bl	0 <perror>
- e80:	eaffffa8 	b	d28 <test+0x58>
- e84:	e320f000 	nop	{0}
- e88:	33333333 	.word	0x33333333
- e8c:	3fe33333 	.word	0x3fe33333
+ dac:	e3000000 	movw	r0, #0
+ db0:	e3400000 	movt	r0, #0
+ db4:	e2879018 	add	r9, r7, #24
+ db8:	ebfffffe 	bl	0 <puts>
+ dbc:	e3000000 	movw	r0, #0
+ dc0:	e3400000 	movt	r0, #0
+ dc4:	ebfffffe 	bl	0 <puts>
+ dc8:	e3a01006 	mov	r1, #6
+ dcc:	e3000000 	movw	r0, #0
+ dd0:	e3400000 	movt	r0, #0
+ dd4:	ebfffffe 	bl	0 <printf>
+ dd8:	e3000000 	movw	r0, #0
+ ddc:	e3032333 	movw	r2, #13107	; 0x3333
+ de0:	e3033333 	movw	r3, #13107	; 0x3333
+ de4:	e3432333 	movt	r2, #13107	; 0x3333
+ de8:	e3433fe3 	movt	r3, #16355	; 0x3fe3
+ dec:	e3400000 	movt	r0, #0
+ df0:	ebfffffe 	bl	0 <printf>
+ df4:	ec532b18 	vmov	r2, r3, d8
+ df8:	e3000000 	movw	r0, #0
+ dfc:	e3400000 	movt	r0, #0
+ e00:	ebfffffe 	bl	0 <printf>
+ e04:	e3001000 	movw	r1, #0
+ e08:	e3a02007 	mov	r2, #7
+ e0c:	e3401000 	movt	r1, #0
+ e10:	e1a00005 	mov	r0, r5
+ e14:	ebfffffe 	bl	0 <fprintf>
+ e18:	e5b43004 	ldr	r3, [r4, #4]!
+ e1c:	e1a01006 	mov	r1, r6
+ e20:	e1a00005 	mov	r0, r5
+ e24:	ee073a10 	vmov	s14, r3
+ e28:	eeb87bc7 	vcvt.f64.s32	d7, s14
+ e2c:	ee277b08 	vmul.f64	d7, d7, d8
+ e30:	ec532b17 	vmov	r2, r3, d7
+ e34:	ebfffffe 	bl	0 <fprintf>
+ e38:	e1a00006 	mov	r0, r6
+ e3c:	edd47a00 	vldr	s15, [r4]
+ e40:	eeb87be7 	vcvt.f64.s32	d7, s15
+ e44:	ee277b08 	vmul.f64	d7, d7, d8
+ e48:	ec532b17 	vmov	r2, r3, d7
+ e4c:	ebfffffe 	bl	0 <printf>
+ e50:	e1590004 	cmp	r9, r4
+ e54:	1affffef 	bne	e18 <test+0x148>
+ e58:	e3001000 	movw	r1, #0
+ e5c:	e3a02007 	mov	r2, #7
+ e60:	e3401000 	movt	r1, #0
+ e64:	e1a00005 	mov	r0, r5
+ e68:	ebfffffe 	bl	0 <fprintf>
+ e6c:	e3006000 	movw	r6, #0
+ e70:	e2889038 	add	r9, r8, #56	; 0x38
+ e74:	e3406000 	movt	r6, #0
+ e78:	e1a04008 	mov	r4, r8
+ e7c:	e1c420d0 	ldrd	r2, [r4]
+ e80:	e1a01006 	mov	r1, r6
+ e84:	e1a00005 	mov	r0, r5
+ e88:	ebfffffe 	bl	0 <fprintf>
+ e8c:	e0c420d8 	ldrd	r2, [r4], #8
+ e90:	e1a00006 	mov	r0, r6
+ e94:	ebfffffe 	bl	0 <printf>
+ e98:	e1540009 	cmp	r4, r9
+ e9c:	1afffff6 	bne	e7c <test+0x1ac>
+ ea0:	e1a00005 	mov	r0, r5
+ ea4:	ebfffffe 	bl	0 <fclose>
+ ea8:	e1a00008 	mov	r0, r8
+ eac:	ebfffffe 	bl	0 <free>
+ eb0:	ecbd8b02 	vpop	{d8}
+ eb4:	e1a00007 	mov	r0, r7
+ eb8:	e8bd47f0 	pop	{r4, r5, r6, r7, r8, r9, sl, lr}
+ ebc:	eafffffe 	b	0 <free>
+ ec0:	e3000000 	movw	r0, #0
+ ec4:	e3400000 	movt	r0, #0
+ ec8:	ebfffffe 	bl	0 <perror>
+ ecc:	e3a00006 	mov	r0, #6
+ ed0:	ebfffffe 	bl	748 <ccof_bwlp>
+ ed4:	e2507000 	subs	r7, r0, #0
+ ed8:	1affff87 	bne	cfc <test+0x2c>
+ edc:	e3000000 	movw	r0, #0
+ ee0:	e3400000 	movt	r0, #0
+ ee4:	ebfffffe 	bl	0 <perror>
+ ee8:	eaffff83 	b	cfc <test+0x2c>
+ eec:	e3000000 	movw	r0, #0
+ ef0:	e3400000 	movt	r0, #0
+ ef4:	ebfffffe 	bl	0 <perror>
+ ef8:	eaffff8a 	b	d28 <test+0x58>
+ efc:	e320f000 	nop	{0}
+ f00:	33333333 	.word	0x33333333
+ f04:	3fe33333 	.word	0x3fe33333
