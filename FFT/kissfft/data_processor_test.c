@@ -16,7 +16,7 @@ static int gensindata(kiss_fft_cpx *cin)
  float t[L],T; 
  double sample;
  //T=1/freq;
- T=.001;
+ T=.000125;
  //t = (0:L-1)*T;
  for(i=0;i<L;i++) t[i] = i*T;
  
@@ -24,7 +24,7 @@ static int gensindata(kiss_fft_cpx *cin)
     {
 		 
        //sample = 1000*sin(2*pi*200*t[i])+2000;
-       sample = 5*sin(2*pi*200*t[i]);
+       sample = 1000*sin(2*pi*2000*t[i]);
        cin[i].r = (int)sample;
        cin[i].i = 0;
        //printf("%f,",cin[i].r);  
@@ -107,7 +107,7 @@ void test(void) {
 	*/
 	float hz = 0;
 	data_processor_t dfft = NULL;
-	dfft = data_processor_init(2048, 1000);
+	dfft = data_processor_init(2048, 8000);
 	//dfft = data_processor_init(2048, 214000);
 	if (!dfft) {
 		fprintf(stderr, "data_processor_init error\n");

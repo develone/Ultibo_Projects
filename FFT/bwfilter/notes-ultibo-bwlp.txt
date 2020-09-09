@@ -1,0 +1,49 @@
+git clone https://github.com/develone/Ultibo_Projects.git
+
+cd ~/Ultibo_Projects/FFT/bwfilter
+
+./compile-ultibo.sh 
+bwlp.o
+
+cd RPi3/
+
+
+Use Lazarus IDE (Ultibo Edition) to compile & link "butterworthlp.lpi"
+
+tftp 192.168.1.245 < cmdstftp 
+tftp> tftp> Sent 2901448 bytes in 8.2 seconds
+
+telnet 192.168.1.245
+Trying 192.168.1.245...
+Connected to 192.168.1.245.
+Escape character is '^]'.
+
+Ultibo Core (Release: Beetroot Version: 2.0.807 Date: 3 September 2020)
+ (Type HELP for a list of available commands)
+# Butterworth lowpass filter coefficients.
+# Produced by bwlp.
+# Filter order: 6
+# Cutoff freq.: 0.600000000000000
+# Scaling factor: 0.070115413492454
+7
+0.070115413492454
+0.420692480954722
+1.051731202386805
+1.402308269849073
+1.051731202386805
+0.420692480954722
+0.070115413492454
+7
+1.000000000000
+1.187600680176
+1.305213349289
+0.674327525298
+0.263469348280
+0.051753033880
+0.005022526595
+
+tftp 192.168.1.245
+tftp> binary
+tftp> get lpcoeffsc
+Received 386 bytes in 0.0 seconds
+tftp> quit

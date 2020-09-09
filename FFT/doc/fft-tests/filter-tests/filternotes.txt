@@ -1,4 +1,14 @@
 initial filter starting with signal which creates a signal of 3 freq
 50, 120, and 200 Hz.
-
+SS no nosie
+SSS with noise
 http://dspfirst.gatech.edu/chapters/DSP1st2eLabs/OctaveBandFiltLab.pdf
+
+sf = 800; sf2 = sf/2;
+Hz			Rad/s
+50	0.125	314.159265	0.00318
+120	0.3		753.982236	0.00132
+200	0.5		1256.63706	0.000795
+
+ω(rad/s) = 2π×f(Hz)
+300 Hz	ω(rad/s) = 2π×300Hz = 1884.956 rad/s
