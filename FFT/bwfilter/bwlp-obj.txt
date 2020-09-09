@@ -894,12 +894,12 @@ Disassembly of section .text:
  d6c:	e3406000 	movt	r6, #0
  d70:	ebfffffe 	bl	0 <fprintf>
  d74:	e3001000 	movw	r1, #0
- d78:	e3032333 	movw	r2, #13107	; 0x3333
+ d78:	e3002b4e 	movw	r2, #2894	; 0xb4e
  d7c:	e3401000 	movt	r1, #0
- d80:	e3432333 	movt	r2, #13107	; 0x3333
- d84:	e3033333 	movw	r3, #13107	; 0x3333
+ d80:	e34f245e 	movt	r2, #62558	; 0xf45e
+ d84:	e30a3415 	movw	r3, #42005	; 0xa415
  d88:	e1a00005 	mov	r0, r5
- d8c:	e3433fe3 	movt	r3, #16355	; 0x3fe3
+ d8c:	e3433fa9 	movt	r3, #16297	; 0x3fa9
  d90:	ebfffffe 	bl	0 <fprintf>
  d94:	ec532b18 	vmov	r2, r3, d8
  d98:	e3001000 	movw	r1, #0
@@ -919,10 +919,10 @@ Disassembly of section .text:
  dd0:	e3400000 	movt	r0, #0
  dd4:	ebfffffe 	bl	0 <printf>
  dd8:	e3000000 	movw	r0, #0
- ddc:	e3032333 	movw	r2, #13107	; 0x3333
- de0:	e3033333 	movw	r3, #13107	; 0x3333
- de4:	e3432333 	movt	r2, #13107	; 0x3333
- de8:	e3433fe3 	movt	r3, #16355	; 0x3fe3
+ ddc:	e3002b4e 	movw	r2, #2894	; 0xb4e
+ de0:	e30a3415 	movw	r3, #42005	; 0xa415
+ de4:	e34f245e 	movt	r2, #62558	; 0xf45e
+ de8:	e3433fa9 	movt	r3, #16297	; 0x3fa9
  dec:	e3400000 	movt	r0, #0
  df0:	ebfffffe 	bl	0 <printf>
  df4:	ec532b18 	vmov	r2, r3, d8
@@ -992,5 +992,5 @@ Disassembly of section .text:
  ef4:	ebfffffe 	bl	0 <perror>
  ef8:	eaffff8a 	b	d28 <test+0x58>
  efc:	e320f000 	nop	{0}
- f00:	33333333 	.word	0x33333333
- f04:	3fe33333 	.word	0x3fe33333
+ f00:	f45e0b4e 	.word	0xf45e0b4e
+ f04:	3fa9a415 	.word	0x3fa9a415
