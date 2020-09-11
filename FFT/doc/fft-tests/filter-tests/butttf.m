@@ -70,8 +70,11 @@ subplot(4,1,4)
 plot(f,P1)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 [A,B,C,D] = tf2ss(b,a);
-
-for k = 1:L
+%saving x in xx
+xx = x;
+for k = 1:2
     %yn(k) = C*x + D*u(k);
-    %x = A*x + B*u(k);
+    %yn(k) = C*xx;
+    %x = A*x + Bu(k);
+    xx = A*x
 end

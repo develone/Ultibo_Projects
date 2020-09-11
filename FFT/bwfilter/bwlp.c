@@ -69,7 +69,7 @@ void test( void )
     //n = atoi( argv[1] );
     n = 6;
     //fcf = atof( argv[2] );
-    fcf = .05008;
+    fcf = .24;
     //sff = atoi( argv[3] );
     sff = 1;
 
