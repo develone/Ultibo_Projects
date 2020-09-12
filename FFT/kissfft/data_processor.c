@@ -30,11 +30,13 @@ static int get_peak_pos(const kiss_fft_cpx *cout, int nfft, int start_pos) {
 			pos = i;
 		}
 	}
+	printf("peak %d\n",pos);
 	return pos;
 }
 
 static float get_peak_frequence(const kiss_fft_cpx *cout, int nfft, float start_hz, float sample_hz) {
 	int start_pos = start_hz * nfft / sample_hz;
+	printf("%f\n",start_hz);
 	return get_peak_pos(cout, nfft, start_pos) * sample_hz / nfft;
 }
 

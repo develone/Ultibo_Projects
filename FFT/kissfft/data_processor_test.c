@@ -12,22 +12,24 @@
 
 static int gensindata(kiss_fft_cpx *cin)
 {
- int i,freq=1000,L=2048;
- float t[L],T; 
+ int i,L=2048;
+ float t[L],freq=1000,T; 
  double sample;
- //T=1/freq;
- T=.000125;
+ T=1/freq;
+ //T=.000125;
  //t = (0:L-1)*T;
  for(i=0;i<L;i++) t[i] = i*T;
  
     for (i=0;i<(L-1);i++)
     {
 		 
-       //sample = 1000*sin(2*pi*200*t[i])+2000;
-       sample = 1000*sin(2*pi*2000*t[i]);
+       //sample = 1000*sin(2*pi*300*t[i])+500;
+       //sample = 10*sin(2*pi*460*t[i]);
+       sample = 10*(sin(2*pi*50*t[i]) + sin(2*pi*120*t[i]) + sin(2*pi*300*t[i])); //no DC
+       //sample = 10*sin(2*pi*120*t[i]);  //no DC
        cin[i].r = (int)sample;
        cin[i].i = 0;
-       //printf("%f,",cin[i].r);  
+       printf("%f,",cin[i].r);  
     }
      
     return 0;
@@ -107,7 +109,7 @@ void test(void) {
 	*/
 	float hz = 0;
 	data_processor_t dfft = NULL;
-	dfft = data_processor_init(2048, 8000);
+	dfft = data_processor_init(2048, 1000);
 	//dfft = data_processor_init(2048, 214000);
 	if (!dfft) {
 		fprintf(stderr, "data_processor_init error\n");
@@ -133,14 +135,14 @@ void test(void) {
 	for (i=0; i< ifft->nfft; i++) {
 		printf("%f ,",  ifft->cout[i].r);
 	}
-	
+	*/
 	printf("hz = %12f\n", hz);
 	data_processor_close(dfft);
 	dfft = NULL;
 	
-	data_processor_inverse_close(ifft);
-	ifft = NULL;
+	//data_processor_inverse_close(ifft);
+	//ifft = NULL;
 	//return 0;
-	*/
+	
 }
 
