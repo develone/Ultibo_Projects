@@ -11,7 +11,7 @@
 clear
 close all
 pkg load signal
-order = 2;
+order = 6;
 fs = 1000;
 fc = 120;
 
@@ -70,11 +70,23 @@ subplot(4,1,4)
 plot(f,P1)
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 [A,B,C,D] = tf2ss(b,a);
-%saving x in xx
-xx = x;
-for k = 1:2
-    %yn(k) = C*x + D*u(k);
-    %yn(k) = C*xx;
-    %x = A*x + Bu(k);
-    xx = A*x
-end
+
+%yf = filtfilt(b,a,x);
+%figure
+%subplot(2,1,1)
+%plot(1000*t(1:50),yf(1:50));
+%subplot(2,1,2)
+%plot(1000*t(1:50),x(1:50));
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%|H(w)| = Ao/sqrt(1+(w/wo)2n
+ff =  (0:1000-1)*T;
+ww = 2*pi*ff;
+pow = 2*order;
+ww = (ww/nf);
+ww = ww(1:1000).^pow;
+ww = sqrt(ww + 1);
+ww = (ww).^-1;
+ 
+figure 
+subplot(2,1,1)
+plot((1:100),ww(1:100))
