@@ -88,5 +88,6 @@ ww = sqrt(ww + 1);
 ww = (ww).^-1;
  
 figure 
-subplot(2,1,1)
+%subplot(2,1,1)
 plot((1:100),ww(1:100))
+grid minor on
