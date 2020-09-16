@@ -34,19 +34,31 @@ static int gensindata(double *ptrsignal)
 
 void band_low_example()
 {
-    int i;
-    double *ptrsignal, signal[2048];
+    int i,result;
+    FILE *wrptr;
+  
+    double *ptrsignal, signal[2048],myfilt[2048];
     ptrsignal = &signal[0];
     printf("0x%x \n",ptrsignal);
     gensindata(ptrsignal);
-    for (i=0;i<2047;i++) printf("%f,",signal[i]);
+    //for (i=0;i<2047;i++) printf("%f,",signal[i]);
+    wrptr = fopen("mysig.bin","w");
+    if (wrptr == 0) printf("can not open file S.bin for writing\n");
+    result = fwrite(&signal[0],sizeof(double),2048,wrptr); 
+    fclose(wrptr);
     //BWBandPass* filter = create_bw_band_pass_filter(4, 250, 2, 45);
     BWLowPass* filter = create_bw_low_pass_filter(4,250,45);
     printf("\n");
     for( i = 0; i < 2048; i++){
-        printf("%f,", bw_low_pass(filter, signal[i]));
+        //printf("%f,", bw_low_pass(filter, signal[i]));
+        myfilt[i] = bw_low_pass(filter, signal[i]);
     }
-    printf("\n");
+    //printf("\n");
+    wrptr = fopen("myfilt.bin","w");
+    if (wrptr == 0) printf("can not open file S.bin for writing\n");
+    result = fwrite(&myfilt[0],sizeof(double),2048,wrptr); 
+    fclose(wrptr);
+    
     free_bw_low_pass(filter);
 
 }
