@@ -48,7 +48,7 @@ void getKey(int *value);
 
 bool ultibo_input_read(lv_indev_drv_t * drv, lv_indev_data_t*data);
 
-void fbdev_flush(lv_disp_drv_t * drv, const lv_area_t * area, lv_color_t * color_p);
+void ultibo_fbddev_flush(lv_disp_drv_t * drv, const lv_area_t * area, lv_color_t * color_p);
 
 
 
@@ -93,7 +93,7 @@ int lvglmain()
     lv_disp_drv_t disp_drv;
     lv_disp_drv_init(&disp_drv);
     disp_drv.buffer = &disp_buf;
-    disp_drv.flush_cb = fbdev_flush;
+    disp_drv.flush_cb = ultibo_fbddev_flush;
     lv_disp_drv_register(&disp_drv);
 	
 	/*Initialize input driver*/
@@ -141,7 +141,7 @@ int lvglmain()
  * @param area an area where to copy `color_p`
  * @param color_p an array of pixel to copy to the `area` part of the screen
  */
-void fbddev_flush(lv_disp_drv_t * drv, const lv_area_t * area, lv_color_t * color_p)
+void ultibo_fbddev_flush(lv_disp_drv_t * drv, const lv_area_t * area, lv_color_t * color_p)
 {
     //if(fbp == NULL ||
     //        area->x2 < 0 ||
