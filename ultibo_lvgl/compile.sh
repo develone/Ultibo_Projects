@@ -9,4 +9,5 @@ lv_examples/src/lv_demo_benchmark/*.c lv_examples/assets/*.c
 arm-none-eabi-ar rcs libultiboClvgl.a *.o
 arm-none-eabi-objdump -d libultiboClvgl.a > libultiboClvgl.txt
 cp libultiboClvgl.a RPi3/
+rm -f *.o
 
