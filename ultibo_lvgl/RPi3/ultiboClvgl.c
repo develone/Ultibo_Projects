@@ -5,7 +5,7 @@
  * 
  *  
  */
-
+#include <pthread.h>
 #include <stdlib.h>
 #include <malloc.h>
 #include <string.h>
@@ -15,6 +15,10 @@
 #include <fcntl.h>
 #include <sys/timeb.h>
 #include <time.h>
+#include<unistd.h>
+
+
+
 
 #include "lvgl/lvgl.h"
 #include "lv_examples/lv_examples.h"
@@ -44,18 +48,10 @@ void getKey(int *value);
 }
 #endif
 
-
-
-bool ultibo_input_read(lv_indev_drv_t * drv, lv_indev_data_t*data);
-
-void ultibo_fbddev_flush(lv_disp_drv_t * drv, const lv_area_t * area, lv_color_t * color_p);
-
-
-
 int PanelMouseX = 0;
 int PanelMouseY = 0;
 int ButtonsMouse = 0;
-int Key;
+int Key = -1;
 
 
 unsigned long int ScreenWidth = 800;
@@ -64,6 +60,17 @@ unsigned long int ScreenHeight = 480;
 unsigned char *lvideo_buffer;
 int mempitch;
 UCHAR* dest_buffer;
+
+
+bool ultibo_input_read(lv_indev_drv_t * drv, lv_indev_data_t*data);
+
+void ultibo_fbddev_flush(lv_disp_drv_t * drv, const lv_area_t * area, lv_color_t * color_p);
+
+void *tick_thread (void *args);
+
+bool ultibo_keyboard_read(lv_indev_drv_t * drv, lv_indev_data_t*data);
+
+
 
 
 
@@ -96,13 +103,26 @@ int lvglmain()
     disp_drv.flush_cb = ultibo_fbddev_flush;
     lv_disp_drv_register(&disp_drv);
 	
-	/*Initialize input driver*/
+	/*Initialize input driver for mouse */
     lv_indev_drv_t indev_drv;
     lv_indev_drv_init(&indev_drv);      /*Basic initialization*/
     indev_drv.type = LV_INDEV_TYPE_POINTER;                 /*See below.*/
     indev_drv.read_cb =ultibo_input_read;              /*See below.*/
     /*Register the driver in LVGL and save the created input device object*/
     lv_indev_t * my_indev = lv_indev_drv_register(&indev_drv);
+	
+	/*Initialize input driver for keyboard */
+    lv_indev_drv_t keyb_indev_drv;
+    lv_indev_drv_init(&keyb_indev_drv);      /*Basic initialization*/
+    keyb_indev_drv.type = LV_INDEV_TYPE_KEYPAD;                 /*See below.*/
+    keyb_indev_drv.read_cb =ultibo_keyboard_read;              /*See below.*/
+    /*Register the driver in LVGL and save the created input device object*/
+    lv_indev_t * keyb_indev = lv_indev_drv_register(&keyb_indev_drv);
+
+    //Keyboard is not as global as the mouse, objects that respond
+	//to keyboard inputs must be added
+	//lv_group_t * g = lv_group_create();
+	//lv_group_add_obj(g, obj);
 
     /*Quick cursor*/
 	lv_obj_t * cursor_obj = lv_label_create(lv_scr_act(), NULL);          
@@ -113,18 +133,19 @@ int lvglmain()
   
 	//lv_demo_printer();
 	//lv_demo_benchmark();
-    lv_ex_get_started_1();
-    //lv_demo_widgets();
-    //lv_ex_widgets();
+	//lv_demo_stress();
+	lv_demo_widgets();
+	//lv_demo_keypad_encoder();
 	
+    pthread_t thread1;
+    int thr = 1;
+    pthread_create(&thread1, NULL, *tick_thread, (void *) thr); 
+   
   while(1)
   {
-	
+	 
      getMouseXY(&PanelMouseX, &PanelMouseY, &ButtonsMouse);	
-  
-     //memset(lvideo_buffer, 0 ,  (480*4) * (320*4));
-
-     lv_tick_inc(5);
+     getKey(&Key);	 
      lv_task_handler();
 		
      memcpy(dest_buffer,lvideo_buffer, (ScreenWidth * 2) * (ScreenHeight * 2 ));
@@ -133,6 +154,15 @@ int lvglmain()
   
  
 
+}
+
+// create the function to be executed as a thread
+void * tick_thread (void *args)
+{
+      while(1) {
+        usleep(5*1000);   /*Sleep for 5 millisecond*/
+        lv_tick_inc(5);      /*Tell LVGL that 5 milliseconds were elapsed*/
+    }
 }
 
 
@@ -243,4 +273,60 @@ bool ultibo_input_read(lv_indev_drv_t * drv, lv_indev_data_t*data)
 
     return false; /*Return `false` because we are not buffering and no more data to read*/
 }
+
+bool ultibo_keyboard_read(lv_indev_drv_t * drv, lv_indev_data_t*data){
+  
+    if(Key != -1) 
+    { 
+      if (Key != 0)
+      {
+         // Standard keys
+		 /*
+         if(Key == 0x08)
+           data->key = ;//nk_input_key(ctx, NK_KEY_BACKSPACE, 1);         
+         else if(Key == 0x09)
+           data->key = ;//nk_input_key(ctx, NK_KEY_TAB, 1);         
+         else if(Key == 0x0D)
+           data->key = ;//nk_input_key(ctx, NK_KEY_ENTER, 1);
+         else if(Key == 0x18)
+           data->key = ;//nk_input_key(ctx, NK_KEY_CUT, 1);	   
+         else if(Key == 0x03)
+           data->key = ;//nk_input_key(ctx, NK_KEY_COPY, 1);	   	   
+         else if(Key == 0x16)
+           data->key = ;//nk_input_key(ctx, NK_KEY_PASTE, 1);	   	   	   
+         else
+         */			 
+         data->key =  (char)Key; 
+		 data->state = LV_INDEV_STATE_PR;
+      }
+      else
+      {
+       // Extended keys	
+       getKey(&Key);
+       if(Key == 0x53)
+		 data->key = LV_KEY_DEL; //nk_input_key(ctx, NK_KEY_DEL, 1);
+	   else if(Key == 0x48)
+         data->key = LV_KEY_UP;//nk_input_key(ctx, NK_KEY_UP, 1); 
+       else if(Key == 0x50)
+         data->key = LV_KEY_DOWN;//nk_input_key(ctx, NK_KEY_DOWN, 1);	     
+       else if(Key == 0x4B)
+         data->key = LV_KEY_LEFT;//nk_input_key(ctx, NK_KEY_LEFT, 1);
+       else if(Key == 0x4D)
+         data->key = LV_KEY_RIGHT;//nk_input_key(ctx, NK_KEY_RIGHT, 1);	   
+       else if(Key == 0x47) // HOME       
+         data->key = LV_KEY_HOME; //nk_input_key(ctx, NK_KEY_TEXT_LINE_START, 1);             
+       else if(Key == 0x4F) // END
+         data->key = LV_KEY_END;//nk_input_key(ctx, NK_KEY_TEXT_LINE_END, 1);       
+	   
+	   data->state = LV_INDEV_STATE_PR;  
+	  }
+	  
+	}
+	else{
+		data->state = LV_INDEV_STATE_REL;
+	}
+
+  return false; /*No buffering now so no more data read*/
+}
+
 
