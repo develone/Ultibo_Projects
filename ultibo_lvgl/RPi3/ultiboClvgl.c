@@ -111,9 +111,11 @@ int lvglmain()
 	lv_indev_set_cursor(my_indev, cursor_obj); 
 
   
-	lv_demo_printer();
+	//lv_demo_printer();
 	//lv_demo_benchmark();
-    
+    lv_ex_get_started_1();
+    //lv_demo_widgets();
+    //lv_ex_widgets();
 	
   while(1)
   {
