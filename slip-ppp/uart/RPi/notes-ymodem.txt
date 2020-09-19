@@ -41,3 +41,10 @@ no longer refers to Xmodem-1K as Ymodem.
 YMODEM
 Ymodem is essentially Xmodem 1K that allows multiple batch file transfer. On some systems 
 it is listed as Ymodem Batch. 
+GPIO 16 pin 36
+GPIO 17 pin 11
+
+FTDI TXD <---> BCM_15_RXD
+FTDI RXD <---> BCM_14_TXD
+FTDI CTS <---> BCM_17_RTS
+FTDI RTS <---> BCM_16_CTS
