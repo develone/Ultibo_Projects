@@ -21,3 +21,23 @@ Sb batch sends one or more files with YMODEM or ZMODEM  protocol.   The
        YAM g option) increases throughput over  error  free  channels  (direct
        connection, X.PC, etc.)  by not acknowledging each transmitted sector.
 Created a project using the example for Hello World  to test if files could be sent to RPi.
+
+http://web.cecs.pdx.edu/~rootd/catdoc/guide/TheGuide_226.html
+XMODEM
+
+Xmodemis one of the most widely used file transfer protocols. The original 
+Xmodem protocol uses 128-byte packets and a simple "checksum" method of error detection. 
+A later enhancement, Xmodem-CRC, uses a more secure Cyclic Redundancy Check (CRC) method 
+for error detection. Xmodem protocol always attempts to use CRC first. If the sender does 
+not acknowledge the requests for CRC, the receiver shifts to the checksum mode and 
+continues its request for transmission.
+
+XMODEM-1K
+Xmodem 1K is essentially Xmodem CRC with 1K (1024 byte) packets. On some systems 
+and bulletin boards it may also be referred to as Ymodem. Some communication software 
+programs, most notably Procomm Plus 1.x, also list Xmodem-1K as Ymodem. Procomm Plus 2.0 
+no longer refers to Xmodem-1K as Ymodem. 
+
+YMODEM
+Ymodem is essentially Xmodem 1K that allows multiple batch file transfer. On some systems 
+it is listed as Ymodem Batch. 
