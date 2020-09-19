@@ -1,0 +1,23 @@
+https://ultibo.org/forum/viewtopic.php?p=9363#p9363
+
+https://axixmiqui.wordpress.com/2008/05/16/minicom-ymodem-issue/
+This was a simple fix, but took a while to figure out because of less than informative error 
+messages. While trying to transfer a file (a Linux kernel) using minicom and ymodem we got 
+a protocol failed error when using one machine (my laptop) and it worked on another. After 
+checking versions of minicom, serial adapter drivers, ymodem config, etc… we noticed that 
+minicom is setup to use /usr/bin/rb and /usr/bin/sb for ymodem comm. Turns out, they 
+weren’t installed! On Debian (*buntu) the lrzsz package is what is needed. A quick 
+apt-get install lrzsz and we were up and running.
+
+Rb  receives  file(s)  with  YMODEM, accepting either standard 128 byte
+       sectors or 1024 byte sectors (YAM sb -k option).  The user  should  de‐
+       termine  when  the  1024 byte block length actually improves throughput
+       without causing lost data or even system crashes.
+       
+Sb batch sends one or more files with YMODEM or ZMODEM  protocol.   The
+       initial  ZMODEM  initialization is not sent.  When requested by the re‐
+       ceiver, sb supports YMODEM-g with "cbreak" tty mode, XON/XOFF flow con‐
+       trol, and interrupt character set to CAN (^X).  YMODEM-g (Professional-
+       YAM g option) increases throughput over  error  free  channels  (direct
+       connection, X.PC, etc.)  by not acknowledging each transmitted sector.
+Created a project using the example for Hello World  to test if files could be sent to RPi.
