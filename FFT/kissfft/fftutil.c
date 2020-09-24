@@ -11,9 +11,18 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <time.h>
 
 #include "kiss_fft.h"
 #include "kiss_fftndr.h"
+
+unsigned Microseconds(void);
+
+unsigned Microseconds(void) {
+    struct timespec ts;
+    clock_gettime(CLOCK_REALTIME, &ts);
+    return ts.tv_sec*1000000 + ts.tv_nsec/1000;
+}
 
 static void complex_abs(kiss_fft_cpx *cout, int n) {
 	while (n-- > 0) {
@@ -117,7 +126,7 @@ void fft_filend_real(FILE * fin,FILE * fout,int *dims,int ndims,int isinverse)
 }
 
 static
-void fft_file_real(FILE * fin,FILE * fout,int nfft,int isinverse)
+void fft_file_real(FILE * fin,FILE * fout,int nfft,int isinverse,int wrflag)
 {
     kiss_fftr_cfg st;
     kiss_fft_scalar * rbuf;
@@ -130,15 +139,15 @@ void fft_file_real(FILE * fin,FILE * fout,int nfft,int isinverse)
     if (isinverse==0) {
         while ( fread( rbuf , sizeof(kiss_fft_scalar) * nfft ,1, fin ) > 0 ) {
             kiss_fftr( st , rbuf ,cbuf);
-            fwrite( cbuf , sizeof(kiss_fft_cpx) , (nfft/2 + 1) , fout );
+            if(wrflag==1) fwrite( cbuf , sizeof(kiss_fft_cpx) , (nfft/2 + 1) , fout );
         }
     }else{
         while ( fread( cbuf , sizeof(kiss_fft_cpx) * (nfft/2+1) ,1, fin ) > 0 ) {
             kiss_fftri( st , cbuf ,rbuf);
-            fwrite( rbuf , sizeof(kiss_fft_scalar) , nfft , fout );
+            if(wrflag==1) fwrite( rbuf , sizeof(kiss_fft_scalar) , nfft , fout );
         }
     }
-    
+    /*
     int j;
     printf("%d %d \n",nfft,isinverse);
     for(j=0;j<nfft;j++) {
@@ -155,7 +164,7 @@ void fft_file_real(FILE * fin,FILE * fout,int nfft,int isinverse)
          
         printf("%d %f %f \n",j,cbuf[j].r,cbuf[j].i);
     }
-    
+    */
     free(st);
     free(rbuf);
     free(cbuf);
@@ -180,18 +189,26 @@ int get_dims(char * arg,int * dims)
 
 test()
 {
-    int isinverse=0;
+    int isinverse=0,i,wrflag=0;
     int isreal=0;
     FILE *fin=stdin;
     FILE *fout=stdout;
     int ndims=1;
     int dims[32];
     dims[0] = 2048; /*default fft size*/
-
+    unsigned t[2];
+    
     fin = fopen("mysig.bin","rb");
     fout = fopen("myfft.bin","wb");
-    fft_file_real(fin,fout,dims[0],isinverse);
-
+    t[0] = Microseconds();
+    
+    for (i = 0; i < 1000; i++) {
+        fft_file_real(fin,fout,dims[0],isinverse,wrflag);
+        if (i== 999) wrflag=1; 
+    }
+    wrflag=0; 
+    t[1] = Microseconds();
+    printf("fft usecs = %d \n",t[1] - t[0]);
     if (fout!=stdout) fclose(fout);
     if (fin!=stdin) fclose(fin);
     
@@ -200,10 +217,13 @@ test()
     isreal=1;
     fin = fopen("myfft.bin","rb");
     fout = fopen("myfftinv.bin","wb");
-    fft_file_real(fin,fout,dims[0],isinverse);
-    //fft_filend(fin,fout,dims[0],isinverse);
-    //fft_filend_real(fin,fout,dims[0],isinverse);
-    //fft_file_real(fin,fout,dims[0],isinverse);
+    t[0] = Microseconds();
+    for (i = 0; i < 1000; i++) {
+        fft_file_real(fin,fout,dims[0],isinverse,wrflag);
+        if (i== 999) wrflag=1;
+    }
+    t[1] = Microseconds();
+    printf("inverse fft usecs = %d \n",t[1] - t[0]);
     
     if (fout!=stdout) fclose(fout);
     if (fin!=stdin) fclose(fin);
