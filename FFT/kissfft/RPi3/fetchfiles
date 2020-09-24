@@ -1,0 +1,5 @@
+binary
+get myfft.bin
+get myfftinv.bin
+
+quit
