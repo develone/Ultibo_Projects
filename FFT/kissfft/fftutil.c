@@ -135,7 +135,8 @@ void fft_file_real(FILE * fin,FILE * fout,int nfft,int isinverse,int wrflag)
     kiss_fftr_cfg st;
     kiss_fft_scalar * rbuf;
     kiss_fft_cpx * cbuf;
-
+    int result;
+    printf("wrflag = %d \n",wrflag);
     rbuf = (kiss_fft_scalar*)malloc(sizeof(kiss_fft_scalar) * nfft );
     cbuf = (kiss_fft_cpx*)malloc(sizeof(kiss_fft_cpx) * (nfft/2+1) );
     st = kiss_fftr_alloc( nfft ,isinverse ,0,0);
@@ -143,12 +144,19 @@ void fft_file_real(FILE * fin,FILE * fout,int nfft,int isinverse,int wrflag)
     if (isinverse==0) {
         while ( fread( rbuf , sizeof(kiss_fft_scalar) * nfft ,1, fin ) > 0 ) {
             kiss_fftr( st , rbuf ,cbuf);
-            if(wrflag==1) fwrite( cbuf , sizeof(kiss_fft_cpx) , (nfft/2 + 1) , fout );
+            if(wrflag==1) { 
+                result = fwrite( cbuf , sizeof(kiss_fft_cpx) , (nfft/2 + 1) , fout );
+                printf("result = %d \n",result);
+            }
+            
         }
     }else{
         while ( fread( cbuf , sizeof(kiss_fft_cpx) * (nfft/2+1) ,1, fin ) > 0 ) {
             kiss_fftri( st , cbuf ,rbuf);
-            if(wrflag==1) fwrite( rbuf , sizeof(kiss_fft_scalar) , nfft , fout );
+            if(wrflag==1) {
+                result = fwrite( rbuf , sizeof(kiss_fft_scalar) , nfft , fout );
+                printf("result = %d \n",result);
+            }
         }
     }
     /*
@@ -205,12 +213,16 @@ test()
     fout = fopen("myfft.bin","wb");
     
     pstats_init();
-    for (i = 0; i < 1000; i++) {
+    /*
+    for (i = 0; i < 5000; i++) {
         fft_file_real(fin,fout,dims[0],isinverse,wrflag);
-        if (i== 999) wrflag=1; 
+        if (i== 4997) wrflag=1; 
     }
+    
     wrflag=0; 
-     
+    */
+    wrflag=1; 
+    fft_file_real(fin,fout,dims[0],isinverse,wrflag);
     printf("forward fft cpu time\n");
     pstats_report();
     if (fout!=stdout) fclose(fout);
@@ -223,11 +235,13 @@ test()
     fout = fopen("myfftinv.bin","wb");
      
     pstats_init();
-    for (i = 0; i < 1000; i++) {
+    /*
+    for (i = 0; i < 5000; i++) {
         fft_file_real(fin,fout,dims[0],isinverse,wrflag);
-        if (i== 999) wrflag=1;
+        if (i== 4997) wrflag=1;
     }
-    
+    */
+    fft_file_real(fin,fout,dims[0],isinverse,wrflag);
     printf("inverse fft cpu time\n");
     pstats_report();
     if (fout!=stdout) fclose(fout);
