@@ -11,10 +11,14 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-#include <time.h>
+#include <sys/time.h>
+#include <sys/types.h>
 
 #include "kiss_fft.h"
 #include "kiss_fftndr.h"
+#include "pstats.h"
+
+/*
 #define CLOCK_MONOTONIC (clockid_t)4
 unsigned Microseconds(void);
 
@@ -23,7 +27,7 @@ unsigned Microseconds(void) {
     clock_gettime(CLOCK_MONOTONIC, &ts);
     return ts.tv_sec*1000000 + ts.tv_nsec/1000;
 }
-
+*/
 static void complex_abs(kiss_fft_cpx *cout, int n) {
 	while (n-- > 0) {
 		cout->r = sqrt(cout->r * cout->r + cout->i * cout->i);
@@ -196,19 +200,19 @@ test()
     int ndims=1;
     int dims[32];
     dims[0] = 2048; /*default fft size*/
-    unsigned t[2];
     
     fin = fopen("mysig.bin","rb");
     fout = fopen("myfft.bin","wb");
-    t[0] = Microseconds();
     
+    pstats_init();
     for (i = 0; i < 1000; i++) {
         fft_file_real(fin,fout,dims[0],isinverse,wrflag);
         if (i== 999) wrflag=1; 
     }
     wrflag=0; 
-    t[1] = Microseconds();
-    printf("fft usecs = %d \n",t[1] - t[0]);
+     
+    printf("forward fft cpu time\n");
+    pstats_report();
     if (fout!=stdout) fclose(fout);
     if (fin!=stdin) fclose(fin);
     
@@ -217,14 +221,15 @@ test()
     isreal=1;
     fin = fopen("myfft.bin","rb");
     fout = fopen("myfftinv.bin","wb");
-    t[0] = Microseconds();
+     
+    pstats_init();
     for (i = 0; i < 1000; i++) {
         fft_file_real(fin,fout,dims[0],isinverse,wrflag);
         if (i== 999) wrflag=1;
     }
-    t[1] = Microseconds();
-    printf("inverse fft usecs = %d \n",t[1] - t[0]);
     
+    printf("inverse fft cpu time\n");
+    pstats_report();
     if (fout!=stdout) fclose(fout);
     if (fin!=stdin) fclose(fin);
     
