@@ -15,12 +15,12 @@
 
 #include "kiss_fft.h"
 #include "kiss_fftndr.h"
-
+#define CLOCK_MONOTONIC (clockid_t)4
 unsigned Microseconds(void);
 
 unsigned Microseconds(void) {
     struct timespec ts;
-    clock_gettime(CLOCK_REALTIME, &ts);
+    clock_gettime(CLOCK_MONOTONIC, &ts);
     return ts.tv_sec*1000000 + ts.tv_nsec/1000;
 }
 
