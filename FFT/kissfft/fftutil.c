@@ -248,7 +248,7 @@ test()
     int dims[32];
     dims[0] = 2048; /*default fft size*/
     int nfft = 2048;
-    unsigned t[2];
+    unsigned t[4];
     int result;
     kiss_fft_scalar * rbuf;
     kiss_fft_cpx * cbuf;
@@ -263,14 +263,18 @@ test()
     rbuf = (kiss_fft_scalar*)malloc(sizeof(kiss_fft_scalar) * nfft );
     printf("rbuf = 0x%x\n",rbuf);
     cbuf = (kiss_fft_cpx*)malloc(sizeof(kiss_fft_cpx) * (nfft/2+1) );
+    t[2] = Microseconds();
     result = fread( rbuf , sizeof(kiss_fft_scalar) * nfft ,1, fin );
-    printf("cbuf = 0x%x\n",cbuf);
+    t[3] = Microseconds();
+    printf("cbuf = 0x%x read = %d\n",cbuf, t[3] - t[2]);
     printf("read result = %d size rbuf %d \n",result,sizeof(kiss_fft_scalar) * nfft);
     for (i = 0; i < 5000; i++) {
         fft_real(rbuf,cbuf,nfft,isinverse);
     }
+    t[2] = Microseconds();
     result = fwrite( cbuf , sizeof(kiss_fft_cpx) , (nfft/2 + 1) , fout );
-    printf("write result = %d size cbuf %d\n",result,sizeof(kiss_fft_cpx));
+    t[3] = Microseconds();
+    printf("write result = %d size cbuf %d write = %d \n",result,sizeof(kiss_fft_cpx),t[3]-t[2]);
     
     if (fout!=stdout) fclose(fout);
     if (fin!=stdin) fclose(fin);
@@ -294,14 +298,18 @@ test()
     printf("rbuf = 0x%x\n",rbuf);
     cbuf = (kiss_fft_cpx*)malloc(sizeof(kiss_fft_cpx) * (nfft/2+1) );
     printf("cbuf = 0x%x\n",cbuf);
+    t[2] = Microseconds();
     result = fread( cbuf , sizeof(kiss_fft_scalar) * nfft ,1, fin );
-    printf("read result = %d size cbuf %d\n",result,sizeof(kiss_fft_scalar) * nfft);
+    t[3] = Microseconds();
+    printf("read result = %d size cbuf %d read = %d\n",result,sizeof(kiss_fft_scalar) * nfft,t[3]-t[2]);
     
     for (i = 0; i < 5000; i++) {
         fft_real(rbuf,cbuf,nfft,isinverse);
     }
+    t[2] = Microseconds();
     result = fwrite( rbuf , sizeof(kiss_fft_cpx) , (nfft/2 + 1) , fout );
-    printf("write result = %d \n",result);
+    t[3] = Microseconds();
+    printf("write result = %d write = %d\n",result,t[3] - t[2] );
     
     if (fout!=stdout) fclose(fout);
     if (fin!=stdin) fclose(fin);
