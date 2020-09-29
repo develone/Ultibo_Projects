@@ -129,6 +129,43 @@ void fft_filend_real(FILE * fin,FILE * fout,int *dims,int ndims,int isinverse)
     free(obuf);
 }
 
+
+static
+void fft_real(kiss_fft_scalar * rbuf,kiss_fft_cpx * cbuf,int nfft,int isinverse)
+{
+    kiss_fftr_cfg st;
+    st = kiss_fftr_alloc( nfft ,isinverse ,0,0);
+
+    if (isinverse==0) {
+        kiss_fftr( st , rbuf ,cbuf);
+        
+    }else{
+         kiss_fftri( st , cbuf ,rbuf);
+             
+    }
+    /*
+    int j;
+    printf("%d %d \n",nfft,isinverse);
+    for(j=0;j<nfft;j++) {
+        printf("%f\n",rbuf[j]);
+    }
+    
+    
+    
+    complex_abs(cbuf,nfft/2+1);
+    //int j;
+    printf("%d %d %d\n",nfft,isinverse,nfft/2+1);
+         
+    for(j=0;j<nfft/2+1;j++) {
+         
+        printf("%d %f %f \n",j,cbuf[j].r,cbuf[j].i);
+    }
+    */
+    free(st);
+    //free(rbuf);
+    //free(cbuf);
+}
+
 static
 void fft_file_real(FILE * fin,FILE * fout,int nfft,int isinverse,int wrflag)
 {
@@ -138,7 +175,9 @@ void fft_file_real(FILE * fin,FILE * fout,int nfft,int isinverse,int wrflag)
     int result;
     //printf("wrflag = %d \n",wrflag);
     rbuf = (kiss_fft_scalar*)malloc(sizeof(kiss_fft_scalar) * nfft );
+    
     cbuf = (kiss_fft_cpx*)malloc(sizeof(kiss_fft_cpx) * (nfft/2+1) );
+    
     st = kiss_fftr_alloc( nfft ,isinverse ,0,0);
 
     if (isinverse==0) {
@@ -208,61 +247,69 @@ test()
     int ndims=1;
     int dims[32];
     dims[0] = 2048; /*default fft size*/
+    int nfft = 2048;
     unsigned t[2];
-    
-    
-    //pstats_init();
-    wrflag=0;
+    int result;
+    kiss_fft_scalar * rbuf;
+    kiss_fft_cpx * cbuf;
+        
     t[0] = Microseconds();
-    for (i = 0; i < 4999; i++) {
-        fin = fopen("mysig.bin","rb");
-        fout = fopen("myfft.bin","wb");
-        fft_file_real(fin,fout,dims[0],isinverse,wrflag);
-        if (fout!=stdout) fclose(fout);
-        if (fin!=stdin) fclose(fin);
-
-    }
-    t[1] = Microseconds();
-    printf("fft usec = %d \n",t[1]-t[0]);
-    wrflag=1; 
     fin = fopen("mysig.bin","rb");
     fout = fopen("myfft.bin","wb");
-    fft_file_real(fin,fout,dims[0],isinverse,wrflag);
+    
+    if (fin == 0) printf("could not open mysig.bin\n");
+    if (fout == 0) printf("could not open myfft.bin\n");
+    
+    rbuf = (kiss_fft_scalar*)malloc(sizeof(kiss_fft_scalar) * nfft );
+    printf("rbuf = 0x%x\n",rbuf);
+    cbuf = (kiss_fft_cpx*)malloc(sizeof(kiss_fft_cpx) * (nfft/2+1) );
+    result = fread( rbuf , sizeof(kiss_fft_scalar) * nfft ,1, fin );
+    printf("cbuf = 0x%x\n",cbuf);
+    printf("read result = %d size rbuf %d \n",result,sizeof(kiss_fft_scalar) * nfft);
+    for (i = 0; i < 5000; i++) {
+        fft_real(rbuf,cbuf,nfft,isinverse);
+    }
+    result = fwrite( cbuf , sizeof(kiss_fft_cpx) , (nfft/2 + 1) , fout );
+    printf("write result = %d size cbuf %d\n",result,sizeof(kiss_fft_cpx));
+    
     if (fout!=stdout) fclose(fout);
     if (fin!=stdin) fclose(fin);
     
-     
-    //printf("fft cpu time\n");
-    //pstats_report();
- 
+    free(rbuf);
+    free(cbuf);
     
-    
+    t[1] = Microseconds();
+    printf("fft usec = %d \n",t[1]-t[0]);
     isinverse=1;
     isreal=1;
  
-     
-    //pstats_init();
-    wrflag=0; 
     t[0] = Microseconds();
-    
-    for (i = 0; i < 4999; i++) {
-        fin = fopen("myfft.bin","rb");
-        fout = fopen("myfftinv.bin","wb");
-        fft_file_real(fin,fout,dims[0],isinverse,wrflag);
-        if (fout!=stdout) fclose(fout);
-        if (fin!=stdin) fclose(fin);         
-    }
-    t[1] = Microseconds();
-    printf("inv fft usec = %d \n",t[1]-t[0]);
-    wrflag=1;
     fin = fopen("myfft.bin","rb");
     fout = fopen("myfftinv.bin","wb");
-    fft_file_real(fin,fout,dims[0],isinverse,wrflag);
-    if (fout!=stdout) fclose(fout);
-    if (fin!=stdin) fclose(fin);         
-
-    //printf("inverse fft cpu time\n");
-    //pstats_report();
- 
     
+    if (fin == 0) printf("could not open myfft.bin\n");
+    if (fout == 0) printf("could not open myfftinv.bin\n");
+    
+    rbuf = (kiss_fft_scalar*)malloc(sizeof(kiss_fft_scalar) * nfft );
+    printf("rbuf = 0x%x\n",rbuf);
+    cbuf = (kiss_fft_cpx*)malloc(sizeof(kiss_fft_cpx) * (nfft/2+1) );
+    printf("cbuf = 0x%x\n",cbuf);
+    result = fread( cbuf , sizeof(kiss_fft_scalar) * nfft ,1, fin );
+    printf("read result = %d size cbuf %d\n",result,sizeof(kiss_fft_scalar) * nfft);
+    
+    for (i = 0; i < 5000; i++) {
+        fft_real(rbuf,cbuf,nfft,isinverse);
+    }
+    result = fwrite( rbuf , sizeof(kiss_fft_cpx) , (nfft/2 + 1) , fout );
+    printf("write result = %d \n",result);
+    
+    if (fout!=stdout) fclose(fout);
+    if (fin!=stdin) fclose(fin);
+    
+    free(rbuf);
+    free(cbuf);
+    
+    t[1] = Microseconds();
+    printf("fft usec = %d \n",t[1]-t[0]);
+
 }
