@@ -49,12 +49,12 @@
     </SearchPaths>
     <CodeGeneration>
       <SmartLinkUnit Value="True"/>
-      <TargetProcessor Value="armv7a"/>
+      <TargetProcessor Value="ARMV7A"/>
       <TargetController Value="RPI3B"/>
       <TargetCPU Value="arm"/>
       <TargetOS Value="ultibo"/>
       <Optimizations>
-        <OptimizationLevel Value="2"/>
+        <OptimizationLevel Value="3"/>
       </Optimizations>
     </CodeGeneration>
     <Linking>

@@ -248,7 +248,7 @@ test()
     int dims[32];
     dims[0] = 2048; /*default fft size*/
     int nfft = 2048;
-    unsigned t[4];
+    unsigned t[8];
     int result;
     kiss_fft_scalar * rbuf;
     kiss_fft_cpx * cbuf;
@@ -269,6 +269,11 @@ test()
     printf("cbuf = 0x%x read = %d\n",cbuf, t[3] - t[2]);
     printf("read result = %d size rbuf %d \n",result,sizeof(kiss_fft_scalar) * nfft);
     for (i = 0; i < 5000; i++) {
+        if (i == 2500) {
+            t[4] = Microseconds();
+            fft_real(rbuf,cbuf,nfft,isinverse);
+            t[5] = Microseconds();
+        }
         fft_real(rbuf,cbuf,nfft,isinverse);
     }
     t[2] = Microseconds();
@@ -299,11 +304,17 @@ test()
     cbuf = (kiss_fft_cpx*)malloc(sizeof(kiss_fft_cpx) * (nfft/2+1) );
     printf("cbuf = 0x%x\n",cbuf);
     t[2] = Microseconds();
+    
     result = fread( cbuf , sizeof(kiss_fft_scalar) * nfft ,1, fin );
     t[3] = Microseconds();
     printf("read result = %d size cbuf %d read = %d\n",result,sizeof(kiss_fft_scalar) * nfft,t[3]-t[2]);
     
     for (i = 0; i < 5000; i++) {
+        if (i == 2500) {
+            t[6] = Microseconds();
+            fft_real(rbuf,cbuf,nfft,isinverse);
+            t[7] = Microseconds();
+        }
         fft_real(rbuf,cbuf,nfft,isinverse);
     }
     t[2] = Microseconds();
@@ -319,5 +330,6 @@ test()
     
     t[1] = Microseconds();
     printf("fft usec = %d \n",t[1]-t[0]);
+    printf("%d %d \n",(t[5]-t[4]), (t[7]-t[6]));
 
 }
