@@ -1,0 +1,22 @@
+Need to set the PATH for fpc.
+export PATH=/home/devel/ultibo/core/fpc/bin/:$PATH
+echo $PATH
+
+The lifting.c C code is part of test.c.
+
+cd Ultibo_Projects/dwt_lifting_step/RPi2/
+./compile.sh
+
+	#!/bin/bash
+	date
+	rm -f test.o
+	rm -f libtest.a
+	rm -f kernel7.img
+	arm-none-eabi-gcc -O2 -mabi=aapcs -marm -march=armv7-a -mfpu=vfpv3-d16 -	mfloat-	abi=hard -c test.c
+	arm-none-eabi-ar rcs libtest.a test.o
+
+	fpc -vi -B -Tultibo -Parm -CpARMV7A -WpRPI2B 	@/home/devel/ultibo/core/fpc/bin/RPI2.CFG -O2 LibCTest_RPi2.lpr
+	ls -la test.o libtest.a kernel7.img
+
+tftp 192.168.1.247 < cmdstftp 
+tftp> tftp> Sent 2688432 bytes in 33.1 seconds
