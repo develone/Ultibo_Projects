@@ -28,6 +28,10 @@ uses
   { needed for telnet }
  uPointersToC,
  uBufferToC,
+ FileSystem, {Include the file system core and interfaces}
+ FATFS,      {Include the FAT file system driver}
+ MMC,        {Include the MMC/SD core to access our SD card}
+ BCM2709,     {And also include the MMC/SD driver for the Raspberry Pi}
  Syscalls;
 
 {$linklib test}
@@ -44,6 +48,10 @@ var
  Window:TWindowHandle;
  Window1:TWindowHandle;
  //Handle3:THandle;
+ Filename:String;
+ SearchRec:TSearchRec;
+ StringList:TStringList;
+ FileStream:TFileStream;
 
  IPAddress : string;
  X:LongWord;
@@ -460,6 +468,18 @@ begin
  ConsoleWindowWriteLn(Handle, TimeToStr(Time));
  Width:= 256;
  Height:= Width;
+   {Let's try creating a file and writing some text to it, we'll assign our filename
+   to a variable.}
+  Filename:='C:\MySavedBitmap.bmp';
+
+  {We should check if the file exists first before trying to create it}
+  {ConsoleWindowWriteLn(LeftWindow,'Checking to see if ' + Filename + ' exists');}
+  if FileExists(Filename) then
+   begin
+    {If it does exist we can delete it}
+    {ConsoleWindowWriteLn(LeftWindow,'Deleting the file ' + Filename);}
+    DeleteFile(Filename);
+   end;
   if SaveBitmap(Window1,'C:\MySavedBitmap.bmp',0,0,Width,Height,24) then
   begin
    {Output a message when the file is saved}
