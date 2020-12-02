@@ -451,7 +451,7 @@ begin
  //ConsoleWindowWriteLn(Handle3, 'writing bottom right handle3');
  ConsoleWindowWriteLn(Handle, TimeToStr(Time));
 
- test;
+ //test;
  DrawBitmap(Window,'C:\MyBitmap.bmp',0,0);
  //DrawBitmap(Window,'C:\MyBitmap.bmp',260,0);
  ConsoleWindowWriteLn (Handle, IntToStr(B));
