@@ -460,7 +460,7 @@ begin
  ConsoleWindowWriteLn(Handle, TimeToStr(Time));
  Width:= 256;
  Height:= Width;
-  if SaveBitmap(Window,'C:\MySavedBitmap.bmp',0,0,Width,Height,24) then
+  if SaveBitmap(Window1,'C:\MySavedBitmap.bmp',0,0,Width,Height,24) then
   begin
    {Output a message when the file is saved}
    GraphicsWindowDrawTextEx(Window,GraphicsWindowGetFont(Window),'Bitmap file saved successfully',256,256,COLOR_BLACK,COLOR_WHITE);
