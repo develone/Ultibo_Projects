@@ -1,0 +1,13 @@
+devel@mypi3-20:~/Ultibo_Projects/FFT/filter-c/RPi4 $ tftp 192.168.1.143 < cmdstftp 
+tftp> tftp> Sent 3031064 bytes in 5.1 seconds
+
+
+devel@mypi3-20:~/Ultibo_Projects/WebServer/RPi4 $ tftp 192.168.1.143
+tftp> binary     
+tftp> get mysig.bin
+Error code 5: 46176
+Received 16384 bytes in 5.0 seconds
+tftp> get myfilt.bin
+Error code 5: 43409
+Received 16384 bytes in 5.1 seconds
+tftp> quit
