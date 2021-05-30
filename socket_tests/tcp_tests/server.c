@@ -5,7 +5,7 @@
 
 int main(void)
 {
-    int socket_desc, client_sock, client_size;
+    int socket_desc, client_sock, client_size, flag=1;
     struct sockaddr_in server_addr, client_addr;
     char server_message[2000], client_message[2000];
     
@@ -50,22 +50,22 @@ int main(void)
         return -1;
     }
     printf("Client connected at IP: %s and port: %i\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
+    while(flag) {
+        // Receive client's message:
+        if (recv(client_sock, client_message, sizeof(client_message), 0) < 0){
+            printf("Couldn't receive\n");
+            return -1;
+        }
+        printf("Msg from client: %s\n", client_message);
     
-    // Receive client's message:
-    if (recv(client_sock, client_message, sizeof(client_message), 0) < 0){
-        printf("Couldn't receive\n");
-        return -1;
+        // Respond to client:
+        strcpy(server_message, "This is the server's message.");
+    
+        if (send(client_sock, server_message, strlen(server_message), 0) < 0){
+            printf("Can't send\n");
+            return -1;
+        }
     }
-    printf("Msg from client: %s\n", client_message);
-    
-    // Respond to client:
-    strcpy(server_message, "This is the server's message.");
-    
-    if (send(client_sock, server_message, strlen(server_message), 0) < 0){
-        printf("Can't send\n");
-        return -1;
-    }
-    
     // Closing the socket:
     close(client_sock);
     close(socket_desc);
