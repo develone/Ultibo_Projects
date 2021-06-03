@@ -1,0 +1,53 @@
+step1 
+~/Ultibo_Projects/jpeg2000/src $ ./compile_ultibo.sh 
+The word count here should be 22
+the word count in /home/pi/jpeg-2000-test/bare-metal/openjp
+when ./libbuild.sh is executed should be 22
+ 22  22 182 libopenjp2_obj.txt
+
+step2 
+/RPi4 $ ./libbuild.sh 
+dwtlift.c: In function 'decompress':
+dwtlift.c:658:3: warning: implicit declaration of function 'octave_write_byte'; did you mean 'opj_write_tile'? [-Wimplicit-function-declaration]
+   octave_write_byte(r_decompress_fn,r_decompress,da_x1*da_y1);
+   ^~~~~~~~~~~~~~~~~
+   opj_write_tile
+when ./libbuild.sh is executed should be 23
+ 23  23 192 libdwtlift_obj.txt
+
+step3
+With the Lazaraus IDE (Ultibo Edition) 
+DWT_LIFT_RPi4.lpi
+
+512-options/lena_rgb_512.bmp on micro sd as MyBitmap.bmp & 512-options/512com on micro sd as testfile
+2 files are the inputs to model MyBitmap.bmp & testfile for compression encoding and the output is the file test.j2k
+512com
+00000000   19 00 00 00  01 00 00 00  00 00 00 00  00 00 00 00  ................
+00000010   00 02 00 00  00 02 00 00
+19 00 00 00 compression ratio 
+01 00 00 00 Encode
+00 00 00 00 xx0 0
+00 00 00 00 yy0 0
+00 02 00 00 xx1 512
+00 02 00 00 yy1 512
+~/t_ultibo/build/bin/opj_decompress -i test.j2k -o tt.bmp
+
+[INFO] Start to read j2k main header (0).
+[INFO] Main header has been correctly decoded.
+[INFO] No decoded area parameters, set the decoded area to the whole image
+[INFO] Header of tile 1 / 1 has been read.
+[INFO] Generated Outfile tt.bmp
+decode time: 106 ms
+
+2 files are the inputs to model dtest.j2k & testfile for decompression decoding and the output is the file test_wr.bmp
+512decom
+00000000   19 00 00 00  00 00 00 00  00 00 00 00  00 00 00 00  ................
+00000010   00 02 00 00  00 02 00 00
+19 00 00 00 compression ratio 
+00 00 00 00 Decode
+00 00 00 00 xx0 0
+00 00 00 00 yy0 0
+00 02 00 00 xx1 512
+00 02 00 00 yy1 512
+tftp 192.168.1.143 < cmdstftp 
+tftp> tftp> Sent 3444972 bytes in 5.0 seconds
