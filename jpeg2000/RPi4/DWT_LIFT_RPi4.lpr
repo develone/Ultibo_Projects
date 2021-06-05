@@ -20,6 +20,7 @@ uses
  { needed by bitmap }
  { needed to use ultibo-tftp  }
  uTFTP,
+ uTSOCKET,
  Winsock2,
  { needed to use ultibo-tftp  }
  { needed for telnet }
