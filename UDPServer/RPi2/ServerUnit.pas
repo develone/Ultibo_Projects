@@ -144,7 +144,7 @@ begin
     server by calling the SendDataTo function and passing the address and port to send to.
     
     Try it out yourself by setting the address to something valid}
-   //SendDataTo('192.168.123.123',514,PChar(MessageText),Length(MessageText)); 
+   SendDataTo('192.168.1.245',514,PChar(MessageText),Length(MessageText));
   end;
 end;
 

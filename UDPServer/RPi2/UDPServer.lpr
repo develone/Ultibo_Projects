@@ -21,7 +21,20 @@ uses
   InitUnit,     {Include InitUnit to allow us to change the startup behaviour}
   RaspberryPi2, {Include RaspberryPi2 to make sure all standard functions are included}
   Threads,
+  Console,
+  HTTP,         {Include HTTP and WebStatus so we can see from a web browser what is happening}
+  WebStatus,
+  SysUtils,  { TimeToStr & Time }
+  Logging,
   uTFTP,
+  Winsock2,
+  { needed to use ultibo-tftp  }
+  { needed for telnet }
+      Shell,
+     ShellFilesystem,
+     ShellUpdate,
+     RemoteShell,
+  { needed for telnet }
   ServerUnit;   {Include ServerUnit which contains the main code for our server}
 
 begin
