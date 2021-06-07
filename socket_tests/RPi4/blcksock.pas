@@ -115,7 +115,7 @@ const
 
   SynapseRelease = '40';
 
-  cLocalhost = '127.0.0.1';
+  cLocalhost = '192.168.1.143';
   cAnyHost = '0.0.0.0';
   cBroadcast = '255.255.255.255';
   c6Localhost = '::1';

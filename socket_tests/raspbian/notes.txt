@@ -1,7 +1,7 @@
 06/06/18
 https://forum.lazarus.freepascal.org/index.php?topic=21024.0
 
-export PATH=/home/pi/ultibo/core/fpc/bin:$PATH
+export PATH=/home/devel/ultibo/core/fpc/bin:$PATH
 fpc -B -Tlinux -Parm @/home/pi/ultibo/core/fpc/bin/fpc.cfg -O2 server.pas
 
 pi@pi3-2:~/socket_tests/AraratSynapse $ ./server 
