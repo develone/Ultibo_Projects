@@ -21,6 +21,21 @@ uses
   syncobjs,
   blcksock,
   synsock,
+  uTFTP,
+  HTTP,         {Include HTTP and WebStatus so we can see from a web browser what is happening}
+  WebStatus,
+  Shell,
+  ShellFilesystem,
+  ShellUpdate,
+  RemoteShell,
+  Winsock2,
+
+
+  FileSystem,  {Include the file system core and interfaces}
+  FATFS,       {Include the FAT file system driver}
+  MMC,         {Include the MMC/SD core to access our SD card}
+  BCM2711,
+  BCM2837,
   Ultibo
   { Add additional units here };
 
@@ -77,7 +92,7 @@ end;
  TThreadManager = class(TObject)
 	private
 		FItemList: TThreadList;
-		FAbort: Boolean;
+		lFAbort: Boolean;
 		FThreadList: TList;
 		FMaxThreadCount: Integer;
 		procedure SetMaxThreadCount(Count: Integer);
