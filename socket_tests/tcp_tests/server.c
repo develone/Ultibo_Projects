@@ -24,7 +24,7 @@ int main(void)
     
     // Set port and IP:
     server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(2000);
+    server_addr.sin_port = htons(5050);
     server_addr.sin_addr.s_addr = inet_addr("192.168.1.245");
     
     // Bind to the set port and IP:
