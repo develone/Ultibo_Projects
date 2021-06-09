@@ -22,13 +22,12 @@ uses
   blcksock,
   synsock,
   uTFTP,
-  HTTP,         {Include HTTP and WebStatus so we can see from a web browser what is happening}
-  WebStatus,
+
   Shell,
   ShellFilesystem,
   ShellUpdate,
   RemoteShell,
-  Winsock2,
+
 
 
   FileSystem,  {Include the file system core and interfaces}
