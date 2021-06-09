@@ -21,7 +21,21 @@ uses
   Keyboard,
   DWCOTG,
   uAsync,
-  uTFTP
+  uTFTP,
+    { needed to use ultibo-tftp  }
+  { needed for telnet }
+
+      Shell,
+     ShellFilesystem,
+     ShellUpdate,
+     RemoteShell,
+  { needed for telnet }
+  FileSystem,  {Include the file system core and interfaces}
+  FATFS,       {Include the FAT file system driver}
+  MMC,         {Include the MMC/SD core to access our SD card}
+  BCM2710,
+  HTTP,         {Include HTTP and WebStatus so we can see from a web browser what is happening}
+  WebStatus
   { Add additional units here };
 
 var
