@@ -18,6 +18,9 @@ uses
   SysUtils,
   Classes,
   Console,
+  HTTP,         {Include HTTP and WebStatus so we can see from a web browser what is happening}
+  WebStatus,
+  Winsock2,
   syncobjs,
   blcksock,
   synsock,
@@ -33,8 +36,8 @@ uses
   FileSystem,  {Include the file system core and interfaces}
   FATFS,       {Include the FAT file system driver}
   MMC,         {Include the MMC/SD core to access our SD card}
-  BCM2711,
-  BCM2837,
+  //BCM2711,
+  //BCM2837,
   Ultibo
   { Add additional units here };
 
@@ -334,7 +337,15 @@ begin
 end;
  var
    Server: TListenerThread;
+   HTTPListener:THTTPListener;
 begin
+ {Create and start the HTTP Listener for our web status page}
+ HTTPListener:=THTTPListener.Create;
+ HTTPListener.Active:=True;
+ {Wait a few seconds for all initialization (like filesystem and network) to be done}
+ Sleep(5000);
+ {Register the web status page, the "Thread List" page will allow us to see what is happening in the example}
+ WebStatusRegister(HTTPListener,'','',True);
    Server:=TListenerThread.Create;
    ReadLn;
 end.
