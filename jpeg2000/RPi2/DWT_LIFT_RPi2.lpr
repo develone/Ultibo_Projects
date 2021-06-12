@@ -33,13 +33,13 @@ uses
  Syscalls,
  FileSystem,  {Include the file system core and interfaces}
  FATFS,       {Include the FAT file system driver}
- MMC,         {Include the MMC/SD core to access our SD card}
- BCM2709;
+ MMC;         {Include the MMC/SD core to access our SD card}
+ //BCM2709;
 
 {$linklib dwtlift}
 {$linklib libm}
 procedure decom_test(x0,y0,x1,y1:LongWord;fn:string); cdecl; external 'libdwtlift' name 'decom_test';
-procedure  rd_inps(); cdecl; external 'libdwtlift' name 'rd_inps';
+
 
 
  var

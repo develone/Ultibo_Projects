@@ -33,7 +33,8 @@ uses
   FileSystem,  {Include the file system core and interfaces}
   FATFS,       {Include the FAT file system driver}
   MMC,         {Include the MMC/SD core to access our SD card}
-  BCM2711,
+
+  //BCM2711,
   HTTP,         {Include HTTP and WebStatus so we can see from a web browser what is happening}
   WebStatus
   { Add additional units here };
@@ -43,6 +44,7 @@ var
   WindowHandle : TWindowHandle;
   IPAddress : string;
   ch : char;
+  HTTPListener:THTTPListener;
 
 function display_string (s : string) : string;
   var
@@ -118,7 +120,12 @@ begin
   aSocket.Addr := '192.168.1.245';
   aSocket.Port := 5050;
   aSocket.Connect;
-
+  {Create and start the HTTP Listener for our web status page}
+  HTTPListener:=THTTPListener.Create;
+  HTTPListener.Active:=True;
+  Sleep(5000);
+  {Register the web status page, the "Thread List" page will allow us to see what is happening in the example}
+  WebStatusRegister(HTTPListener,'','',True);
   while true do
     begin
       if ConsoleReadChar (ch, nil) then
