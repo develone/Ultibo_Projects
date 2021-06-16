@@ -1,0 +1,29 @@
+Ultibo_Projects/socket_tests/RPi4/kernel7l.img
+
+tftp 192.168.1.143 < cmdstftp
+
+Steps to compile. Ultibo_Projects/socket_tests/pgmpush/client.c
+
+gcc -c error.c -o error.o
+
+gcc -c pnmio.c -o pnmio.o
+
+gcc client.c error.o pnmio.o -o client
+client.c: In function ‘main’:
+client.c:103:13: warning: implicit declaration of function ‘gets’; did you mean ‘fgets’? [-Wimplicit-function-declaration]
+             gets(client_message);
+             ^~~~
+             fgets
+client.c:125:9: warning: implicit declaration of function ‘sleep’ [-Wimplicit-function-declaration]
+         sleep(10);
+         ^~~~~
+client.c:136:5: warning: implicit declaration of function ‘close’; did you mean ‘pclose’? [-Wimplicit-function-declaration]
+     close(socket_desc);
+     ^~~~~
+     pclose
+/usr/bin/ld: /tmp/ccwPXphe.o: in function `main':
+client.c:(.text+0x494): warning: the `gets' function is dangerous and should not be used.
+
+The red.pgm is read by the client.c 
+First 2048 block of red.pgm is sent to Ultibo.
+A 512 X 512 image will require 128 blocks.

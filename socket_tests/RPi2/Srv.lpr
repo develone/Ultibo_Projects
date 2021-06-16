@@ -307,7 +307,7 @@ begin
    begin
     if fSock.WaitingData > 0 then
      begin
-      s:=fSock.RecvPacket(2000);
+      s:=fSock.RecvPacket(2048);
       if fSock.LastError <> 0 then
        WriteLn(fSock.GetErrorDescEx);
        ProcessingData(fSock.Socket,S);
