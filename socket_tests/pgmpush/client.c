@@ -5,13 +5,16 @@
 #include <stdlib.h>
 
 void rb_block(unsigned char *in, int *pstart, int *pend, unsigned char *out) {
-    int i,j;
-    //offset = *pstart*512;
+    int i,j,index;
+    
     printf("rb_block %d  %d 0x%x \n",*pstart,*pend,in);
+    index = 0;
     for(j=*pstart;j<*pend;j++) {
+	
 	for(i=0;i<512;i++) {
-	    out[i] = in[i];
-	    printf("%d %d %d   \n",j, i,in[i],out[i]);
+	    out[index] = in[index];
+	    printf("%d %d %d %d  %d \n",j, i,in[index],out[index],(index));
+	    index += 1;
 	}
     }
     
@@ -31,7 +34,7 @@ int main(void)
 {
     int socket_desc,flag=1,userflg,msg;
     struct sockaddr_in server_addr;
-    unsigned char server_message[2047], client_message[2047];
+    unsigned char server_message[2047], client_message[2048];
     char *inp1, *inp2, *inp3,*out1;
     unsigned char *inbuf, *inbufsav,*pclient_message;
 
@@ -118,6 +121,8 @@ int main(void)
 	    */
         }
         // Send the message to server:
+	printf("The length of client_message %d\n",strlen(client_message));
+	printf("%s\n",client_message);
         if(send(socket_desc, client_message, strlen(client_message), 0) < 0){
             printf("Unable to send message\n");
             return -1;

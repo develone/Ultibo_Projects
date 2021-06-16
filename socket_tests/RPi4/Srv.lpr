@@ -307,7 +307,7 @@ begin
    begin
     if fSock.WaitingData > 0 then
      begin
-      s:=fSock.RecvPacket(2000);
+      s:=fSock.RecvPacket(2048);
       if fSock.LastError <> 0 then
        WriteLn(fSock.GetErrorDescEx);
        ProcessingData(fSock.Socket,S);
@@ -333,7 +333,9 @@ end;
 procedure TTCPThread.ProcessingData(procSock: TSocket; Data: string);
 begin
   if data <> '' then
+   WriteLn(IntToStr(length(Data))+#32+Data[2046]);
    WriteLn(data+#32+'we get it from '+IntToStr(number)+' thread');
+   WriteLn(Data[1] + #32 + Data[512] +#32 + Data[513]);
 end;
  var
    Server: TListenerThread;
