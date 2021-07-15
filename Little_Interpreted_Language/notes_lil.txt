@@ -10,3 +10,36 @@ myenv.sh
 export PATH=/home/devel/ultibo/core/fpc/bin/:$PATH
 echo $PATH
 
+Used the sources /home/devel/Ultibo_Projects/Little_Interpreted_Language/lil/fplil
+
+cd  /home/devel/Ultibo_Projects/Little_Interpreted_Language
+
+cp -R lilfplil linux
+
+cd linux
+
+add fpc to my PATH
+
+. ../myenv.sh
+
+make
+fpc lil.pas
+Free Pascal Compiler version 3.1.1 [2021/05/15] for arm
+Copyright (c) 1993-2015 by Florian Klaempfl and others
+Target OS: Linux for ARMHF
+Compiling lil.pas
+Compiling fplil.pas
+lil.pas(7,23) Hint: Parameter "LIL" not used
+lil.pas(14,22) Hint: Parameter "LIL" not used
+lil.pas(14,33) Hint: Parameter "Args" not used
+Linking lil
+3249 lines compiled, 1.0 sec
+3 hint(s) issued
+
+./lil 
+FreePascal implementation of LIL
+Type "exit" to exit
+
+# print hello fred
+hello fred
+#
