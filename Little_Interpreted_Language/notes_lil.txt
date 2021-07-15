@@ -43,3 +43,10 @@ Type "exit" to exit
 # print hello fred
 hello fred
 #
+
+git clone https://github.com/Gavinmc42/Lil-gui.git
+Used the source files in my 
+
+Ultibo_Projects/Little_Interpreted_Language/QEMU/Lil-gui
+
+When I tried to compile in Lazarus IDE (Ultibo Edition) I was getting an error.
