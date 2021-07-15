@@ -193,7 +193,7 @@ begin
 
   Console1 := ConsoleWindowCreate (ConsoleDeviceGetDefault, CONSOLE_POSITION_LEFT, true);
   Console2 := GraphicsWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_RIGHT);
-  ConsoleWindowWriteLn(Console1, 'writing top Console1');
+  ConsoleWindowWriteLn(Console1, 'Little_Interpreted_Language Demo RPi3');
 
   GraphicsWindowSetBackcolor (Console2, BACK_COLOUR);
   GraphicsWindowClear (Console2);
