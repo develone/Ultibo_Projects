@@ -9,7 +9,7 @@ program lil2;
 {  To compile your program select Run, Compile (or Run, Build) from the menu.  }
 
 uses
-  RaspberryPi4, {<-- Change this to suit which model you have!!}
+  RaspberryPi3, {<-- Change this to suit which model you have!!}
   GlobalConfig,
   GlobalConst,
   GlobalTypes,
@@ -22,7 +22,7 @@ uses
   WebStatus,
   SysUtils,  { TimeToStr & Time }
   uTFTP,
-  
+
   Winsock2,
   { needed to use ultibo-tftp  }
   { needed for telnet }
@@ -31,7 +31,7 @@ uses
      ShellUpdate,
      RemoteShell,
   { needed for telnet }
-  
+
   //Shell,
   GraphicsConsole,
   Syscalls,
@@ -223,6 +223,7 @@ begin
   ThreadHalt (0);
 
 end.
+
 
 
 
