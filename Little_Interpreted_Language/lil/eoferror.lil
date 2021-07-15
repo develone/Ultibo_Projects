@@ -1,0 +1,28 @@
+#
+# readline error test (note that readline is not available in LIL/FPLIL
+# itself but provided by the command line interfaces in main.c/lil.pas)
+#
+# You can either call this and enter lines directly (use Ctrl+Z/Ctrl+D
+# to finish) or a redirect (e.g. lil eoferror.lil < somefile.txt)
+#
+# This is an alternative way to read lines from standard input that
+# relies on readline issuing an error when it reaches end-of-file before
+# attempting to perform the read.  This is not really recommended as
+# error/try should not be used for normal code flow, but since the
+# readline implementation also doubles as an example of how to issue
+# errors then a script that can use these errors (this one) would be
+# helpful.  For a better way see canread.lil.
+#
+
+# Note: the "quote 1" here will be executed whenever readline works
+# properly and 1 will be returned by try, but will be skipped if
+# readline raises an error causing try to return an empty value - we
+# use quote here because otherwise try would return whatever value
+# readline returned, causing the loop to stop the first time an empty
+# line or a line containing a single zero was read in
+
+set count 0
+while {[try {set line [readline] ; quote 1}]} {
+    inc count
+}
+print $count lines

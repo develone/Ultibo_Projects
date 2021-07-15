@@ -1,0 +1,63 @@
+#
+# Lists test
+#
+
+# dumps the list
+func dumplist {t l} {
+    print "${t}: $l"
+    set i 1
+    foreach it $l {
+        print "    item ${i}: $it"
+        inc i
+    }
+    print "[count $l] items"
+}
+
+set l [list foo bar baz bad]
+dumplist "Initial list" $l
+
+print "Item at index 2: [index $l 2]"
+
+print "Appending Chlorine..."
+append l Chlorine
+dumplist "List after Chlorine" $l
+
+print "Appending Hello, world!..."
+append l "Hello, world!"
+dumplist "List after Hello, world!" $l
+
+print "Substituting the list"
+set l [subst $l]
+dumplist "List after substitution" $l
+
+print "Map list to variables"
+lmap $l foox barx bamia
+foreach "foox barx bamia" {print "$i is '$${i}'"}
+
+print "List made up of multiple lines"
+foreach {one            # linebreaks are ignored in list parsing mode
+         
+         two;three      # a semicolon still counts as line break (which
+                        # in list mode is treated as a separator for
+                        # list entries)
+         # of course a semicolon inside quotes is treated like normal
+         three";"and";a;half"
+         # like in code mode, a semicolon will stop the comment; four
+         
+         # below we have a quote, square brackets for inline expansions
+         # are still taken into consideration
+         [quote {this line will be ignored completely
+                 as will this line and instead be replaced
+                 with the "five" below since while in code
+                 mode (that is, inside the brackets here)
+                 linebreaks are still processed}
+          quote five]
+          
+         # The curly brackets are also processed so the next three lines
+         # will show up as three separate lines (but with a single arrow
+         # at their left side)
+         {six
+    seven
+    eight}} {print "-> {${i}}"}
+
+print "Done"

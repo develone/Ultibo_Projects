@@ -1,0 +1,281 @@
+This archive has been exported from a Fossil repository 
+at local date Sat 07/03/2021 
+ 
+ 
+Repository information 
+====================== 
+project-name: LIL: The Little Interpreted Language
+repository:   C:/Code/fossil/lil.fossil
+local-root:   C:/Code/lil/
+config-db:    C:/Users/badsector/AppData/Local/_fossil
+project-code: 6aa4537da265ccb69427ccd4c3489bf071821998
+checkout:     23452cb193110535df85a14d2f4b14abd4795a7a 2021-07-02 21:53:57 UTC
+parent:       d17391a2a3dd1c70d9c3dc7fea57cd01edb65cbb 2021-07-02 21:49:50 UTC
+tags:         trunk
+comment:      Added the extract.lil example which shows how "reflect this" and "upeval" can be used to parse data embedded in a function. (user: badsector)
+check-ins:    147
+ 
+ 
+Full timeline 
+============= 
+=== 2021-07-02 ===
+21:53:57 [23452cb193] *CURRENT* Added the extract.lil example which shows how "reflect this" and "upeval" can be used to parse data embedded in a function. (user: badsector tags: trunk)
+21:49:50 [d17391a2a3] Fix use-after-free when a script called "reflect this" (the bug existed in both C LIL and FPLIL). Also fix memory leak in the FPLIL Lazarus example. (user: badsector tags: trunk)
+=== 2021-05-01 ===
+23:10:03 [a5bebd0123] Added license file (user: badsector tags: trunk)
+23:08:13 [da8537259f] Added lil_break_run which can be used to check or control code execution breaks (e.g. a loop implemented in C that calls LIL code can check this to stop the loop or a native LIL function can use it to cause a break). Also updated copyright date and email. (user: badsector tags: trunk)
+=== 2019-08-25 ===
+19:28:23 [6648a09cb1] Fix readme.txt documentation for exit (it doesn't call C's exit()) (user: badsector tags: trunk)
+=== 2019-08-21 ===
+21:07:30 [27ea9f2df8] Added a simple Bash script to compare different LIL executables with the .lil files at the current directory and the ability to exclude some of them (for details check the comment at the top of the script). It assumes the presence of a Unix-y environment (be it Linux or MSYS2 under Windows). Thanks to this it turns out FPLIL isn't as compatible as i originally assumed. Fixes to follow later. (user: badsector tags: trunk)
+21:05:07 [1a03c5e27f] Fix comment description in mlhello.lil (user: badsector tags: trunk)
+21:04:41 [e7e4e73d29] Edit [183938ec90b38bdc|183938ec90]: Edit check-in comment. (user: badsector)
+21:03:28 [183938ec90] Added line escaping example (user: badsector tags: trunk)
+21:02:23 [a63cd5034b] Added canread in lil shell that will return true if readline can be used and false if the end-of-file stdin marker was reached. Also made readline to raise an error if it reaches end-of-file or any other I/O error. Finally fixed a warning in Borland C++ 5 about char-vs-int use for fgetc that could cause byte 255 to be treated the same as EOF. (user: badsector tags: trunk)
+20:58:09 [a8ceed8185] Updated readme.txt to clarify how line breaks work inside LIL lists and added missing information about escaping line breaks (that should have been there back when these were introduced) (user: badsector tags: trunk)
+20:56:41 [a22c468380] Updated mlcmt.lil to include examples of how semicolons affect line breaking (user: badsector tags: trunk)
+20:55:20 [87702bbe45] Updated lists.lil to reflect the changes in list parsing behavior (user: badsector tags: trunk)
+20:53:16 [6c6279bca0] 1. Fix comment parsing inside lists (ignoreeol==1) to not ignore EOL for single line comments (and thus ignore the rest of the list) 2. Use eolchar instead of ateol during EOL escaping to skip all EOLs inside lists (it doesn't change the whitespace skipping behavior, this is just more consistent) 3. Make sure ; is also treated as line break (separator) inside lists to be consistent with code mode and comments 4. When encountering square brackets inside lists, disable list parsing mode temporarily so that code with multiple commands separated by line breaks (including semicolons) works as expected instead of everything being combined into a single command The above may break some scripts that rely on the current broken behavior but chances are such reliance is unintentional and the behavior above is closer to what is described in readme.txt and expected in practice. (user: badsector tags: trunk)
+=== 2019-08-18 ===
+23:01:26 [15b99426b0] Exposed readline through the commandline interface when in non-interactive mode (user: badsector tags: trunk)
+=== 2019-08-17 ===
+23:02:39 [8d21a2bacb] Fixed dollar.lil example to make my-set return the value of the given variable instead of its name. (user: badsector tags: trunk)
+=== 2018-08-18 ===
+06:45:58 [2861a290a0] Added o and c escape characters to readme (user: badsector tags: trunk)
+=== 2017-12-28 ===
+20:30:53 [66bad6fa70] Changes to wiki page [Download] (user: badsector)
+=== 2017-11-14 ===
+19:39:53 [865126ddcc] Changes to wiki page [Other LIL Projects] (user: badsector)
+19:39:21 [d118254edd] Changes to wiki page [Other LIL Projects] (user: badsector)
+19:39:10 [b61117b9a0] Changes to wiki page [Other LIL Projects] (user: badsector)
+19:38:25 [8bb0610ce8] Changes to wiki page [LIL: The Little Interpreted Language] (user: badsector)
+19:37:40 [e007007cfc] Changes to wiki page [Other LIL Projects] (user: badsector)
+19:27:24 [4fd076876a] Changes to wiki page [How LIL code looks like] (user: badsector)
+19:26:58 [94b5d17bb1] Changes to wiki page [LIL: The Little Interpreted Language] (user: badsector)
+00:16:05 [c941bf3394] Changes to wiki page [LIL: The Little Interpreted Language] (user: badsector)
+=== 2017-10-31 ===
+18:01:52 [1ebebd2340] Fix FPLIL's TLIL.SubstituteToList method to behave like C LIL so that lists can have newlines in them without the need to escape via backslashes. Also minor update in readme.txt. (user: badsector tags: trunk)
+=== 2017-10-15 ===
+04:52:47 [5006e0f499] Fixed small memory leak in C LIL when calling the watcher code. (user: badsector tags: trunk)
+04:35:39 [80c60b437a] Ported new C LIL features and fixes to FPLIL: recursion limit define (LIL_ENABLE_RECLIMIT, unlike C LIL this uses a separate constant in the implementation section called MAX_RECLIMIT), the new variable watch function, fix for use of a function in the definition of the function itself and fix for memory leak during redefinition of the same function and making sure natives can be replaces with script defined functions. Also added TLILVariable.AddWatch and TLILVariable.RemoveWatch methods for native watches, TLILEnvironment.LIL property and TLIL.FindVar and TLIL.FindGlobal for variable lookup and finally replaced try ... catch use in TLILValue.ToInteger with StrToInt64Def and StrToFloatDef that use the LILFormatSettings (avoids unnecessary breaks in the debugger and fixes a bug where a floating point value could be locale dependent). Finally made the error callback (OnError) to be called only for the topmost call to TLIL.Parse, similarly to C LIL's LIL_CALLBACK_ERROR. (user: badsector tags: trunk)
+04:23:03 [0e6c751426] Remove unnecessary warning about printf formatting (user: badsector tags: trunk)
+04:22:11 [602eedbc9e] Added a test for the recent bug fix about function definitions that use themselves before they are fully defined (user: badsector tags: trunk)
+04:21:12 [22f7afd15e] Added a new function called watch which can be used to watch variables for modifications and execute code in the same environment as the variable for each modification. Also added watch.lil as a test and example for the new function. (user: badsector tags: trunk)
+02:00:07 [0ab468efce] Added information about the LIL_ENABLE_RECLIMIT macro to the readme.txt file (user: badsector tags: trunk)
+01:54:22 [eff77c76ed] Change a couple of tabs to spaces in lil.c (user: badsector tags: trunk)
+01:53:08 [ea104cbf09] Added the ability to limit the recursive calls to C LIL if LIL_ENABLE_RECLIMIT is defined (it must be defined to a number for the recursive calls). This can be useful to avoid call stack overflows and when performing automated tests (f.e. this was added for running LIL through the AFL fuzzer). (user: badsector tags: trunk)
+00:55:07 [0f0248d4f2] Parse the function argument list before registering the function so that if the list refers to the function itself (either a previous definition or an error), LIL wont try to use an incomplete object (argument list wont be NULL). (user: badsector tags: trunk)
+=== 2017-10-14 ===
+23:41:30 [25db3c4dad] Make sure lil_subst_to_list always returns a list even if the given code is an invalid LIL list. (user: badsector tags: trunk)
+06:33:07 [7ac05c4e77] Fixed memory leak in C LIL when redefining a function and made sure a native function can be replaced with a script provided one. Also made sure that when calling func with more than three arguments they are treated as three and the rest are ignored (user: badsector tags: trunk)
+=== 2017-10-13 ===
+01:55:49 [bcfd3bf8d4] Added TLIL.WriteString which can be used to write a string wherever the print and write functions write to (standard output or OnWrite callback). This is added for completeness' sake as the FPLIL equivalent of C LIL's lil_write function. (user: badsector tags: trunk)
+01:33:56 [04febfa1ca] Added lil_write function to the C lil implementation that allows the host to write wherever the write or print LIL functions would write (stdout, callback or internal lil_embedded buffer) (user: badsector tags: trunk)
+=== 2017-08-28 ===
+01:13:07 [dd6e7e5880] Fixed warning about _BSD_SOURCE when building with new glibc (user: badsector tags: trunk)
+=== 2017-06-01 ===
+00:46:18 [fd4c5db0b1] Changes to wiki page [Download] (user: badsector)
+=== 2017-05-31 ===
+23:00:18 [2a686d0e0a] Added logo XCF file (user: badsector tags: trunk)
+22:56:17 [68b4a24e03] LIL is back to Fossil SCM (user: badsector)
+22:47:28 [c11c6f4df2] Import form from VCS change: Fixes inc and dec functions bugs in both C LIL and FPLIL that caused the result to become zero when two floats were added/subtracted and the result became an integer, Fixes a memory leak in the Free Pascal version of LIL, Makes C LIL's rename to delete a function if it is renamed to nothing (FPLIL keeps the function but it is unusable - it needs to be updated to remove it too), Fix compatibility with Pelles C, Improve lil_list_to_value escaping. (user: badsector tags: trunk)
+=== 2015-10-30 ===
+10:27:53 [788c28d2bf] Changes to wiki page [LIL: The Little Interpreted Language] (user: badsector)
+=== 2015-10-05 ===
+12:07:51 [9cc4558342] Added a package file for Atom editor (user: badsector tags: trunk)
+=== 2015-08-16 ===
+23:15:08 [73b786ee85] Added mention of LIL_ENABLE_POOLS in readme (user: badsector tags: trunk)
+23:11:06 [f2bd40a184] Added optional pooling of values, lists and environments which can speed up significantly the script execution (mandelbrot is 4.6 times faster with it enabled). Since this uses global pools it makes using different lil contexts from different threads unsafe and it expects that the runtime/OS will release the pools on exit. For these two reasons this is disabled by defalt and can enabled by defining LIL_ENABLE_POOLS when compiling lil.c Also a minor optimization was made in "reflect" which now uses the hashmaps to check if a variable or function exists instead of scanning linearly. (user: badsector tags: trunk)
+=== 2015-04-10 ===
+09:37:23 [eb0bd612b7] Fixed ticket [5df94ed3f14d6e95|5df94ed3f1]: <i>Memory leak in hm_destroy</i> plus 7 other changes (user: badsector)
+09:35:53 [a372338377] Fixed a memory leak bug in hm_destroy (ticket 5df94ed3f14d6e9528a3b8041881c204c48df84c) (user: badsector tags: trunk)
+=== 2015-03-27 ===
+06:18:56 [b71d2e8260] New ticket [5df94ed3f14d6e95|5df94ed3f1] <i>Memory leak in hm_destroy</i>. (user: tarkin000)
+=== 2014-09-06 ===
+17:43:56 [c125a8b816] Updated readme.txt for the multiline restriction (user: badsector tags: trunk)
+17:42:08 [93595bbdb8] Fixed bug with multiline comments (they shouldn't apply with more than two #s) and added LILINT_PRINTF that defines the platform/compiler-specific printf code for lilint_t. (user: badsector tags: trunk)
+=== 2014-07-19 ===
+13:10:12 [1afbf79700] Added Qt Creator managed project (qmake) file for building the static library (user: Kostas tags: trunk)
+13:04:18 [d1b3d33efa] Removed old Qt Creator files (user: Kostas tags: trunk)
+=== 2014-06-27 ===
+10:23:50 [e21b5dd598] Verified ticket [8f98a6a4085a4388|8f98a6a408]: <i>wchar_t support?</i> plus 5 other changes (user: badsector)
+=== 2014-05-01 ===
+08:35:47 [4753acff70] New ticket [8f98a6a4085a4388|8f98a6a408] <i>wchar_t support?</i>. (user: roytam1)
+=== 2013-12-10 ===
+14:09:01 [4443178257] Disabled hints in fplil.pas unit (user: badsector tags: trunk)
+=== 2013-07-06 ===
+11:45:42 [fa8e011ca4] Changes to wiki page [Free Pascal port] (user: badsector)
+11:28:14 [a91a2bc89d] Changes to wiki page [Documentation] (user: badsector)
+11:17:55 [a5837d8089] Changes to wiki page [Documentation] (user: badsector)
+11:16:37 [8fbdaf8980] Updated LIL project URL in readme (user: badsector tags: trunk)
+11:15:49 [effcfd0376] Added FPLIL sources (user: badsector tags: trunk)
+11:10:27 [2b90e2f6cd] Changes to wiki page [Documentation] (user: badsector)
+11:08:44 [c7d49b6741] Changes to wiki page [Documentation] (user: badsector)
+11:05:23 [79b15babb1] Changes to wiki page [Download] (user: badsector)
+10:52:57 [5a90e4e0e7] Edit [498c6c3f3d13c093|498c6c3f3d]: Cancel tag "--closed". (user: badsector)
+10:52:26 [e8c63a9454] Changes to wiki page [Free Pascal port] (user: badsector)
+10:47:15 [bf6e2cc0dd] Changes to wiki page [License] (user: badsector)
+10:44:38 [448c9381f4] Changes to wiki page [LIL: The Little Interpreted Language] (user: badsector)
+10:38:14 [b745238d96] Changes to wiki page [LIL: The Little Interpreted Language] (user: badsector)
+10:20:03 [6753643345] Fixed a small warning (parentheses in assigned inside while) (user: badsector tags: trunk)
+10:19:02 [16ebdb0d85] Edit [498c6c3f3d13c093|498c6c3f3d]: Mark "Closed". (user: badsector)
+10:18:50 [0f464514d1] Edit [498c6c3f3d13c093|498c6c3f3d]: Add tag "--closed". (user: badsector)
+10:18:27 [f21f25252c] Edit [498c6c3f3d13c093|498c6c3f3d]: Add tag "--closed". (user: badsector)
+=== 2013-03-11 ===
+23:21:37 [9600d10313] Tabs to spaces, updated readme and OW project This commit converts all tabs in the lil.c source code to spaces to match the rest of the code. Also updates some formatting, increases the copyright year to 2013 and does a little update in OW project files. (user: badsector@runtimelegend.com tags: trunk)
+=== 2012-12-26 ===
+22:08:42 [87514733f7] Added lil_embedded for embedding LIL code inside other languages This commit adds the lil_embedded function which can be used to parse code and/or text that has embedded LIL snippets of the form <?lil ... ?>. Also adds the lil_freemem function which can be used to release memory allocated in the LIL side (like the string allocated by lil_embedded) (user: badsector@runtimelegend.com tags: trunk)
+=== 2012-12-22 ===
+21:33:30 [498c6c3f3d] Made new site using WebGroan and removed live LIL This commit puts a new site made with my WebGroan tool and removes the "live" LIL since it was based on a very outdated (and buggy) version of LIL (and Emscripten). A future version should use a haXe implementation (when and if i make it) instead of the C one. (user: badsector@runtimelegend.com tags: trunk, gh-pages)
+20:29:39 [3770f38ca8] Added reported case to expr.lil Forgot to add the reported use case of expr bug to expr.lil (user: badsector@runtimelegend.com tags: trunk)
+20:18:18 [f59e9bff05] Fixed expr ignoring parentheses without spaces This commit fixes expr (and ee_expr in general) to not ignore parentheses (and ~ and !) when there aren't spaces between them and an operator. Also added test script for this bug (user: badsector@runtimelegend.com tags: trunk)
+19:46:09 [b8d7e12947] Updated vim syntax file for multiline comments (user: badsector@runtimelegend.com tags: trunk)
+19:26:24 [be6660ebc5] Finalized and documented grable's multiline comments This commit finalizes the merge from grable's fork that adds multiline comments. Also adds documentation for them in the readme.txt file and adds a test/example in the form of the mlcmt.lil script. (user: badsector@runtimelegend.com tags: trunk)
+19:12:41 [2247a7c139] *MERGE* Merge branch 'master' of https://github.com/grable/lil (user: badsector@runtimelegend.com tags: trunk)
+19:05:12 [fef25ba915] OpenWatcom prj and MSVC batch file update (user: badsector@runtimelegend.com tags: trunk)
+19:04:39 [4ca2db481a] Replaced linear searches with hashtables This commit replaces linear searches for functions and variables with hashtables (the older code is still there commented out - later i'll make it enableable via a macro for environments where eating less memory is more important than speed. Also there are a couple of other minor speed optimizations. Overall after this commit, the execution speed of the mandelbrot script doubled (although it is not a good indicator for the improvements since it uses few variables and functions - most of the time there is spent in parsing the text) (user: badsector@runtimelegend.com tags: trunk)
+=== 2012-12-20 ===
+10:43:57 [d9d5ad1022] Adds multi-line comments ## .. ## (user: grable0@gmail.com tags: trunk)
+=== 2012-07-31 ===
+21:12:48 [487e1cfafd] *FORK* Float/int conversion warning disable for MSVC (user: badsector@runtimelegend.com tags: trunk)
+20:04:19 [d2fabfd41b] Suppressed MSVC warning about using standard C functions (user: badsector@runtimelegend.com tags: trunk)
+=== 2012-06-30 ===
+01:38:22 [f382563ded] Added mkmsvc.bat batch file for command-line builds using Microsoft's C/C++ Compiler (user: badsector@runtimelegend.com tags: trunk)
+=== 2012-04-30 ===
+20:44:02 [2a6f4d42e3] Added lil_call function to call a named LIL function This commit adds a new function to the C API, lil_call, which can be used to call a named function directly. (user: badsector@runtimelegend.com tags: trunk)
+17:09:39 [50521d9dfe] Added breaks in default cases to shut up Eclipse (user: badsector@runtimelegend.com tags: trunk)
+=== 2012-01-19 ===
+23:27:20 [b7cf5fb3bf] Enabled "Force ANSI Compliance" setting for liblil under OpenWatcom (user: badsector@runtimelegend.com tags: trunk)
+23:20:03 [adf5e12625] Dependency on stdint.h is now optional so that the code compiles under BCC 5.5 and (older) MSVC This commit makes the dependency on stdint.h to be optional so that the code will compile under Borland's free C/C++ Compiler version 5.5.1. It replaces the use of int64_t with lilint_t which, by default, is typedef'd to int64_t unless the macros LILINT_LONGLONG or LILINT_INT64 are used, which typedef lilint_t to long long int or __int64. Also a Makefile (Makefile.bcc) for BCC32/Borland Make is included that builds the library (liblil.lib, lil.obj) and test shell (lil.exe). The readme.txt has been updated to reference to the new API and compiler support. (user: badsector@runtimelegend.com tags: trunk)
+=== 2011-12-29 ===
+13:52:24 [0d813b6073] Fixed and clarified variable scope information in readme.txt (user: badsector@runtimelegend.com tags: trunk)
+13:42:03 [7245e2b528] Added a new function, result, to specify function results This commit adds a new function called "result" which can be used to specify the result (return value) of a function without returning from the function. The new function can also be used to return the current result value (if set previously by calling result), which basically gives some sort of indirect access to a variable holding the function's return value. (user: badsector@runtimelegend.com tags: trunk)
+13:10:58 [f86fec43fe] Made functions to return the last command's result instead of nothing This commit makes the functions to return the last command's result instead of nothing, as mentioned in the readme.txt file. This fixes GitHub issue #2. (user: badsector@runtimelegend.com tags: trunk)
+11:09:28 [09e664faf2] Fixed a warning about difference between size_t and long long in 32bit build (user: badsector@runtimelegend.com tags: trunk)
+10:26:36 [a74cad4f41] Updated copyright date (user: badsector@runtimelegend.com tags: trunk)
+=== 2011-12-28 ===
+16:10:32 [16036200e4] Fixed crashing bug in enveval when more outvars were used than invars This commit fixes a crashing bug in enveval when more outvars were specified than invars. The bug was caused because the varvalues array was not resized to accomodate for the bigger number of variables in outvars. (user: badsector@runtimelegend.com tags: trunk)
+13:43:05 [f86798a7f7] Fixed crashing bug in invalid use of set This commit fixes a crashing bug when set was called with global but without additional arguments, like: set global This was found thanks to the wonders of Clang's static analyzer :-P (user: badsector@runtimelegend.com tags: trunk)
+=== 2011-11-10 ===
+18:44:36 [f27088c19c] Added LIL_SETVAR_LOCAL_ONLY constant for setting always-local variables This commit adds a new constant (and the relevant functionality in lil.c) for setting always-local (or global, if the current environment is the global one) variables. The behaviour of foreach and filter is altered to use the new functionality to avoid name collisions between global and local variables. (user: badsector@runtimelegend.com tags: trunk)
+16:09:22 [96c54c0d82] Updated readme.txt to include the new guideline about funclevel use (user: badsector@runtimelegend.com tags: trunk)
+16:05:32 [ee13692a18] Calling lil_parse with funclevel now resets the breakrun flag (user: badsector@runtimelegend.com tags: trunk)
+15:50:39 [cd85fa8907] Added loop breaking check after return This commit adds a check in loop commands (filter, for, foreach and while) for the breakrun flag which is set after return so that the loop will not get stuck if return is used from the loop code (user: badsector@runtimelegend.com tags: trunk)
+=== 2011-11-08 ===
+05:34:27 [f79e06ccdf] Fixed two warnings with MinGW and OpenWatcom with the command-line interface This commit fixes two warnings: 1. Under MinGW, the missing popen/pclose etc for system in main.c 2. Under OpenWatcom, an expression expected that char is signed (under OpenWatcom char is unsigned by default) (user: badsector@runtimelegend.com tags: trunk)
+=== 2011-09-06 ===
+18:32:38 [6afeb1fa8f] Added command-line lil functions to readme.txt (user: badsector@runtimelegend.com tags: trunk)
+18:32:04 [2590a7b487] Added readline function in main.c This commit adds a new function, readline, in main.c. The function can be used to read a single line from the console/terminal. (user: badsector@runtimelegend.com tags: trunk)
+=== 2011-08-11 ===
+16:04:33 [c1434ec28e] Fixed enveval.lil variable expansion This commit fixes issue #1 in github tracker for the enveval.lil example. In some places instead of referencing the x variable, the script references a variable named "x," because it was used like "blah blah $x, blahblah" instead of "blah blah ${x}, blahblah". (user: badsector@runtimelegend.com tags: trunk)
+=== 2011-08-10 ===
+11:05:22 [f355836487] Added syntax highlighting file for vim (user: badsector@runtimelegend.com tags: trunk)
+10:50:23 [8b121dccf4] Fixed setvar target environment and added a new function This commit fixes the target environment for lil_set_var (it used to be always the current environment for non LIL_SETVAR_LOCAL_NEW) and adds a new function called enveval. The enveval function can be used to evaluate code inside a new environment with optional variable copy-to/from the current one. Additionally the result of 'return' is now set to the passed value instead of NULL. (user: badsector@runtimelegend.com tags: trunk)
+=== 2011-08-09 ===
+13:05:03 [2c5f2add13] Added local and topeval functions This commit adds two new functions: local and topeval The local function can be used to make local variables (if they are not already defined in the current environment). This is useful for reusable functions to make sure they will not modify global variables with the same name. The topeval function can be used to evaluate code at the toplevel (global) environment. (user: badsector@runtimelegend.com tags: trunk)
+=== 2011-08-07 ===
+11:52:23 [a031c2e67e] Fixed small memory leak in lil_eval_expr This commit fixes a small memory lean in lil_eval_expr which caused the code/expression to be evaluated not be released when an empty string was used. (user: badsector@runtimelegend.com tags: trunk)
+=== 2011-07-07 ===
+15:26:14 [5748f64d08] Fixed a bug in expression parser for signs symbols followed by non-numbers without whitespace This commit fixes a bug in the expression parser that made sign symbols followed by non-numbers without whitespace to produce wrong results. As an example of the issue, the expression -(3*3) produced wrong results while - ( 3 * 3 ) produced correct results. Now this is fixed. It is still recommended to use whitespaces between operators and operands though. (user: badsector@runtimelegend.com tags: trunk)
+=== 2011-02-26 ===
+23:51:24 [2e53fd2bf6] Fixed compilation under OpenWatcom (user: badsector@runtimelegend.com tags: trunk)
+=== 2011-02-22 ===
+07:21:21 [97df644416] Added reference to the state machine article (user: badsector@runtimelegend.com tags: trunk)
+=== 2011-02-20 ===
+07:53:26 [e86dd9ce5c] Added state machine examples (user: badsector@runtimelegend.com tags: trunk)
+04:16:35 [bd1b00af7d] Updated readme.txt (user: badsector@runtimelegend.com tags: trunk)
+04:13:23 [f1477cc9fb] Updated skip spaces func to use ignoreeol (user: badsector@runtimelegend.com tags: trunk)
+04:05:14 [c4c332a90a] Lists now ignore end-of-line This commit changes the list behaviour to ignore end-of-line in LIL values, which makes them be treated as ordinary whitespace (like they should). (user: badsector@runtimelegend.com tags: trunk)
+=== 2011-02-04 ===
+15:34:41 [18b87f5ef9] Fixed signed vs unsigned warnings (user: badsector@runtimeterror.com tags: trunk)
+15:33:43 [17b6109e48] Fixed last commit... (user: badsector@runtimeterror.com tags: trunk)
+15:32:36 [5ae6a94e56] Revert "Make behaviour of 'split' less ambiguous" This reverts commit c469cc218bcfbfc4261159be931c6a3d25047bf6. (user: badsector@runtimeterror.com tags: trunk)
+12:27:06 [fca69136a8] Make behaviour of 'split' less ambiguous This commit makes 'split' return the string passed if the separators string is an empty value. (user: badsector@runtimeterror.com tags: trunk)
+=== 2011-02-02 ===
+15:45:12 [413fd33cfc] The behaviour of 'foreach' changed to be more flexible This commit changes a bit the behaviour of foreach to accept (and ignore) more than three arguments. Previously the loop wouldn't work correctly if more than three arguments were given. Properly written code is not affected by this commit. (user: badsector@runtimeterror.com tags: trunk)
+=== 2011-01-18 ===
+22:50:32 [af8b904943] Replaced lilc with lil because of Firefox crash (user: badsector@runtimelegend.com tags: trunk, gh-pages)
+18:23:02 [bc8da5d72f] Added link to readme.txt (user: badsector@runtimelegend.com tags: trunk, gh-pages)
+18:10:34 [72658de126] Added trylil page and updated index (user: badsector@runtimelegend.com tags: trunk, gh-pages)
+17:56:59 [7c65b9367d] github generated gh-pages branch (user: badsector@runtimeterror.com tags: trunk, gh-pages)
+=== 2011-01-12 ===
+05:38:46 [31cd781b2f] Added checks in *_free functions for NULL objects (user: badsector@runtimelegend.com tags: trunk)
+=== 2011-01-10 ===
+00:20:34 [cbf87d251b] Added mandelbrot.lil example for performance tests This commit adds a new example, mandelbrot.lil, which implements the mandelbrot test of the Computer Language Benchmarks Game. This will be used to test the performance differencies between LIL versions and spot performance bottlenecks. (user: badsector@runtimelegend.com tags: trunk)
+=== 2011-01-09 ===
+23:28:10 [a2cbff8149] Added a "writechar" function in main.c Added a new function, writechar, in main.c. The function can be used to write a character based on its code (like writing "write [char <code>]") but is not filtered via the rest of the LIL runtime and exported directly to the stdout. This can be used main to write the zero byte at output. This has been made part of the main.c instead of lil.c because the ability to write non-ascii, non-control characters depends on the host program (most command-line based interfaces can) and is not globally available. If a host program requires this functionality, it is trivial to add it (or just copy main.c's implementation). (user: badsector@runtimelegend.com tags: trunk)
+23:24:57 [b8f59e78c5] Fixed a bug in expr with space skipping This commit fixes a bug in expression parsing (expr func and others). The bug was caused with whitespace before a second operator of the same level as the last parsed (example: x * y / z -- the "/ z" part was ignored because the space before it wasn't skipped). Now a call to ee_skipspaces is made at the end of each while loop which checks for a known operator at the same level. (user: badsector@runtimelegend.com tags: trunk)
+22:50:42 [a769b94735] Added a new function, char This commit adds a new function named "char" which returns the character with the given code. (user: badsector@runtimelegend.com tags: trunk)
+=== 2011-01-07 ===
+23:47:22 [ac0efad9f1] Added prototype-based object oriented examples (user: badsector@runtimelegend.com tags: trunk)
+21:59:03 [f8e2079e17] Changed the unused name pattern to avoid $s (user: badsector@runtimelegend.com tags: trunk)
+15:16:54 [065962fdea] Added short-circuit logical and example (user: badsector@runtimelegend.com tags: trunk)
+=== 2011-01-04 ===
+13:38:40 [37ee2cf46f] Added reflect name and reflect this This commit adds two new subcommands for "reflect": reflect this, which returns the code of the current environment and reflect name, which returns the currently executed function's name. (user: badsector@runtimelegend.com tags: trunk)
+09:03:51 [1e3c0598ad] Fixed misuse of the terms "environment" and "runtime" (user: badsector@runtimelegend.com tags: trunk)
+07:41:21 [b2493805da] Added trim, ltrim and rtrim functions and extended the split function This commit adds three new functions: trim, ltrim and rtrim. These can be used to "trim" whitespace (or other characters, if specified) from the beginning and ending of a string. Also the commit extends the "split" function to use more than one character as a separator if needed. (user: badsector@runtimelegend.com tags: trunk)
+=== 2011-01-01 ===
+21:00:25 [556de0bb0e] Added a new function, downeval This commit adds a new function called "downeval" which can be used from an upeval block to evalute code in the upeval's environment. This is useful for "bringing back" stuff. (user: badsector@runtimelegend.com tags: trunk)
+18:59:41 [fbfb48e2d1] Changed print and write and added a system function in main.c This commit changes the way print and write to not return anything and adds a "system" function in main.c which runs an external command and returns whatever it writes to stdout. Note that this currently works only under UNIX systems. (user: badsector@runtimelegend.com tags: trunk)
+14:37:21 [1350d55708] Added upeval function which evaluates code at the parent enviornment This commit adds a new function, upeval, which can be used to evaluate code at the parent environment of the current code's. This usually means that a function can access its own caller's environment (local variables, etc) and provide macro-like functionality. (user: badsector@runtimelegend.com tags: trunk)
+12:57:08 [c2ca17486c] Added filter and slice functions and modified eval's behavior This commit adds two new functions: filter and slice. The "filter" function can be used to filter a list against some expression and returns the filtered list. The "slice" function can be used to get part of a list. The commit also modifies the way "eval" behaves: the "funclevel" argument for the call to lil_parse_value is now 0, which means that the last command's result is used instead any call to "return". Also calling "return" is now the same as if it was called by the code that called eval. (user: badsector@runtimelegend.com tags: trunk)
+11:27:35 [19d7d88341] Added test files for rename, unusedname and reflect dollar-prefix (user: badsector@runtimelegend.com tags: trunk)
+11:06:36 [346b549639] Added reflect dollar-prefix This commit adds a new subcommand in reflect: reflect dollar-prefix. This can be used to obtain or set the dollar prefix. Previously LIL had the 'set ' prefix hardcoded when the dollar $ was used (for variable expansion like $foo, $bar, etc). Now the dollar prefix can be altered with this new command. (user: badsector@runtimelegend.com tags: trunk)
+05:35:43 [9e7e0be271] Added rename, unusedname and indexof functions This commit adds three new functions: rename (which renames a function), unusedname (which uses lil_unused_name to return an unused function name) and indexof (which returns the index of a string in a list). (user: badsector@runtimelegend.com tags: trunk)
+=== 2010-12-31 ===
+05:36:51 [f97316e217] Added the ability to "catch" unknown function calls in scripts This commit adds a new function, catcher, which can be used to set and retrieve LIL code which will be called when a function call fails because the function name was not known. The code is executed in place of the function (in a similar way to anonymous functions) inside its own environment. Catchers can be used to implement embedded DSLs or shell (as in UNIX shell) like functionality. The commit also adds an example program (catcher.lil) and updates the readme.txt file with information about the new functionality. Also the commit updates readme.txt to use double spaces everywhere. (user: badsector@runtimelegend.com tags: trunk)
+02:09:41 [31806c8654] Updated .gitignore to ignore lil (user: badsector@runtimelegend.com tags: trunk)
+02:08:23 [3083672379] Replaced strdup with strclone to avoid the warnings lil.c had strclone defined for a while since strdup is not part of any standard, but in some places i used strdup. I changed the code to use strclone everywhere and avoid the warnings under Linux. (user: badsector@atoo.(none) tags: trunk)
+=== 2010-11-10 ===
+19:17:15 [f140b9c66d] Updated readme.txt with info about the new functions (user: badsector@runtimelegend.com tags: trunk)
+19:12:01 [5491a56946] Added custom data in lil_t objects This commit adds lil_set_data and lil_get_data which can be used to associate custom data (via a single pointer) to a lil_t object. This is useful in the case where there are multiple lil_t objects lying around which are encapsulated in some outer object (like a C++ object) and a callback function needs to figure out the outer object from the lil_t object. (user: badsector@runtimelegend.com tags: trunk)
+=== 2010-11-09 ===
+00:49:09 [0c3c3f0dbe] Updated readme.txt for FreePascal / Lazarus support in ImpLIL (user: badsector@runtimelegend.com tags: trunk)
+=== 2010-11-07 ===
+14:15:24 [d12cf36e2b] Updated readme.txt with Import LIL, C# interface and DLL option (user: badsector@runtimelegend.com tags: trunk)
+13:58:16 [d46e38f66c] Updated gitignore (user: badsector@runtimelegend.com tags: trunk)
+13:17:51 [400248a46d] Added more code for use as DLL This commit adds more code for using LIL as a DLL. Programs that wish to use LIL as DLL must compile LIL with the LILDLL definition. Their code must also be compiled with the LILDLL definition and their callbacks with LILCALLBACK modifier. Existing programs or programs which do not wish to use LIL as a DLL can ignore these. The commit also adds OpenWatcom target and project files for making a lil.dll file. (user: badsector@runtimelegend.com tags: trunk)
+=== 2010-11-06 ===
+19:02:57 [b051c25c45] Added code for DLL version This commit adds code in the lil.h header file for making a DLL version of LIL (needs the LILDLL definition to exist) under Windows and adds an OpenWatcom target (under the dll directory) which builds the DLL. (user: badsector@runtimelegend.com tags: trunk)
+16:45:48 [84d8267f75] Updated readme.txt to mention MSVC2010 support (user: badsector@runtimelegend.com tags: trunk)
+16:42:15 [aab1daf8bf] Added atoll definition for MSVC 2010 This commit adds a #define atoll _atoi64 for MSVC 2010 since that compiler does not provide an atoll function. (user: badsector@runtimelegend.com tags: trunk)
+=== 2010-11-05 ===
+10:55:10 [27b671c2ee] Added more details in readme.txt This commit adds more details in readme.txt about LIL's strings (especially escaping), command separation, comments and fixes an error about $ (user: badsector@runtimelegend.com tags: trunk)
+08:23:00 [3df9da9750] Added jaileval LIL function This commit adds a new function, jaileval, which can be used to evaluate LIL code (similar to eval) in a new temporary LIL runtime and returns (via "return") some value. (user: badsector@runtimelegend.com tags: trunk)
+=== 2010-11-03 ===
+15:52:34 [e8f3a5a668] Updated readme.txt to refer to other LIL (user: badsector@runtimelegend.com tags: trunk)
+12:31:28 [d0278f4f34] Added readme.txt This commit adds a readme.txt file which practically explains everything about LIL. (user: badsector@runtimelegend.com tags: trunk)
+=== 2010-10-25 ===
+01:13:03 [aa21f5d7b3] WPJ update (user: badsector@runtimelegend.com tags: trunk)
+=== 2010-10-24 ===
+21:44:41 [deb9735fa5] Added OpenWatcom IDE files (user: badsector@runtimelegend.com tags: trunk)
+=== 2010-10-11 ===
+12:22:48 [cf690276ae] Removed lilcgi, updated email address This commit removes the lilcgi subdirectory (will become a separate project) and updates the email address from badsector@runtimeterror.com to badsector@runtimelegend.com. (user: badsector@runtimelegend.com tags: trunk)
+=== 2010-09-12 ===
+16:05:29 [9fe23f578b] Added setvar/getvar callbacks for global variables This commit adds two new callbacks, LIL_CALLBACK_SETVAR and LIL_CALLBACK_GETVAR, which are called when a global variable is set or get. This allows host programs to inspect global variables directly. (user: badsector@runtimeterror.com tags: trunk)
+=== 2010-09-10 ===
+07:04:35 [bba02c8072] Added function, fixed "error" and Qt Creator files This commit adds a new function, lil_get_var_or, which returns the value of a variable or a default value if the variable wasn't found and fixes a bug with "error". Also adds Qt Creator project files. (user: badsector@runtimeterror.com tags: trunk)
+=== 2010-08-30 ===
+03:18:43 [5588766dbd] Makefile does not override CFLAGS or LDFLAGS now (user: badsector@runtimeterror.com tags: trunk)
+=== 2010-08-24 ===
+23:15:35 [81ffc3c1ae] Added example on writing and reading lines to file This commit adds a small example on how to write two lines of text and read the second back as specified in http://stackoverflow.com/questions/3538156. (user: badsector@runtimeterror.com tags: trunk)
+=== 2010-08-20 ===
+21:42:27 [41eb56fb3a] Error is reset when lil_parse is called in depth 0 This commit makes lil to reset the error flag when lil_parse is called in depth 0 - ie at top level. (user: badsector@runtimeterror.com tags: trunk)
+=== 2010-08-19 ===
+12:33:24 [a75eae2ae6] Added "error" callback and parse depth This commit adds a new callback, LIL_CALLBACK_ERROR, which is called when an error exists at parse depth 1's exit. Parse depth is a counter which is increased at the beginning of lil_parse and decreased at the end of it. (user: badsector@runtimeterror.com tags: trunk)
+=== 2010-08-16 ===
+23:56:22 [5f9ac52591] Added C callbacks, more functions and other stuff This commit adds C callbacks, more functions, modifies the "func" function to create anonymous functions and many other stuff i don't remember right now (i really really need to make commits more frequently). Ah! Another thing added is the ability to report errors: try { ... } { error handler }. Also the C host can detect errors too. (user: badsector@runtimeterror.com tags: trunk)
+=== 2010-07-21 ===
+00:01:00 [8a36beb150] Added lil_parse_value function This commit adds lil_parse_value and modifies lil_parse to require a string length. lil_value_t holds string lengths so now calculating it is avoided when parsing LIL code (still, there are many places where this can be used...) (user: badsector@runtimeterror.com tags: trunk)
+=== 2010-07-18 ===
+03:07:51 [ffb8e785e9] Added Eclipse project and LOTSASTUFF This commit is huge mainly because its huge. It adds: 1. Eclipse project 2. Makefile 3. Many many LIL language features 4. Lil-as-a-library support 5. LILCGI, a LIL-based CGI runner with SQLite support and other awesome stuff 6. The first commit comment which tries to explain something about what is commited... (user: badsector@runtimeterror.com tags: trunk)
+=== 2010-07-05 ===
+14:24:25 [107de33012] Added a lot of stuff (user: badsector@runtimeterror.com tags: trunk)
+=== 2010-04-13 ===
+09:31:12 [ff13805ca3] Added a bunch of stuff... ...which i'm too tired to list now. However in very short from the top of my head: proper command definition, lists, list commands, variable environments, push/pop for envs, renamed put and putln to write and print, added $/[ support in quotted strings, other stuff, bug fixes, etc. (user: badsector@runtimeterror.com tags: trunk)
+=== 2010-04-12 ===
+02:04:14 [41f4bd8f2d] Initial commit (user: badsector@runtimeterror.com tags: trunk)
++++ end of timeline (178) +++
+  
+ 
+End of export notice 

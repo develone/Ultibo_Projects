@@ -1,0 +1,12 @@
+07/14/21
+
+Adding to my Ultibo_Projects
+http://runtimeterror.com/tech/lil/#latestversion
+Downloaded  a zip file wget http://runtimeterror.com/tech/lil/lil20210703.zip 
+
+Script to add fpc to my PATH
+myenv.sh
+#!/bin/bash
+export PATH=/home/devel/ultibo/core/fpc/bin/:$PATH
+echo $PATH
+

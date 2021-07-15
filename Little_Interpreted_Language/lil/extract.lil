@@ -1,0 +1,70 @@
+#
+# Example for extracting data inside a function by taking
+# advantage of "upeval" and "reflect this"
+#
+
+func data1 args {
+    print Loading data1...
+    extract-data
+    ---
+    Name:       Alice       Bob     Carol
+    Age:        30          40      25
+    Place:      Here        Here    There
+}
+
+func data2 args {
+    print Loading data2...
+    extract-data
+    ---
+    Name:       John        Anna    Cleo        Sam
+    Age:        27          33      23          31
+    Place:      There       Here    There       Here
+}
+
+func extract-data args {
+    set body [upeval {reflect this}]
+    set process 0
+    set global names {}
+    foreach line [split $body "\n"] {
+        set line [trim $line]
+        if $line {
+            if $process {
+                set name [index $line 0]
+                if [streq [substr $name [expr [length $name] - 1]] :] {
+                    set name [substr $name 0 [expr [length $name] - 1]]
+                    set i 1
+                    set value [index $line 1]
+                    append names $name
+                    while {$value} {
+                        set global ${name}-[expr $i - 1] $value
+                        inc i
+                        set value [index $line $i]
+                    }
+                    set global ${name}-count [expr $i - 1]
+                }
+            } {
+                if [streq $line ---] {
+                    set process 1
+                }
+            }
+        }
+    }
+    upeval return
+}
+
+func dump-data args {
+    print "Data has [count $names] name(s):"
+    foreach $names { print "  $i" }
+    print "Data for each name:"
+    foreach name $names {
+        print "  ${name}:"
+        for {set i 0} {$i < $"${name}-count"} {inc i} {
+            print "  #${i}. $'${name}-$i'"
+        }
+    }
+}
+
+data1
+dump-data
+data2
+dump-data

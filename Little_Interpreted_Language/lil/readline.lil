@@ -1,0 +1,8 @@
+#
+# readline test (note that readline is not available in LIL/FPLIL itself
+# but provided by the command line interfaces in main.c/lil.pas)
+#
+
+write "Hello, what is your name? "
+set name [readline]
+print "Hi ${name}!"

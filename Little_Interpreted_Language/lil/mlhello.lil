@@ -1,0 +1,6 @@
+#
+# Line escaping example
+#
+
+print hello \
+      world
