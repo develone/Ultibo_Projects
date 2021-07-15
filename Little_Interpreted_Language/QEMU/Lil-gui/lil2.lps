@@ -3,15 +3,31 @@
   <ProjectSession>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="1">
+    <Units Count="2">
       <Unit0>
         <Filename Value="lil2.lpr"/>
         <IsPartOfProject Value="True"/>
         <IsVisibleTab Value="True"/>
-        <UsageCount Value="20"/>
+        <TopLine Value="37"/>
+        <UsageCount Value="23"/>
         <Loaded Value="True"/>
       </Unit0>
+      <Unit1>
+        <Filename Value="uFontInfo.pas"/>
+        <EditorIndex Value="1"/>
+        <CursorPos X="3" Y="33"/>
+        <UsageCount Value="12"/>
+        <Loaded Value="True"/>
+      </Unit1>
     </Units>
-    <JumpHistory HistoryIndex="-1"/>
+    <JumpHistory Count="2" HistoryIndex="1">
+      <Position1>
+        <Filename Value="uFontInfo.pas"/>
+      </Position1>
+      <Position2>
+        <Filename Value="uFontInfo.pas"/>
+        <Caret Line="33" TopLine="28"/>
+      </Position2>
+    </JumpHistory>
   </ProjectSession>
 </CONFIG>
