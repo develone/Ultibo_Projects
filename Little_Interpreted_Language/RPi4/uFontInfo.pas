@@ -30,7 +30,7 @@ function FontInfo (fn : string; var Info : TFontInfo) : boolean;
 
 implementation
 
-//uses ulog;
+uses uLog;
 
 type
 
