@@ -50,3 +50,39 @@ Used the source files in my
 Ultibo_Projects/Little_Interpreted_Language/QEMU/Lil-gui
 
 When I tried to compile in Lazarus IDE (Ultibo Edition) I was getting an error.
+
+07/16/21
+Modified the Makefile ~/Ultibo_Projects/Little_Interpreted_Language/linux
+devel@pi400-1:~/Ultibo_Projects/Little_Interpreted_Language/linux $ git diff Makefile
+diff --git a/Little_Interpreted_Language/linux/Makefile b/Little_Interpreted_Language/linux/Makefile
+index af31637..f5067c7 100644
+--- a/Little_Interpreted_Language/linux/Makefile
++++ b/Little_Interpreted_Language/linux/Makefile
+@@ -6,7 +6,7 @@ FPC = fpc
+ all: $(OUTPUT)
+ 
+ $(OUTPUT): $(SOURCES)
+-       $(FPC) lil.pas
++       $(FPC) example.pas^M
+ 
+ .PHONY: clean
+ clean:
+
+devel@pi400-1:~/Ultibo_Projects/Little_Interpreted_Language/linux $ make clean
+rm -f lil *.o *.ppu
+
+devel@pi400-1:~/Ultibo_Projects/Little_Interpreted_Language/linux $ make
+fpc example.pas
+Free Pascal Compiler version 3.1.1 [2021/07/07] for arm
+Copyright (c) 1993-2015 by Florian Klaempfl and others
+Target OS: Linux for ARMHF
+Compiling example.pas
+Compiling fplil.pas
+example.pas(8,17) Hint: Parameter "LIL" not used
+Linking example
+3189 lines compiled, 0.8 sec
+1 hint(s) issued
+
+devel@pi400-1:~/Ultibo_Projects/Little_Interpreted_Language/linux $ ./example 
+12.0
+
