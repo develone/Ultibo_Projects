@@ -1,0 +1,90 @@
+https://unix.stackexchange.com/questions/209566/how-to-format-a-partition-inside-of-an-img-file
+https://stackoverflow.com/questions/10379897/how-to-use-dev-loop0-to-create-and-mount-image
+
+qemu-img create -f raw disk1.img 10M
+Formatting 'disk1.img', fmt=raw size=1048576000
+
+sudo fdisk -l disk1.img
+[sudo] password for devel: 
+ 
+Disk disk1.img: 1000 MiB, 1048576000 bytes, 20480 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+
+sudo fdisk -lu disk1.img
+Disk disk1.img: 1000 MiB, 1048576000 bytes, 20480 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+
+sudo losetup --offset $((512*2048)) --sizelimit $((512*20480)) --show --find disk1.img
+/dev/loop0
+
+mkfs.fat /dev/loop0
+mkfs.fat 4.1 (2017-01-24)
+
+If no /mnt/img it should be created. 
+ 
+mount /dev/loop0 /mnt/img1
+
+cp -R /home/devel/Ultibo_Projects/Little_Interpreted_Language/img-tests/disk/* /mnt/img1
+
+cp -R /home/devel/Ultibo_Projects/Little_Interpreted_Language/img-tests/RPi3051621/* /mnt/img1
+
+ ls -la /mnt/img1
+total 2984
+drwxr-xr-x 3 root root    4096 Dec 31  1969  .
+drwxr-xr-x 5 root root    4096 Jul 18 10:10  ..
+-rwxr-xr-x 1 root root      53 Jul 20 05:06 'Another File.txt'
+-rwxr-xr-x 1 root root   52456 Jul 20 05:08  bootcode.bin
+-rwxr-xr-x 1 root root    7313 Jul 20 05:08  fixup.dat
+-rwxr-xr-x 1 root root   10297 Jul 20 05:08  fixup_x.dat
+-rwxr-xr-x 1 root root     386 Jul 20 05:08  sha256.txt
+-rwxr-xr-x 1 root root 2955936 Jul 20 05:08  start.elf
+-rwxr-xr-x 1 root root      31 Jul 20 05:06 'Test File.txt'
+drwxr-xr-x 2 root root    4096 Jul 20 05:06  www
+
+umount /mnt/img1
+
+losetup -d /dev/loop0
+
+Testing the new img data 
+ls -la /mnt/img1
+total 8
+drwxr-xr-x 2 root root 4096 Jul 18 09:38 .
+drwxr-xr-x 5 root root 4096 Jul 18 10:10 ..
+
+losetup --offset $((512*2048)) --sizelimit $((512*20480)) --show --find disk1.img
+
+mount /dev/loop0 /mnt/img1
+
+ls -la /mnt/img1
+total 2984
+drwxr-xr-x 3 root root    4096 Dec 31  1969  .
+drwxr-xr-x 5 root root    4096 Jul 18 10:10  ..
+-rwxr-xr-x 1 root root      53 Jul 20 05:06 'Another File.txt'
+-rwxr-xr-x 1 root root   52456 Jul 20 05:08  bootcode.bin
+-rwxr-xr-x 1 root root    7313 Jul 20 05:08  fixup.dat
+-rwxr-xr-x 1 root root   10297 Jul 20 05:08  fixup_x.dat
+-rwxr-xr-x 1 root root     386 Jul 20 05:08  sha256.txt
+-rwxr-xr-x 1 root root 2955936 Jul 20 05:08  start.elf
+-rwxr-xr-x 1 root root      31 Jul 20 05:06 'Test File.txt'
+drwxr-xr-x 2 root root    4096 Jul 20 05:06  www
+
+umount /mnt/img1
+
+losetup -d /dev/loop0
+
+qemu-system-arm -machine versatilepb -kernel kernel.bin -drive file=disk1.img,if=sd,format=raw
+The QEMU window appears with the following:
+
+pulseaudio: set_sink_input_volume() failed
+pulseaudio: Reason: Invalid argument
+pulseaudio: set_sink_input_mute() failed
+pulseaudio: Reason: Invalid argument
+
+
+**********************************************************************
+
+sudo losetup --partscan --show --find disk1.img
