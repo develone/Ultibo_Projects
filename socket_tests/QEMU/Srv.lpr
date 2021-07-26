@@ -238,7 +238,11 @@ begin
    bind('0.0.0.0', '5050');
     if LastError = 0 then
       begin
-      ConsoleWindowWriteLn(WindowHandle,'Bind on 5050');
+      ConsoleWindowWriteLn(WindowHandle,'Bind RPi2B or RPi4B on 5050 ');
+      ConsoleWindowWriteLn(WindowHandle,'Bind QEMU localhost 6050');
+      ConsoleWindowWriteLn(WindowHandle,'telnet QEMU localhost 5023');
+      ConsoleWindowWriteLn(WindowHandle,'tftp QEMU localhost 5069');
+      ConsoleWindowWriteLn(WindowHandle,'WebStatus QEMU http://localhost:5080/status');
       end
      else
       WriteLn('Bind error: '+GetErrorDescEx);
