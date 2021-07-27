@@ -1,0 +1,114 @@
+qemu-img create disk1.img 25M
+Formatting 'disk1.img', fmt=raw size=26214400
+
+sudo fdisk disk1.img
+
+Welcome to fdisk (util-linux 2.33.1).
+Changes will remain in memory only, until you decide to write them.
+Be careful before using the write command.
+
+Device does not contain a recognized partition table.
+Created a new DOS disklabel with disk identifier 0xeacf6efa.
+
+Command (m for help): n
+Partition type
+   p   primary (0 primary, 0 extended, 4 free)
+   e   extended (container for logical partitions)
+Select (default p): p
+Partition number (1-4, default 1): 
+First sector (2048-51199, default 2048): 
+Last sector, +/-sectors or +/-size{K,M,G,T,P} (2048-51199, default 51199): 
+
+Created a new partition 1 of type 'Linux' and of size 24 MiB.
+
+Command (m for help): t
+Selected partition 1
+Hex code (type L to list all codes): L
+
+ 0  Empty           24  NEC DOS         81  Minix / old Lin bf  Solaris        
+ 1  FAT12           27  Hidden NTFS Win 82  Linux swap / So c1  DRDOS/sec (FAT-
+ 2  XENIX root      39  Plan 9          83  Linux           c4  DRDOS/sec (FAT-
+ 3  XENIX usr       3c  PartitionMagic  84  OS/2 hidden or  c6  DRDOS/sec (FAT-
+ 4  FAT16 <32M      40  Venix 80286     85  Linux extended  c7  Syrinx         
+ 5  Extended        41  PPC PReP Boot   86  NTFS volume set da  Non-FS data    
+ 6  FAT16           42  SFS             87  NTFS volume set db  CP/M / CTOS / .
+ 7  HPFS/NTFS/exFAT 4d  QNX4.x          88  Linux plaintext de  Dell Utility   
+ 8  AIX             4e  QNX4.x 2nd part 8e  Linux LVM       df  BootIt         
+ 9  AIX bootable    4f  QNX4.x 3rd part 93  Amoeba          e1  DOS access     
+ a  OS/2 Boot Manag 50  OnTrack DM      94  Amoeba BBT      e3  DOS R/O        
+ b  W95 FAT32       51  OnTrack DM6 Aux 9f  BSD/OS          e4  SpeedStor      
+ c  W95 FAT32 (LBA) 52  CP/M            a0  IBM Thinkpad hi ea  Rufus alignment
+ e  W95 FAT16 (LBA) 53  OnTrack DM6 Aux a5  FreeBSD         eb  BeOS fs        
+ f  W95 Ext'd (LBA) 54  OnTrackDM6      a6  OpenBSD         ee  GPT            
+10  OPUS            55  EZ-Drive        a7  NeXTSTEP        ef  EFI (FAT-12/16/
+11  Hidden FAT12    56  Golden Bow      a8  Darwin UFS      f0  Linux/PA-RISC b
+12  Compaq diagnost 5c  Priam Edisk     a9  NetBSD          f1  SpeedStor      
+14  Hidden FAT16 <3 61  SpeedStor       ab  Darwin boot     f4  SpeedStor      
+16  Hidden FAT16    63  GNU HURD or Sys af  HFS / HFS+      f2  DOS secondary  
+17  Hidden HPFS/NTF 64  Novell Netware  b7  BSDI fs         fb  VMware VMFS    
+18  AST SmartSleep  65  Novell Netware  b8  BSDI swap       fc  VMware VMKCORE 
+1b  Hidden W95 FAT3 70  DiskSecure Mult bb  Boot Wizard hid fd  Linux raid auto
+1c  Hidden W95 FAT3 75  PC/IX           bc  Acronis FAT32 L fe  LANstep        
+1e  Hidden W95 FAT1 80  Old Minix       be  Solaris boot    ff  BBT            
+Hex code (type L to list all codes): 4
+Changed type of partition 'Linux' to 'FAT16 <32M'.
+
+Command (m for help): p
+Disk disk1.img: 25 MiB, 26214400 bytes, 51200 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: dos
+Disk identifier: 0xeacf6efa
+
+Device     Boot Start   End Sectors Size Id Type
+disk1.img1       2048 51199   49152  24M  4 FAT16 <32M
+Command (m for help): w
+The partition table has been altered.
+Syncing disks.
+
+
+mkdosfs disk1.img
+mkfs.fat 4.1 (2017-01-24)
+
+sudo mount disk1.img /mnt/img1
+
+sudo cp -R ~/Ultibo_Projects/Little_Interpreted_Language/img-tests/disk/* /mnt/img1
+
+sudo umount /mnt/img1
+
+#!/bin/bash
+qemu-system-arm -machine versatilepb -cpu cortex-a8 -kernel kernel.bin \
+-net user,hostfwd=tcp::5080-:80,hostfwd=tcp::5023-:23,hostfwd=udp::5069-:69,hostfwd=tcp::6050-:5050 -net nic \
+ -drive file=disk1.img,if=sd,format=raw
+ 
+./startqemu.sh
+
+telnet mypi3-20 5023
+
+sudo su
+
+cp '/mnt/img1/Test File.txt' file1.txt
+
+
+cp '/mnt/img1/Another File.txt' file2.txt
+
+telnet mypi3-20 5023
+Trying 2600:1700:69f0:42c0:58b0:345f:f03:548a...
+Trying 2600:1700:69f0:42c0::1c...
+Trying 192.168.1.245...
+Connected to mypi3-20.
+Escape character is '^]'.
+
+Ultibo Core (Release: Beetroot Version: 2.1.079 Date: 21 July 2021)
+ (Type HELP for a list of available commands)
+>dir
+  Directory of C:\
+
+ 27-7-21 19:13:06                  53  Another File.txt
+ 27-7-21 19:13:06                  31  Test File.txt
+ 27-7-21 19:13:06       <DIR>          www
+ 27-7-21 19:17:04                  53  file2.txt
+ 27-7-21 19:17:22                  31  file1.txt
+          4 file(s) 168 bytes
+          1 dir(s)
