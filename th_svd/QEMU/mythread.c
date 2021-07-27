@@ -17,10 +17,10 @@ void *mysvd(void *strptr) {
 	if(pthread_equal(id,th_id[0])!=0) {
 		sw = 0;
 		
-		th0.m = 512;
-		th0.n = 512;
-		th0.p = 512;
-		th0.q = 512;
+		th0.m = 128;
+		th0.n = 128;
+		th0.p = 128;
+		th0.q = 128;
 		
 		th0.inbuf = (char *)malloc(sizeof(char)*th0.m*th0.n);
 		th0.inbuffr = th0.inbuf;
@@ -30,10 +30,10 @@ void *mysvd(void *strptr) {
 	if(pthread_equal(id,th_id[1])!=0) {
 		sw = 1;
 		
-		th1.m = 512;
-		th1.n = 512;
-		th1.p = 512;
-		th1.q = 512;
+		th1.m = 128;
+		th1.n = 128;
+		th1.p = 128;
+		th1.q = 128;
 		
 		th1.inbuf = (char *)malloc(sizeof(char)*th1.m*th1.n);
 		th1.inbuffr = th1.inbuf;
@@ -43,10 +43,10 @@ void *mysvd(void *strptr) {
 	if(pthread_equal(id,th_id[2])!=0) {
 		sw = 2;
 		
-		th2.m = 512;
-		th2.n = 512;
-		th2.p = 512;
-		th2.q = 512;
+		th2.m = 128;
+		th2.n = 128;
+		th2.p = 128;
+		th2.q = 128;
 		
 		th2.inbuf = (char *)malloc(sizeof(char)*th2.m*th2.n);
 		th2.inbuffr = th2.inbuf;
