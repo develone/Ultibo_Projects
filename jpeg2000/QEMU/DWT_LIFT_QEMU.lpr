@@ -155,7 +155,7 @@ begin
  {Wait a few seconds for all initialization (like filesystem and network) to be done}
  Sleep(5000);
  {Register the web status page, the "Thread List" page will allow us to see what is happening in the example}
- WebStatusRegister(HTTPListener,'','',True);
+ //WebStatusRegister(HTTPListener,'','',True);
  {Create a graphics window to display our bitmap, let's use the new CONSOLE_POSITION_FULLSCREEN option}
  Window:=GraphicsWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_BOTTOM);
 
