@@ -19,7 +19,7 @@ uses
  Classes,
  { needed by bitmap }
  { needed to use ultibo-tftp  }
- //uTFTP,
+ uTFTP,
  Winsock2,
  { needed to use ultibo-tftp  }
  { needed for telnet }
@@ -155,7 +155,7 @@ begin
  {Wait a few seconds for all initialization (like filesystem and network) to be done}
  Sleep(5000);
  {Register the web status page, the "Thread List" page will allow us to see what is happening in the example}
- //WebStatusRegister(HTTPListener,'','',True);
+ WebStatusRegister(HTTPListener,'','',True);
  {Create a graphics window to display our bitmap, let's use the new CONSOLE_POSITION_FULLSCREEN option}
  Window:=GraphicsWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_BOTTOM);
 
@@ -254,7 +254,7 @@ begin
  DrawBitmap(Window,'C:\test_wr.bmp',0,0,DECOMP,ENCODE,TCP_DISTORATIO,FILTER, COMPRESSION_RATIO,DIS_CR_FLG);
  end;
  ConsoleWindowWriteLn (Handle1, 'Local Address ' + IPAddress);
- //SetOnMsg (@Msg);
+ SetOnMsg (@Msg);
  ConsoleWindowWriteLn(Handle, TimeToStr(Time));
  {-----------------------------------
  X:= 0;
