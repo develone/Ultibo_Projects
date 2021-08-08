@@ -28,7 +28,7 @@ begin
 		end
  	else
 		begin
-		Writeln('Usage: imconv infile outfile');
+		Writeln('Usage: ./Imgconv infile outfile');
 		Halt(1);
 		end;
 	if CompareText(ReadFile,WriteFile)=0 then
