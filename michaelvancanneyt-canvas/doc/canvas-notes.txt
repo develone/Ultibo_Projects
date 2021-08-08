@@ -1,0 +1,29 @@
+https://ultibo.org/forum/viewtopic.php?f=15&t=1558
+by Gavinmc42 » Thu Aug 05, 2021 4:59 pm
+A nice intro to how fpimage and fpcanvas works.
+
+https://www.freepascal.org/~michael/articles/canvas/canvas.pdf
+
+export PATH=/home/devel/ultibo/core/fpc/bin:$PATH This is only needed once in shell which adds
+ppcarm to path  
+
+fpc -B -Tlinux -Parm @/home/devel/ultibo/core/fpc/bin/fpc.cfg -O2 ImgConv.pas
+
+Free Pascal Compiler version 3.1.1 [2021/07/22] for arm
+Copyright (c) 1993-2015 by Florian Klaempfl and others
+Target OS: Linux for ARMHF
+Compiling ImgConv.pas
+Linking ImgConv
+47 lines compiled, 0.9 sec
+
+-B     Build all modules
+-T<x>  Target operating system:
+      -Tandroid  Android
+      -Tdarwin   Darwin/iPhoneOS/iOS
+      -Tembedded Embedded
+      -Tgba      Game Boy Advance
+      -Tlinux    Linux
+      -Tnds      Nintendo DS
+      -Tsymbian  Symbian
+      -Tultibo   Ultibo
+      -Twince    Windows CE
