@@ -1,4 +1,18 @@
-My thinking is that Ultibo could take the place of the Arduino Mega Embed.
+My thinking is that Ultibo could take the place of the Arduino Mega Embed of transputer 
+seen at Hackaday.
+
+https://en.m.wikipedia.org/wiki/Transputer
+The transputer is a series of pioneering microprocessors from the 1980s, featuring 
+integrated memory and serial communication links, intended for parallel computing. 
+They were designed and produced by Inmos, a semiconductor company based in Bristol, 
+United Kingdom.[1] T414 transputer chip
+IMSB008 base platform with IMSB419 and IMSB404 modules mounted
+
+For some time in the late 1980s, many[2] considered the transputer to be 
+the next great design for the future of computing. While Inmos and the transputer 
+did not achieve this expectation, the transputer architecture was highly influential 
+in provoking new ideas in computer architecture, several of which have re-emerged 
+in different forms in modern systems. 
 
 Pico Pi App.
 
