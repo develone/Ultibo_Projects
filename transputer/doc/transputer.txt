@@ -1,0 +1,42 @@
+My thinking is that Ultibo could take the place of the Arduino Mega Embed.
+
+Pico Pi App.
+
+What is a transputer?
+It's a processor from the 80's which has some really interesting and different features.
+
+https://hackaday.com/2021/08/05/raspberry-pi-pico-used-as-a-transputer/
+
+picoputer part 1
+https://www.youtube.com/watch?app=desktop&v=MV_q7ltG8gY
+
+There 6 parts on youtube.
+
+Algol 68 Which was compared to Pascal.  Algol 68 was the first to introduce pointers.
+
+https://www.youtube.com/watch?v=SVYBJlCmRxE
+
+Pascal evolved from Algol 60. Professor Brailsford discusses the rift in the Algol committee that led to its creation.
+
+Brian Kernighan's Bell Labs Memo: http://www.eprg.org/computerphile/pas...
+
+EXTRA BITS: https://youtu.be/nA_FXCzibgw 
+
+https://www.facebook.com/computerphile
+
+https://twitter.com/computer_phile
+
+
+
+This video was filmed and edited by Sean Riley.
+
+
+
+Computer Science at the University of Nottingham: https://bit.ly/nottscomputer
+
+
+
+Computerphile is a sister project to Brady Haran's Numberphile. More at http://www.bradyharan.com
+
+
+https://sites.google.com/site/transputeremulator/
