@@ -109,7 +109,9 @@ begin
       t := Copy (s, 1, si);
       Canvas.DrawText (20, 100, t, 'arial', 24, COLOR_WHITE, 200);
     end;
-  Canvas.Draw (DefFrameBuff, (FrameProps.PhysicalWidth div 2) + 2, (FrameProps.PhysicalHeight div 2) + 2);
+  {Canvas.Draw (DefFrameBuff, (FrameProps.PhysicalWidth div 2) + 2, (FrameProps.PhysicalHeight div 2) + 2);}
+  //Canvas.Flush (DefFrameBuff);
+  Canvas.Flush (DefFrameBuff, (FrameProps.PhysicalWidth div 2) + 2, (FrameProps.PhysicalHeight div 2) + 2);
 end;
 
 { THelper }
@@ -155,6 +157,8 @@ begin
   SetLogProc (@Log1);
   Log1 ('Animated PNG Test.');
   Log1 ('Uses my own version of TCanvas.');
+//Log1( longToStr(DefFrameBuff) );
+  Log1('test output to screen');
   WaitForSDDrive;
 
 {$ifdef use_tftp}
@@ -168,12 +172,12 @@ begin
   DefFrameBuff := FramebufferDeviceGetDefault;
   Canvas := TCanvas.Create;
   FrameProps.Size := 0;
-  FBFormat := COLOR_FORMAT_UNKNOWN;
+  FBFormat := COLOR_FORMAT_DEFAULT;
   if FramebufferDeviceGetProperties (DefFrameBuff, @FrameProps) = ERROR_SUCCESS then
     begin
       Log ('Buffer Colour Format ' + FrameProps.Format.ToString + ' Depth ' + FrameProps.Depth.ToString + ' Size ' + Frameprops.Size.ToString);
       Log ('Buffer Width ' + FrameProps.PhysicalWidth.ToString + ' Height ' + FrameProps.PhysicalHeight.ToString);
-      FBFormat := FrameProps.Format;
+      FBFormat := COLOR_FORMAT_DEFAULT;
     end
   else
     Log ('failed to get props');
@@ -267,7 +271,9 @@ begin
               Rect := SetRect (39, 40, 30 + 39, 20 + 40);
               Canvas.Fill (Rect, COLOR_BROWN);
               Canvas.DrawText (20, 20, 'How is it going', 'arial', 24, COLOR_BLUE);
-              Canvas.Draw (DefFrameBuff, (FrameProps.PhysicalWidth div 2) + 2, (FrameProps.PhysicalHeight div 2) + 2);
+              {Canvas.Draw (DefFrameBuff, (FrameProps.PhysicalWidth div 2) + 2, (FrameProps.PhysicalHeight div 2) + 2);}
+              {Canvas.Flush (DefFrameBuff); }
+              Canvas.Flush (DefFrameBuff, (FrameProps.PhysicalWidth div 2) + 2, (FrameProps.PhysicalHeight div 2) + 2);
             end;
         end;
     end;
