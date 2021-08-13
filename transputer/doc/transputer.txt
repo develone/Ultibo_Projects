@@ -22,8 +22,12 @@ It's a processor from the 80's which has some really interesting and different f
 https://hackaday.com/2021/08/05/raspberry-pi-pico-used-as-a-transputer/
 
 picoputer part 1
+
+https://trochilidae.blogspot.com/2021/07/stack-based-with-os-in-hardware.html
 https://www.youtube.com/watch?app=desktop&v=MV_q7ltG8gY
 
+links found on youtube video part 1 https://github.com/blackjetrock/picoputer
+https://github.com/pahihu/t4
 There 6 parts on youtube.
 
 Algol 68 Which was compared to Pascal.  Algol 68 was the first to introduce pointers.
@@ -54,3 +58,10 @@ Computerphile is a sister project to Brady Haran's Numberphile. More at http://w
 
 
 https://sites.google.com/site/transputeremulator/
+
+Raspberry Pi Pico was released in January 2021 with a retail price of $4. 
+It was Raspberry Pi's first board based upon a single microcontroller chip; 
+the RP2040, which was designed by Raspberry Pi in the UK.
+
+The RP2040 datasheet chapter 3 has the overview of the PIO.
+The RP2040 has 2 PIO0 & PIO1 
