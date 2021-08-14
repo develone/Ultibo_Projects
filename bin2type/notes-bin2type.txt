@@ -1,0 +1,38 @@
+Hello All,
+I run on either a RPi4 or Pi400.  I have been able to run some examples without using 
+Lazarus IDE (Ultibo Edition).
+[b]I first add fpc to my PATH with "export PATH=/home/devel/ultibo/core/fpc/bin:$PATH"
+The with a command fpc -B -Tlinux -Parm @/home/devel/ultibo/core/fpc/bin/fpc.cfg -O2 xxx.pas[/b]
+
+I get an executable that runs on RPi4 or Pi400.
+
+While reading 
+
+[url]https://ultibo.org/forum/viewtopic.php?f=13&t=312&start=10[/url]
+I saw bin2type.
+
+I added forms.pp, interfacebase.pp, maps.pp, avglvltree.pas, Bin2Type.pas, fpcadds.pas, lclstrconsts.pas, lclversion.pas
+lazutils_defines.inc, lcl_defines.inc, and lclstrconsts.rsj.
+
+[b]fpc -B -Tlinux -Parm @/home/devel/ultibo/core/fpc/bin/fpc.cfg -O2 Bin2Type.pas 
+Free Pascal Compiler version 3.1.1 [2021/08/10] for arm
+Copyright (c) 1993-2015 by Florian Klaempfl and others
+Target OS: Linux for ARMHF
+Compiling Bin2Type.pas
+Compiling forms.pp
+Compiling maps.pp
+Compiling fpcadds.pas
+Compiling avglvltree.pas
+Compiling lclversion.pas
+Compiling interfacebase.pp
+Compiling lclstrconsts.pas
+Writing Resource String Table file: lclstrconsts.rsj
+interfacebase.pp(30,49) Fatal: Can't find unit LCLType used by InterfaceBase
+Fatal: Compilation aborted
+Error: /home/devel/ultibo/core/fpc/bin/ppcarm returned an error exitcode[/b]
+
+[url]https://github.com/develone/Ultibo_Projects/tree/master/bin2type/linux[/url]
+
+What is the standard for names of files? I pp with names uppercase and lowercase.
+
+As always all help is appreciated.
