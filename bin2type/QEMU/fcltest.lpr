@@ -25,6 +25,11 @@ uses
      ShellUpdate,
      RemoteShell,
   { needed for telnet }
+ Logging,
+ Syscalls,
+ FileSystem,  {Include the file system core and interfaces}
+ FATFS,       {Include the FAT file system driver}
+ MMC,         {Include the MMC/SD core to access our SD card}
 
   FPimage,
   FPReadPNG,
@@ -194,11 +199,16 @@ const
 var
  Count:Integer;
  Filename:String;
+ SearchRec:TSearchRec;
+ StringList:TStringList;
  FileStream:TFileStream;
+ WindowHandle:TWindowHandle;
  CR, enc, xx0, yy0, xx1, yy1:LongWord;
+ MyPLoggingDevice : ^TLoggingDevice;
   Handle:THandle;
  Handle1:THandle;
   GConsole : TWindowHandle;
+ Window:TWindowHandle;
  HTTPListener:THTTPListener;
  BGnd, aCanvas : TCanvas;
  BufferStream: TBufferStream;
@@ -268,9 +278,35 @@ begin
 end;
 
 begin
+{
+ The following 3 lines are logging to the console
+ CONSOLE_REGISTER_LOGGING:=True;
+ LoggingConsoleDeviceAdd(ConsoleDeviceGetDefault);
+ LoggingDeviceSetDefault(LoggingDeviceFindByType(LOGGING_TYPE_CONSOLE));
+ }
+
+ {The following 2 lines are logging to a file
+ LoggingDeviceSetTarget(LoggingDeviceFindByType(LOGGING_TYPE_FILE),'c:\ultibologging.log');
+ LoggingDeviceSetDefault(LoggingDeviceFindByType(LOGGING_TYPE_FILE));
+ MyPLoggingDevice:=LoggingDeviceGetDefault;
+ LoggingDeviceRedirectOutput(MyPLoggingDevice); }
+
+
+ // wait for IP address and SD Card to be initialised.
+ WaitForSDDrive;
+ IPAddress := WaitForIPComplete;
+ {Create and start the HTTP Listener for our web status page}
+ HTTPListener:=THTTPListener.Create;
+ HTTPListener.Active:=True;
+ {Wait a few seconds for all initialization (like filesystem and network) to be done}
+ Sleep(5000);
+ {Register the web status page, the "Thread List" page will allow us to see what is happening in the example}
+ WebStatusRegister(HTTPListener,'','',True);
+ {Create a graphics window to display our bitmap, let's use the new CONSOLE_POSITION_FULLSCREEN option}
+ Window:=GraphicsWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_BOTTOMLEFT);
   Handle:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_TOPLEFT,True);
   Handle1:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_TOPRIGHT,True);
-  GConsole := ConsoleWindowCreate (ConsoleDeviceGetDefault, CONSOLE_POSITION_BOTTOMLEFT, true);
+  GConsole := ConsoleWindowCreate (ConsoleDeviceGetDefault, CONSOLE_POSITION_BOTTOMRIGHT, true);
   ConsoleWindowWriteLn(Handle, TimeToStr(Time));
   ConsoleWindowWriteLn (Handle1, 'TFTP Demo.');
 
