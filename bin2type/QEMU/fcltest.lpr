@@ -49,8 +49,9 @@ procedure decom_test(x0,y0,x1,y1:LongWord;fn:string); cdecl; external 'libdwtlif
 
   { Add additional units here }
 
-{$INCLUDE '128.inc'}
-
+//{$INCLUDE '100-1com.inc'}
+//{$INCLUDE '128.inc'}
+{$INCLUDE '256.inc'}
 
 // Add the new class
 type
@@ -76,7 +77,7 @@ var
  StringList:TStringList;
  FileStream:TFileStream;
  WindowHandle:TWindowHandle;
- CR, enc, xx0, yy0, xx1, yy1:LongWord;
+ PTR, CR, enc, xx0, yy0, xx1, yy1:LongWord;
  MyPLoggingDevice : ^TLoggingDevice;
   Handle:THandle;
  Handle1:THandle;
@@ -102,6 +103,7 @@ var
  Height:LongWord;
  da_x0,da_y0,da_x1,da_y1:LongWord;
  ff:string;
+{$INCLUDE 'hexdump.inc'}
 
 function WaitForIPComplete : string;
 
@@ -239,6 +241,15 @@ begin
     end;
  end;
  }
+ ConsoleWindowWriteLn(Handle, 'ASize ' + intToStr(SizeOf(BinaryData)));
+
+
+
+ {
+ ConsoleWindowWriteLn(Handle, 'ABuffer ' + intToStr(TBufferStream.ABuffer));
+ ConsoleWindowWriteLn(Handle, 'ASize ' + intToStr(TBufferStream.ASize));
+ decom_disp(da_x0,da_y0,da_x1,da_y1,ASize,ABuffer);
+ }
  //should not be set lower than  30 which is compressiong over 1500
  //
  //		38	189.4093899116
@@ -265,7 +276,8 @@ begin
  {DrawBitmap(Window,'C:\test_wr.bmp',0,0,DECOMP,ENCODE,TCP_DISTORATIO,FILTER, COMPRESSION_RATIO,DIS_CR_FLG);}
  }
  WaitForSDDrive;
-
+ //PTR:=@ABuffer;
+ //decom_disp(da_x0,da_y0,da_x1,da_y1,ASize,PTR);
 
 
   aCanvas := TCanvas.Create;
