@@ -1259,5 +1259,18 @@ void decom_test(int x0, int y0, int x1, int y1,char *ff_in) {
 	printf("In decom_test called by Pascal %s %d %d %d %d %s\n",input_file,x0,y0,x1,y1,ff_in);
 	decompress(x0, y0, x1, y1,ff_in);	
 }
- 
- 
+void decom_disp(int x0, int y0, int x1, int y1,int ASize ,int * ABuffer) {
+     printf("In decom_disp called by Pascal  %d %d %d %d %d %x\n",x0,y0,x1,y1,ASize,ABuffer);
+
+}
+void xx(int x0) {
+char *ptrx0;
+int ii;
+ptrx0=(char *)x0;
+printf("%x\n",x0);
+for(ii=0;ii<5;ii++) {
+	printf("%x ",*ptrx0);
+	ptrx0++;
+}
+printf("\n");
+}

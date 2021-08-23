@@ -43,7 +43,9 @@ uses
   Ultibo;
   {$linklib dwtlift}
   {$linklib libm}
+procedure xx(x0:Pointer); cdecl; external 'libdwtlift' name 'xx';
 procedure decom_test(x0,y0,x1,y1:LongWord;fn:string); cdecl; external 'libdwtlift' name 'decom_test';
+procedure decom_disp(x0,y0,x1,y1,asize:LongWord;abuffer:Pointer); cdecl; external 'libdwtlift' name 'decom_disp';
   // Add your unit created from Bin2Type data
   //MyData
 
@@ -71,13 +73,14 @@ const
   BACK_COLOUR                    = $FF055A93;
 
 var
+ PTBinaryData:^TBinaryData;
  Count:Integer;
  Filename:String;
  SearchRec:TSearchRec;
  StringList:TStringList;
  FileStream:TFileStream;
  WindowHandle:TWindowHandle;
- PTR, CR, enc, xx0, yy0, xx1, yy1:LongWord;
+ CR, enc, xx0, yy0, xx1, yy1:LongWord;
  MyPLoggingDevice : ^TLoggingDevice;
   Handle:THandle;
  Handle1:THandle;
@@ -103,7 +106,7 @@ var
  Height:LongWord;
  da_x0,da_y0,da_x1,da_y1:LongWord;
  ff:string;
-{$INCLUDE 'hexdump.inc'}
+//{$INCLUDE 'hexdump.inc'}
 
 function WaitForIPComplete : string;
 
@@ -203,17 +206,17 @@ begin
  //rd_inps();
  {starting the procedure to read the file testfile which contains a struct
  which has the varables for decompression.}
- {
+
  try
   Filename:='C:\testfile';
   try
    FileStream:=TFileStream.Create(Filename,fmOpenRead);
    FileStream.Read(CR,sizeof(CR));
    COMPRESSION_RATIO:=CR;
-   ConsoleWindowWriteLn(Handle, 'xx0 ' + intToStr(xx0));
+   ConsoleWindowWriteLn(Handle, 'CR ' + intToStr(CR));
    FileStream.Read(enc,sizeof(enc));
    ENCODE:=enc;
-   ConsoleWindowWriteLn(Handle, 'xx0 ' + intToStr(xx0));
+   ConsoleWindowWriteLn(Handle, 'enc ' + intToStr(enc));
    FileStream.Read(xx0,sizeof(xx0));
    da_x0:=xx0;
    ConsoleWindowWriteLn(Handle, 'xx0 ' + intToStr(xx0));
@@ -226,10 +229,6 @@ begin
    FileStream.Read(yy1,sizeof(yy1));
    da_y1:=yy1;
    ConsoleWindowWriteLn(Handle, 'yy1 ' + intToStr(yy1));
-
-   {FileStream.Read(decompstr,1);
-   ConsoleWindowWriteLn(Handle, 'decomp file ' + decompstr); }
-
    FileStream.Free;
 
   finally
@@ -240,16 +239,15 @@ begin
      ConsoleWindowWriteLn(Handle, 'Error: ' + E.Message);
     end;
  end;
- }
+
+ PTBinaryData:=@BinaryData;
  ConsoleWindowWriteLn(Handle, 'ASize ' + intToStr(SizeOf(BinaryData)));
+ //ConsoleWindowWriteLn(Handle, 'ABuffer ' + IntToHex(PtrUInt(@BinaryData),8));
+ ConsoleWindowWriteLn(Handle, 'ABuffer ' + PtrToHex(PTBinaryData));
+ //ConsoleWindowWriteLn(Handle, 'ABuffer ' + PtrToHex(@BinaryData));
+ xx(PTBinaryData);
+ decom_disp(da_x0,da_y0,da_x1,da_y1,SizeOf(BinaryData),PTBinaryData);
 
-
-
- {
- ConsoleWindowWriteLn(Handle, 'ABuffer ' + intToStr(TBufferStream.ABuffer));
- ConsoleWindowWriteLn(Handle, 'ASize ' + intToStr(TBufferStream.ASize));
- decom_disp(da_x0,da_y0,da_x1,da_y1,ASize,ABuffer);
- }
  //should not be set lower than  30 which is compressiong over 1500
  //
  //		38	189.4093899116
@@ -275,9 +273,7 @@ begin
  decom_test(da_x0,da_y0,da_x1,da_y1,ff);
  {DrawBitmap(Window,'C:\test_wr.bmp',0,0,DECOMP,ENCODE,TCP_DISTORATIO,FILTER, COMPRESSION_RATIO,DIS_CR_FLG);}
  }
- WaitForSDDrive;
- //PTR:=@ABuffer;
- //decom_disp(da_x0,da_y0,da_x1,da_y1,ASize,PTR);
+
 
 
   aCanvas := TCanvas.Create;
