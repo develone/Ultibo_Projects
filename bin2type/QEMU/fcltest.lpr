@@ -51,9 +51,9 @@ procedure decom_disp(x0,y0,x1,y1,asize:LongWord;abuffer:Pointer); cdecl; externa
 
   { Add additional units here }
 
-//{$INCLUDE '100-1com.inc'}
+{$INCLUDE '100-1com.inc'}
 //{$INCLUDE '128.inc'}
-{$INCLUDE '256.inc'}
+//{$INCLUDE '256.inc'}
 
 // Add the new class
 type
@@ -167,7 +167,7 @@ begin
  LoggingDeviceSetTarget(LoggingDeviceFindByType(LOGGING_TYPE_FILE),'c:\ultibologging.log');
  LoggingDeviceSetDefault(LoggingDeviceFindByType(LOGGING_TYPE_FILE));
  MyPLoggingDevice:=LoggingDeviceGetDefault;
- LoggingDeviceRedirectOutput(MyPLoggingDevice); }
+ LoggingDeviceRedirectOutput(MyPLoggingDevice);}
 
 
  // wait for IP address and SD Card to be initialised.
@@ -213,22 +213,22 @@ begin
    FileStream:=TFileStream.Create(Filename,fmOpenRead);
    FileStream.Read(CR,sizeof(CR));
    COMPRESSION_RATIO:=CR;
-   ConsoleWindowWriteLn(Handle, 'CR ' + intToStr(CR));
+   ConsoleWindowWriteLn(Handle1, 'CR ' + intToStr(CR));
    FileStream.Read(enc,sizeof(enc));
    ENCODE:=enc;
-   ConsoleWindowWriteLn(Handle, 'enc ' + intToStr(enc));
+   ConsoleWindowWriteLn(Handle1, 'enc ' + intToStr(enc));
    FileStream.Read(xx0,sizeof(xx0));
    da_x0:=xx0;
-   ConsoleWindowWriteLn(Handle, 'xx0 ' + intToStr(xx0));
+   ConsoleWindowWriteLn(Handle1, 'xx0 ' + intToStr(xx0));
    FileStream.Read(yy0,sizeof(yy0));
    da_y0:=yy0;
-   ConsoleWindowWriteLn(Handle, 'yy0 ' + intToStr(yy0));
+   ConsoleWindowWriteLn(Handle1, 'yy0 ' + intToStr(yy0));
    FileStream.Read(xx1,sizeof(xx1));
    da_x1:=xx1;
-   ConsoleWindowWriteLn(Handle, 'xx1 ' + intToStr(xx1));
+   ConsoleWindowWriteLn(Handle1, 'xx1 ' + intToStr(xx1));
    FileStream.Read(yy1,sizeof(yy1));
    da_y1:=yy1;
-   ConsoleWindowWriteLn(Handle, 'yy1 ' + intToStr(yy1));
+   ConsoleWindowWriteLn(Handle1, 'yy1 ' + intToStr(yy1));
    FileStream.Free;
 
   finally
@@ -241,9 +241,9 @@ begin
  end;
 
  PTBinaryData:=@BinaryData;
- ConsoleWindowWriteLn(Handle, 'ASize ' + intToStr(SizeOf(BinaryData)));
+ ConsoleWindowWriteLn(Handle1, 'ASize ' + intToStr(SizeOf(BinaryData)));
  //ConsoleWindowWriteLn(Handle, 'ABuffer ' + IntToHex(PtrUInt(@BinaryData),8));
- ConsoleWindowWriteLn(Handle, 'ABuffer ' + PtrToHex(PTBinaryData));
+ ConsoleWindowWriteLn(Handle1, 'ABuffer ' + PtrToHex(PTBinaryData));
  //ConsoleWindowWriteLn(Handle, 'ABuffer ' + PtrToHex(@BinaryData));
  xx(PTBinaryData);
  decom_disp(da_x0,da_y0,da_x1,da_y1,SizeOf(BinaryData),PTBinaryData);
@@ -261,7 +261,7 @@ begin
  //DIS_CR_FLG 0 COMPRESSION_RATIO
  //DIS_CR_FLG 1 TCP_DISTORATIO
  DIS_CR_FLG := 0;
- {
+
  if (ENCODE = 1) then
 
  DrawBitmap(Window,'C:\MyBitmap.bmp',0,0,DECOMP,ENCODE,TCP_DISTORATIO,FILTER, COMPRESSION_RATIO,DIS_CR_FLG);
@@ -271,11 +271,11 @@ begin
  begin
 
  decom_test(da_x0,da_y0,da_x1,da_y1,ff);
- {DrawBitmap(Window,'C:\test_wr.bmp',0,0,DECOMP,ENCODE,TCP_DISTORATIO,FILTER, COMPRESSION_RATIO,DIS_CR_FLG);}
- }
-
-
-
+ DrawBitmap(Window,'C:\test_wr.bmp',0,0,DECOMP,ENCODE,TCP_DISTORATIO,FILTER, COMPRESSION_RATIO,DIS_CR_FLG);
+ end;
+ ConsoleWindowWriteLn (Handle1, 'Local Address ' + IPAddress);
+ SetOnMsg (@Msg);
+ ConsoleWindowWriteLn(Handle, TimeToStr(Time));
   aCanvas := TCanvas.Create;
   if GraphicsWindowGetProperties (GConsole, @Properties) = ERROR_SUCCESS then
     begin
@@ -293,14 +293,14 @@ begin
 
   // Add a LoadFromStream
   BufferStream := TBufferStream.Create(@BinaryData, SizeOf(BinaryData));
-  anImage0.LoadFromStream(BufferStream);
+  //anImage0.LoadFromStream(BufferStream);
 
   BGnd := TCanvas.Create;
   BGnd.SetSize (aCanvas.Width, aCanvas.Height, aCanvas.ColourFormat);
 
-  aCanvas.DrawImage (anImage0, 0, 0, BGnd.Width, BGnd.Height);
+  //aCanvas.DrawImage (anImage0, 0, 0, BGnd.Width, BGnd.Height);
 
-  aCanvas.Flush (DefFrameBuff);
+  //aCanvas.Flush (DefFrameBuff);
 
 
   ThreadHalt (0);
