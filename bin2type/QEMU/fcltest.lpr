@@ -44,7 +44,7 @@ uses
   {$linklib dwtlift}
   {$linklib libm}
 procedure xx(x0:Pointer); cdecl; external 'libdwtlift' name 'xx';
-procedure decom_test(x0,y0,x1,y1:LongWord;fn:string); cdecl; external 'libdwtlift' name 'decom_test';
+procedure decom_test(x0,y0,x1,y1:LongWord;fn:string;asize:LongWord;abuffer:Pointer); cdecl; external 'libdwtlift' name 'decom_test';
 procedure decom_disp(x0,y0,x1,y1,asize:LongWord;abuffer:Pointer); cdecl; external 'libdwtlift' name 'decom_disp';
   // Add your unit created from Bin2Type data
   //MyData
@@ -245,8 +245,8 @@ begin
  //ConsoleWindowWriteLn(Handle, 'ABuffer ' + IntToHex(PtrUInt(@BinaryData),8));
  ConsoleWindowWriteLn(Handle1, 'ABuffer ' + PtrToHex(PTBinaryData));
  //ConsoleWindowWriteLn(Handle, 'ABuffer ' + PtrToHex(@BinaryData));
- xx(PTBinaryData);
- decom_disp(da_x0,da_y0,da_x1,da_y1,SizeOf(BinaryData),PTBinaryData);
+ //xx(PTBinaryData);
+ //decom_disp(da_x0,da_y0,da_x1,da_y1,SizeOf(BinaryData),PTBinaryData);
 
  //should not be set lower than  30 which is compressiong over 1500
  //
@@ -270,7 +270,7 @@ begin
  if(ENCODE = 0) then
  begin
 
- decom_test(da_x0,da_y0,da_x1,da_y1,ff);
+ decom_test(da_x0,da_y0,da_x1,da_y1,ff,SizeOf(BinaryData),PTBinaryData);
  DrawBitmap(Window,'C:\test_wr.bmp',0,0,DECOMP,ENCODE,TCP_DISTORATIO,FILTER, COMPRESSION_RATIO,DIS_CR_FLG);
  end;
  ConsoleWindowWriteLn (Handle1, 'Local Address ' + IPAddress);

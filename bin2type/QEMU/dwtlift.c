@@ -38,6 +38,7 @@
 #include "opj_config.h"
 #include "openjpeg.h"
 #include <string.h>
+#include <unistd.h>/*needed to include sleep*/
 
 #include "format_defs.h"
 /* -------------------------------------------------------------------------- */
@@ -373,7 +374,8 @@ static int infile_format(const char *fname)
         int ext_format, magic_format,ii;
         unsigned char buf[12];
         unsigned int l_nb_read;
-
+	printf("buf 0x%x \n",&buf[0]);
+	sleep(10);
         reader = fopen(fname, "rb");
 		printf("In infile_format %s reader 0x%x\n", fname,reader);
         if (reader == NULL)
@@ -382,6 +384,7 @@ static int infile_format(const char *fname)
         memset(buf, 0, 12);
         l_nb_read = (unsigned int)fread(buf, 1, 12, reader);
         printf("%s l_nb_read %d 0x%x ",fname,l_nb_read,reader);
+	sleep(10);
         for(ii = 0;ii < 12;ii++) printf("0x%x ",buf[ii]);
         printf("\n");
         fclose(reader);
@@ -437,7 +440,7 @@ int get_file_format(const char *filename) {
 }
 
 
-int decompress(int da_x0, int da_y0, int da_x1, int da_y1,const char *input_file)
+int decompress(int da_x0, int da_y0, int da_x1, int da_y1,const char *input_file,int ASize,char * ABuffer)
 {
 		/*
 		char lclip = (char *)*bufferptr;
@@ -450,6 +453,8 @@ int decompress(int da_x0, int da_y0, int da_x1, int da_y1,const char *input_file
 		const char *g_decompress_fn="green";
 		const char *b_decompress_fn="blue";		
 		char *r_decompress,*g_decompress,*b_decompress;	
+	printf("ASize %d ABuffer 0x%x \n", ASize,ABuffer);
+	sleep(10);
         opj_dparameters_t l_param;
         opj_codec_t * l_codec;
         opj_image_t * l_image;
@@ -723,7 +728,11 @@ int decompress(int da_x0, int da_y0, int da_x1, int da_y1,const char *input_file
 		mtime = seconds + useconds;
  
 		printf("File writes: %ld seconds %ld useconds %ld starting openjpeg\n", mtime,seconds, useconds);
-
+		for(loop=0;loop<12;loop++) {
+		printf("0x%x ",*ABuffer);
+		ABuffer++;
+		}
+		printf("\n");
         if (! opj_end_decompress(l_codec,l_stream))
         {
                 free(l_data);
@@ -741,7 +750,7 @@ int decompress(int da_x0, int da_y0, int da_x1, int da_y1,const char *input_file
 
         /* Print profiling*/
         /*PROFPRINT();*/
- 
+	
         return EXIT_SUCCESS;
 }
 
@@ -1252,12 +1261,12 @@ void lift_config(int dec, int enc, int TCP_DISTORATIO, int FILTER, int CR, int f
  	 
 }
 
-void decom_test(int x0, int y0, int x1, int y1,char *ff_in) {
+void decom_test(int x0, int y0, int x1, int y1,char *ff_in,int ASize ,char * ABuffer) {
     const char *input_file;
     input_file = "dtest.j2k";
     
-	printf("In decom_test called by Pascal %s %d %d %d %d %s\n",input_file,x0,y0,x1,y1,ff_in);
-	decompress(x0, y0, x1, y1,ff_in);	
+	printf("In decom_test called by Pascal %s %d %d %d %d %s %d %x\n",input_file,x0,y0,x1,y1,ff_in,ASize,ABuffer);
+	decompress(x0, y0, x1, y1,ff_in,ASize, ABuffer);	
 }
 void decom_disp(int x0, int y0, int x1, int y1,int ASize ,int * ABuffer) {
      printf("In decom_disp called by Pascal  %d %d %d %d %d %x\n",x0,y0,x1,y1,ASize,ABuffer);
