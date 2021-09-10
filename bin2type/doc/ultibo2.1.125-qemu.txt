@@ -1,0 +1,111 @@
+https://ultibo.org/forum/viewtopic.php?f=14&t=1568&start=10
+Re: ultibo2.1.125
+by Ultibo » Tue Sep 07, 2021 5:36 pm
+
+Analysis
+
+We traced the boot process of an Ultibo image to the point where it stopped working when started with QEMU on Raspberry Pi OS. It always fails at a try/finally block and removing that block allows it to proceed until it finds the next try/finally where it fails again.
+
+We discovered that adding or removing code in the application could allow it to work, in fact we got down to the point where in one test we could add or remove a single line and rebuild and that was enough to make it either work or not. Of course what is happening when adding or removing that line is that the rest of the code moves around in memory, a comparison of the output shows that nothing in the code changes (except the added line) and the alignment of code itself in memory doesn't change, only the locations.
+
+From that we were left with only two possible conclusions, the first was that the QEMU supplied with Raspberry Pi OS (version 3.1.0) has a bug in the TCG (Tiny Code Generator) when running natively on ARM (remember this problem only appears on ARM and never seems to affect an x86 or x86_64). The second possibility was that the version of FPC we are using has a bug that somehow appears only on ARM and only when the code is loaded at certain offsets in memory.
+
+Since the first possibility was the easiest to try a resolution to (QEMU 6.1.0 is the latest stable version) then we decided to test that initially and the results seem to be absolutely conclusive.
+
+Solution
+
+Upgrading to QEMU 6.1.0 on Raspberry Pi OS requires building from source as the version supplied by apt-get is 3.1.0 as noted above.
+
+QEMU provide instructions to download and build the latest version at https://www.qemu.org/download/
+
+On our installation of Raspberry Pi OS (Desktop) we needed to install the following prerequisites to get the QEMU build process to complete successfully
+
+I needed to build once and use on several RPi4Bs.
+I also run as user devel instead of user pi
+
+wget https://download.qemu.org/qemu-6.1.0.tar.xz
+tar xvJf qemu-6.1.0.tar.xz
+cd qemu-6.1.0
+./configure --target-list=aarch64-softmmu,arm-softmmu,aarch64-linux-user,arm-linux-user --enable-gtk --prefix=/home/devel/qemu-6.1.1.0-rpios
+
+Install prefix: /home/devel/qemu-6.1.1.0-rpios
+This build was 6.1.1.0 which should been 6.1.0
+
+[2976/3105] Linking target tests/unit/test-bdrv-graph-mod
+FAILED: tests/unit/test-bdrv-graph-mod 
+cc  -o tests/unit/test-bdrv-graph-mod tests/unit/test-bdrv-graph-mod.p/test-bdrv-graph-mod.c.o tests/unit/test-bdrv-graph-mod.p/iothread.c.o -Wl,--as-needed -Wl,--no-undefined -pie -Wl,--whole-archive libblock.fa libcrypto.fa libauthz.fa libqom.fa libio.fa -Wl,--no-whole-archive -Wl,--warn-common -Wl,-z,relro -Wl,-z,now -fstack-protector-strong -Wl,--start-group libqemuutil.a subprojects/libvhost-user/libvhost-user-glib.a subprojects/libvhost-user/libvhost-user.a libblock.fa libcrypto.fa libauthz.fa libqom.fa libio.fa @block.syms -Wl,--export-dynamic -pthread -lgmodule-2.0 -lglib-2.0 -lutil -lgio-2.0 -lgobject-2.0 -lglib-2.0 -lgio-2.0 -lgobject-2.0 -lglib-2.0 /usr/lib/arm-linux-gnueabihf/libgnutls.so -lm /usr/lib/arm-linux-gnueabihf/libpixman-1.so -lgmodule-2.0 -lglib-2.0 /usr/lib/arm-linux-gnueabihf/libz.so /usr/lib/arm-linux-gnueabihf/libnettle.so -Wl,--end-group
+collect2: error: ld returned 1 exit status
+ninja: build stopped: subcommand failed.
+make[1]: *** [Makefile:156: run-ninja] Error 1
+make[1]: Leaving directory '/home/devel/qemu-6.1.0/build'
+make: *** [GNUmakefile:11: all] Error 2
+fixed since wrong path was set in ./configure of qemu-6.1.0
+export PATH=/home/devel/qemu-6.1.0-rpios/bin:$PATH
+export PATH=/home/devel/qemu-6.1.1.0-rpios/bin:$PATH
+
+~/Examples/01-HelloWorld/QEMU $ /home/devel/qemu-6.1.1.0-rpios/bin/qemu-system-arm -machine versatilepb -cpu cortex-a8 -kernel kernel.bin
+
+fixed since wrong path was set in ./configure of qemu-6.1.0
+sudo unsquashfs -d qemu-6.1.0-rpios qemu-bin.img
+Parallel unsquashfs: Using 4 processors
+devel@mypi3-16:~ $ ls -la ~/qemu-6.1.0-rpios/
+total 28
+drwxr-xr-x  7 root  root  4096 Sep 10 09:53 .
+drwxr-xr-x 72 devel devel 4096 Sep 10 15:04 ..
+drwxr-xr-x  2 root  root  4096 Sep 10 09:52 bin
+drwxr-xr-x  2 root  root  4096 Sep 10 09:53 include
+drwxr-xr-x  2 root  root  4096 Sep 10 09:52 libexec
+drwxr-xr-x  6 root  root  4096 Sep 10 09:53 share
+drwxr-xr-x  3 root  root  4096 Sep 10 09:51 var
+
+devel@mypi3-18:~ $ ls -la ~/qemu-6.1.0-rpios/
+total 28
+drwxr-xr-x  7 root  root  4096 Sep 10 09:53 .
+drwxr-xr-x 70 devel devel 4096 Sep 10 14:56 ..
+drwxr-xr-x  2 root  root  4096 Sep 10 09:52 bin
+drwxr-xr-x  2 root  root  4096 Sep 10 09:53 include
+drwxr-xr-x  2 root  root  4096 Sep 10 09:52 libexec
+drwxr-xr-x  6 root  root  4096 Sep 10 09:53 share
+drwxr-xr-x  3 root  root  4096 Sep 10 09:51 var
+
+devel@mypi3-20:~ $ ls -la ~/qemu-6.1.0-rpios/
+total 36
+drwxr-xr-x   7 root  root   4096 Sep 10 09:53 .
+drwxr-xr-x 128 devel devel 12288 Sep 10 14:56 ..
+drwxr-xr-x   2 root  root   4096 Sep 10 09:52 bin
+drwxr-xr-x   2 root  root   4096 Sep 10 09:53 include
+drwxr-xr-x   2 root  root   4096 Sep 10 09:52 libexec
+drwxr-xr-x   6 root  root   4096 Sep 10 09:53 share
+drwxr-xr-x   3 root  root   4096 Sep 10 09:51 var
+
+sudo unsquashfs -d /home/devel/qemu-6.1.1.0-rpios qemu-bin.img 
+
+
+
+qemu-system-arm: Invalid SD card size: 25 MiB
+SD card size has to be a power of 2, e.g. 32 MiB.
+You can resize disk images with 'qemu-img resize <imagefile> <new-size>'
+(note that this will lose data if you make the image smaller than it currently is).
+
+qemu-img resize -f raw disk.img 32M
+Image resized.
+
+built qemu-6.1.0 on mypi3-18
+
+sha256sum qemu-built.img 
+39cc9f687b5061a1e693a39669289b8ab05584aa5d6656dfe8f86d596cce4f64  qemu-built.img
+devel@mypi3-18:~ $ sha256sum qemu-bin.img 
+65f2087e58034a84088420405b1817405bbeb544ca183ef6589726ce77c2b62a  qemu-bin.img
+
+The 4 systems listed below tested okay with qemu-6.1.0 ultibo2.1.125 on 2 different QEMU projects
+testing mypi3-18 with qemu-6.1.0 ultibo2.1.125 HelloWorld.lpi
+testing mypi3-18 with qemu-6.1.0 ultibo2.1.125 fcltest.lpi
+
+testing mypi3-16 with qemu-6.1.0 ultibo2.1.125 HelloWorld.lpi
+testing mypi3-16 with qemu-6.1.0 ultibo2.1.125 fcltest.lpi
+
+testing mypi3-20 with qemu-6.1.0 ultibo2.1.125 HelloWorld.lpi
+testing mypi3-20 with qemu-6.1.0 ultibo2.1.125 fcltest.lpi
+
+testing pi400-1 with qemu-6.1.0 ultibo2.1.125 HelloWorld.lpi
+testing pi400-1 with qemu-6.1.0 ultibo2.1.125 fcltest.lpi
