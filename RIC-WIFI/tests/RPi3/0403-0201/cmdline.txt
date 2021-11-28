@@ -1,0 +1,2 @@
+WIFISCAN=1 SSID=ATTtpHTfPi KEY=t?bqxvcqh#6t COUNTRY=US
+
