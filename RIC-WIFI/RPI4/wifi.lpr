@@ -18,6 +18,7 @@ uses
   RaspberryPi4,
   BCM2838,
   BCM2711,
+  uTFTP,
   {$ENDIF}
   GlobalConfig,
   GlobalConst,
