@@ -13,7 +13,6 @@ uses
   RaspberryPi3,
   BCM2837,
   BCM2710,
-  uTFTP,
   {$ENDIF}
   {$IFDEF RPI4}
   RaspberryPi4,
