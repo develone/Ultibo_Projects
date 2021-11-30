@@ -23,7 +23,24 @@ uses
   SysUtils,
   Logging,      //Add the logging unit
   FTDISerial,
-  Serial;   {Include the Serial unit so we can open, read and write to the device}
+  Serial,   {Include the Serial unit so we can open, read and write to the device}
+  HTTP,         {Include HTTP and WebStatus so we can see from a web browser what is happening}
+  WebStatus,
+  uTFTP,
+  Winsock2,
+  { needed to use ultibo-tftp  }
+  { needed for telnet }
+      Shell,
+     ShellFilesystem,
+     ShellUpdate,
+     RemoteShell,
+  { needed for telnet }
+  Syscalls,
+  FileSystem,  {Include the file system core and interfaces}
+  FATFS,       {Include the FAT file system driver}
+  MMC;         {Include the MMC/SD core to access our SD card}
+
+
 
 const
   stUnknown = 0;
@@ -44,8 +61,81 @@ var
   state, oldState : integer;
   s : string;
 
+  HTTPListener:THTTPListener;
+  IPAddress : string;
+  MyPLoggingDevice : ^TLoggingDevice;
+
+  function WaitForIPComplete : string;
+
+var
+
+  TCP : TWinsock2TCPClient;
+
 begin
+
+  TCP := TWinsock2TCPClient.Create;
+
+  Result := TCP.LocalAddress;
+
+  if (Result = '') or (Result = '0.0.0.0') or (Result = '255.255.255.255') then
+
+    begin
+
+      while (Result = '') or (Result = '0.0.0.0') or (Result = '255.255.255.255') do
+
+        begin
+
+          sleep (1500);
+
+          Result := TCP.LocalAddress;
+
+        end;
+
+    end;
+
+  TCP.Free;
+
+end;
+
+
+
+procedure Msg (Sender : TObject; s : string);
+
+begin
+
+  ConsoleWindowWriteLn (WindowHandle, s);
+
+end;
+
+
+
+procedure WaitForSDDrive;
+
+begin
+
+  while not DirectoryExists ('C:\') do sleep (500);
+
+end;
+
+
+begin
+
+  LoggingDeviceSetTarget(LoggingDeviceFindByType(LOGGING_TYPE_FILE),'c:\pico.log');
+  LoggingDeviceSetDefault(LoggingDeviceFindByType(LOGGING_TYPE_FILE));
+  MyPLoggingDevice:=LoggingDeviceGetDefault;
+  LoggingDeviceRedirectOutput(MyPLoggingDevice);
+
   WindowHandle := ConsoleWindowCreate (ConsoleDeviceGetDefault, CONSOLE_POSITION_FULL, true);
+
+  WaitForSDDrive;
+  IPAddress := WaitForIPComplete;
+  {Create and start the HTTP Listener for our web status page}
+  HTTPListener:=THTTPListener.Create;
+  HTTPListener.Active:=True;
+  Sleep(5000);
+  {Register the web status page, the "Thread List" page will allow us to see what is happening in the example}
+  WebStatusRegister(HTTPListener,'','',True);
+
   ConsoleWindowWriteLn (WindowHandle, 'Welcome to PIco Test Program.');
   oldState := stUnknown;
   state := stFind;
