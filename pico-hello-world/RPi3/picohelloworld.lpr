@@ -24,6 +24,7 @@ uses
   Logging,      //Add the logging unit
   FTDISerial,
   Serial,   {Include the Serial unit so we can open, read and write to the device}
+  USBCDCACM,
   HTTP,         {Include HTTP and WebStatus so we can see from a web browser what is happening}
   WebStatus,
   uTFTP,
