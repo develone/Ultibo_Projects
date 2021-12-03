@@ -1,0 +1,38 @@
+
+wget https://download.qemu.org/qemu-6.1.0.tar.xz
+
+tar xvJf qemu-6.1.0.tar.xz
+
+cd qemu-6.1.0
+
+./configure --target-list=aarch64-softmmu,arm-softmmu,aarch64-linux-user,arm-linux-user --ninja=/usr/bin/ninja --enable-gtk --prefix=/home/devel/qemu-6.1.0-rpios
+
+make
+
+make install
+
+qemu-6.1.0-rpios-bullseye.img
+
+qemu-6.1.0-bullseye.img
+
+export PATH=/home/devel/qemu-6.1.0-rpios:$PATH
+
+cd Ultibo_Projects/jpeg2000/src/
+
+./compile_ultibo.sh
+
+libopenjp2.a
+
+cd ../QEMU/
+
+./libbuild.sh
+
+libdwtlift.a
+
+export PATH=/home/devel/qemu-6.1.0-rpios/bin:$PATH
+
+cd Ultibo_Projects/jpeg2000/QEMU/
+
+qemu-img resize -f raw disk.img 32M
+
+./startqemu.sh
