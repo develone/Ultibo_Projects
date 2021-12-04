@@ -37,6 +37,7 @@ uses
  gpio,
  devices,
  ultibo,
+ framebuffer,
  Syscalls;
 
 {$linklib dwtlift}
@@ -197,6 +198,7 @@ begin
  Handle:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_TOPLEFT,True);
  Handle1:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_TOPRIGHT,True);
  ConsoleWindowWriteLn (Handle1, 'TFTP Demo.');
+ ConsoleFramebufferDeviceAdd(FramebufferDeviceGetDefault);
  {Handle2:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_BOTTOMLEFT,True);}
  //Handle3:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_BOTTOMRIGHT,True);
  ConsoleWindowWriteLn(Handle1, 'writing top right handle1');
