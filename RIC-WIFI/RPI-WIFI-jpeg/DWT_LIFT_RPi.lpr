@@ -1,121 +1,364 @@
 program DWT_LIFT_RPi;
 
-{$mode objfpc}{$H+}
+{$mode delphi}{$H+}
 {define RPI}
-uses
- overrides,
- RaspberryPi, {<-- Change this to suit which model you have!!}
-  BCM2835,
-  BCM2708,
-  uTFTP,
- GlobalConfig,
- GlobalConst,
- GlobalTypes,
- Platform,
- Threads,
- StrUtils,
- SysUtils,  { TimeToStr & Time }
- Classes,
- 
- Shell,
- ShellFilesystem,
- ShellUpdate,
- RemoteShell,
- 
- Console,
- framebuffer,
-  gpio,
-  mmc,
- devices,
- wifidevice,
- ultibo,
- Logging,
- network,
- Winsock2,
-  HTTP,
-  WebStatus,
- Serial,
- uLiftBitmap, 
- GraphicsConsole, {Include the GraphicsConsole unit so we can create a graphics window}
- BMPcomn,         {Include the BMPcomn unit from the fpc-image package to give the Bitmap headers}
- Syscalls;
-
+{needed to include C}
 {$linklib dwtlift}
 {$linklib libm}
 
-procedure decom_test(x0,y0,x1,y1:LongWord;fn:string); cdecl; external 'libdwtlift' name 'decom_test';
+uses
+  overrides,
+  {$IFDEF RPI}
+  RaspberryPi,
+  BCM2835,
+  BCM2708,
+  uTFTP,
+  {$ENDIF}
+  {$IFDEF RPI3}
+  RaspberryPi3,
+  BCM2837,
+  BCM2710,
+  {$ENDIF}
+  {$IFDEF RPI4}
+  RaspberryPi4,
+  BCM2838,
+  BCM2711,
+  {$ENDIF}
+  GlobalConfig,
+  GlobalConst,
+  GlobalTypes,
+  Platform,
+  Threads,
+  StrUtils,
+  SysUtils,
+  Classes,
+  ShellFilesystem,
+  ShellUpdate,
+  RemoteShell,
+  logoutput,
+  console,
+  framebuffer,
+  gpio,
+  mmc,
+  devices,
+  wifidevice,
+  Ultibo,
+//  vishell,
+  Logging,
+  Network,
+  Winsock2,
+  font,
+  HTTP,
+  WebStatus,
+  Serial,
+  uLiftBitmap,
+  {Include the GraphicsConsole unit so we can create a graphics window}
+  GraphicsConsole,
+  {from the fpc-image package to give the Bitmap headers}
+  BMPcomn,
+  {needed to include C}
+  Syscalls;
+
+  {needed to include C}
+  procedure decom_test(x0,y0,x1,y1:LongWord;fn:string); cdecl; external 'libdwtlift' name 'decom_test';
+
+
+
+
+//{$DEFINE SERIAL_LOGGING}
+
+const
+   // copied from font as it's in the implementation section there.
+   FONT_LATIN1_8X16_DATA:TFontData8x16 = (
+    Data:(($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $18, $3C, $3C, $3C, $18, $18, $18, $00, $18, $18, $00, $00, $00, $00),
+          ($00, $66, $66, $66, $24, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $6C, $6C, $FE, $6C, $6C, $6C, $FE, $6C, $6C, $00, $00, $00, $00),
+          ($00, $10, $10, $7C, $D6, $D0, $D0, $7C, $16, $16, $D6, $7C, $10, $10, $00, $00),
+          ($00, $00, $00, $00, $C2, $C6, $0C, $18, $30, $60, $C6, $86, $00, $00, $00, $00),
+          ($00, $00, $38, $6C, $6C, $38, $76, $DC, $CC, $CC, $CC, $76, $00, $00, $00, $00),
+          ($00, $18, $18, $18, $30, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $0C, $18, $30, $30, $30, $30, $30, $30, $18, $0C, $00, $00, $00, $00),
+          ($00, $00, $30, $18, $0C, $0C, $0C, $0C, $0C, $0C, $18, $30, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $66, $3C, $FF, $3C, $66, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $18, $18, $7E, $18, $18, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $18, $18, $18, $30, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $FE, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $18, $18, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $06, $0C, $18, $30, $60, $C0, $00, $00, $00, $00, $00),
+          ($00, $00, $7C, $C6, $CE, $CE, $D6, $D6, $E6, $E6, $C6, $7C, $00, $00, $00, $00),
+          ($00, $00, $18, $38, $78, $18, $18, $18, $18, $18, $18, $7E, $00, $00, $00, $00),
+          ($00, $00, $7C, $C6, $06, $0C, $18, $30, $60, $C0, $C6, $FE, $00, $00, $00, $00),
+          ($00, $00, $7C, $C6, $06, $06, $3C, $06, $06, $06, $C6, $7C, $00, $00, $00, $00),
+          ($00, $00, $0C, $1C, $3C, $6C, $CC, $FE, $0C, $0C, $0C, $1E, $00, $00, $00, $00),
+          ($00, $00, $FE, $C0, $C0, $C0, $FC, $06, $06, $06, $C6, $7C, $00, $00, $00, $00),
+          ($00, $00, $38, $60, $C0, $C0, $FC, $C6, $C6, $C6, $C6, $7C, $00, $00, $00, $00),
+          ($00, $00, $FE, $C6, $06, $06, $0C, $18, $30, $30, $30, $30, $00, $00, $00, $00),
+          ($00, $00, $7C, $C6, $C6, $C6, $7C, $C6, $C6, $C6, $C6, $7C, $00, $00, $00, $00),
+          ($00, $00, $7C, $C6, $C6, $C6, $7E, $06, $06, $06, $0C, $78, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $18, $18, $00, $00, $00, $18, $18, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $18, $18, $00, $00, $00, $18, $18, $30, $00, $00, $00, $00),
+          ($00, $00, $00, $06, $0C, $18, $30, $60, $30, $18, $0C, $06, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $FE, $00, $00, $FE, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $60, $30, $18, $0C, $06, $0C, $18, $30, $60, $00, $00, $00, $00),
+          ($00, $00, $7C, $C6, $C6, $0C, $18, $18, $18, $00, $18, $18, $00, $00, $00, $00),
+          ($00, $00, $7C, $C6, $C6, $C6, $DE, $DE, $DE, $DC, $C0, $7C, $00, $00, $00, $00),
+          ($00, $00, $10, $38, $6C, $C6, $C6, $FE, $C6, $C6, $C6, $C6, $00, $00, $00, $00),
+          ($00, $00, $FC, $66, $66, $66, $7C, $66, $66, $66, $66, $FC, $00, $00, $00, $00),
+          ($00, $00, $3C, $66, $C2, $C0, $C0, $C0, $C0, $C2, $66, $3C, $00, $00, $00, $00),
+          ($00, $00, $F8, $6C, $66, $66, $66, $66, $66, $66, $6C, $F8, $00, $00, $00, $00),
+          ($00, $00, $FE, $66, $62, $68, $78, $68, $60, $62, $66, $FE, $00, $00, $00, $00),
+          ($00, $00, $FE, $66, $62, $68, $78, $68, $60, $60, $60, $F0, $00, $00, $00, $00),
+          ($00, $00, $3C, $66, $C2, $C0, $C0, $DE, $C6, $C6, $66, $3A, $00, $00, $00, $00),
+          ($00, $00, $C6, $C6, $C6, $C6, $FE, $C6, $C6, $C6, $C6, $C6, $00, $00, $00, $00),
+          ($00, $00, $3C, $18, $18, $18, $18, $18, $18, $18, $18, $3C, $00, $00, $00, $00),
+          ($00, $00, $1E, $0C, $0C, $0C, $0C, $0C, $CC, $CC, $CC, $78, $00, $00, $00, $00),
+          ($00, $00, $E6, $66, $66, $6C, $78, $78, $6C, $66, $66, $E6, $00, $00, $00, $00),
+          ($00, $00, $F0, $60, $60, $60, $60, $60, $60, $62, $66, $FE, $00, $00, $00, $00),
+          ($00, $00, $C6, $EE, $FE, $FE, $D6, $C6, $C6, $C6, $C6, $C6, $00, $00, $00, $00),
+          ($00, $00, $C6, $E6, $F6, $FE, $DE, $CE, $C6, $C6, $C6, $C6, $00, $00, $00, $00),
+          ($00, $00, $7C, $C6, $C6, $C6, $C6, $C6, $C6, $C6, $C6, $7C, $00, $00, $00, $00),
+          ($00, $00, $FC, $66, $66, $66, $7C, $60, $60, $60, $60, $F0, $00, $00, $00, $00),
+          ($00, $00, $7C, $C6, $C6, $C6, $C6, $C6, $C6, $D6, $DE, $7C, $0C, $0E, $00, $00),
+          ($00, $00, $FC, $66, $66, $66, $7C, $6C, $66, $66, $66, $E6, $00, $00, $00, $00),
+          ($00, $00, $7C, $C6, $C6, $64, $38, $0C, $06, $C6, $C6, $7C, $00, $00, $00, $00),
+          ($00, $00, $7E, $7E, $5A, $18, $18, $18, $18, $18, $18, $3C, $00, $00, $00, $00),
+          ($00, $00, $C6, $C6, $C6, $C6, $C6, $C6, $C6, $C6, $C6, $7C, $00, $00, $00, $00),
+          ($00, $00, $C6, $C6, $C6, $C6, $C6, $C6, $C6, $6C, $38, $10, $00, $00, $00, $00),
+          ($00, $00, $C6, $C6, $C6, $C6, $D6, $D6, $D6, $FE, $EE, $6C, $00, $00, $00, $00),
+          ($00, $00, $C6, $C6, $6C, $7C, $38, $38, $7C, $6C, $C6, $C6, $00, $00, $00, $00),
+          ($00, $00, $66, $66, $66, $66, $3C, $18, $18, $18, $18, $3C, $00, $00, $00, $00),
+          ($00, $00, $FE, $C6, $86, $0C, $18, $30, $60, $C2, $C6, $FE, $00, $00, $00, $00),
+          ($00, $00, $3C, $30, $30, $30, $30, $30, $30, $30, $30, $3C, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $C0, $60, $30, $18, $0C, $06, $00, $00, $00, $00, $00),
+          ($00, $00, $3C, $0C, $0C, $0C, $0C, $0C, $0C, $0C, $0C, $3C, $00, $00, $00, $00),
+          ($10, $38, $6C, $C6, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $FF, $00),
+          ($00, $30, $30, $30, $18, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $78, $0C, $7C, $CC, $CC, $CC, $76, $00, $00, $00, $00),
+          ($00, $00, $E0, $60, $60, $78, $6C, $66, $66, $66, $66, $7C, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $7C, $C6, $C0, $C0, $C0, $C6, $7C, $00, $00, $00, $00),
+          ($00, $00, $1C, $0C, $0C, $3C, $6C, $CC, $CC, $CC, $CC, $76, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $7C, $C6, $FE, $C0, $C0, $C6, $7C, $00, $00, $00, $00),
+          ($00, $00, $38, $6C, $64, $60, $F0, $60, $60, $60, $60, $F0, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $76, $CC, $CC, $CC, $CC, $CC, $7C, $0C, $CC, $78, $00),
+          ($00, $00, $E0, $60, $60, $6C, $76, $66, $66, $66, $66, $E6, $00, $00, $00, $00),
+          ($00, $00, $18, $18, $00, $38, $18, $18, $18, $18, $18, $3C, $00, $00, $00, $00),
+          ($00, $00, $06, $06, $00, $0E, $06, $06, $06, $06, $06, $06, $66, $66, $3C, $00),
+          ($00, $00, $E0, $60, $60, $66, $6C, $78, $78, $6C, $66, $E6, $00, $00, $00, $00),
+          ($00, $00, $38, $18, $18, $18, $18, $18, $18, $18, $18, $3C, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $EC, $FE, $D6, $D6, $D6, $D6, $C6, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $DC, $66, $66, $66, $66, $66, $66, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $7C, $C6, $C6, $C6, $C6, $C6, $7C, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $DC, $66, $66, $66, $66, $66, $7C, $60, $60, $F0, $00),
+          ($00, $00, $00, $00, $00, $76, $CC, $CC, $CC, $CC, $CC, $7C, $0C, $0C, $1E, $00),
+          ($00, $00, $00, $00, $00, $DC, $76, $66, $60, $60, $60, $F0, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $7C, $C6, $60, $38, $0C, $C6, $7C, $00, $00, $00, $00),
+          ($00, $00, $10, $30, $30, $FC, $30, $30, $30, $30, $36, $1C, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $CC, $CC, $CC, $CC, $CC, $CC, $76, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $66, $66, $66, $66, $66, $3C, $18, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $C6, $C6, $D6, $D6, $D6, $FE, $6C, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $C6, $6C, $38, $38, $38, $6C, $C6, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $C6, $C6, $C6, $C6, $C6, $C6, $7E, $06, $0C, $F8, $00),
+          ($00, $00, $00, $00, $00, $FE, $CC, $18, $30, $60, $C6, $FE, $00, $00, $00, $00),
+          ($00, $00, $0E, $18, $18, $18, $70, $18, $18, $18, $18, $0E, $00, $00, $00, $00),
+          ($00, $00, $18, $18, $18, $18, $18, $18, $18, $18, $18, $18, $00, $00, $00, $00),
+          ($00, $00, $70, $18, $18, $18, $0E, $18, $18, $18, $18, $70, $00, $00, $00, $00),
+          ($00, $00, $76, $DC, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $7E, $C3, $99, $99, $F3, $E7, $E7, $FF, $E7, $E7, $7E, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $82, $FE, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $18, $18, $00, $18, $18, $18, $3C, $3C, $3C, $18, $00, $00),
+          ($00, $00, $00, $00, $10, $7C, $D6, $D0, $D0, $D0, $D6, $7C, $10, $00, $00, $00),
+          ($00, $00, $38, $6C, $60, $60, $F0, $60, $60, $66, $F6, $6C, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $C6, $7C, $6C, $6C, $7C, $C6, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $66, $66, $3C, $18, $7E, $18, $7E, $18, $18, $18, $00, $00, $00, $00),
+          ($00, $00, $18, $18, $18, $18, $00, $18, $18, $18, $18, $18, $00, $00, $00, $00),
+          ($00, $7C, $C6, $60, $38, $6C, $C6, $C6, $6C, $38, $0C, $C6, $7C, $00, $00, $00),
+          ($00, $6C, $6C, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $3C, $42, $99, $A5, $A1, $A5, $99, $42, $3C, $00, $00, $00, $00, $00),
+          ($00, $00, $3C, $6C, $6C, $3E, $00, $7E, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $36, $6C, $D8, $6C, $36, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $FE, $06, $06, $06, $06, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $7E, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $3C, $42, $B9, $A5, $B9, $A5, $A5, $42, $3C, $00, $00, $00, $00, $00),
+          ($FF, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $38, $6C, $6C, $38, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $18, $18, $7E, $18, $18, $00, $7E, $00, $00, $00, $00),
+          ($38, $6C, $18, $30, $7C, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($38, $6C, $18, $6C, $38, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $18, $30, $60, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $CC, $CC, $CC, $CC, $CC, $CC, $F6, $C0, $C0, $C0, $00),
+          ($00, $00, $7F, $D6, $D6, $76, $36, $36, $36, $36, $36, $36, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $18, $18, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $18, $6C, $38, $00),
+          ($30, $70, $30, $30, $78, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $38, $6C, $6C, $38, $00, $7C, $00, $00, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $D8, $6C, $36, $6C, $D8, $00, $00, $00, $00, $00, $00),
+          ($60, $E0, $60, $60, $F6, $0C, $18, $30, $66, $CE, $1A, $3F, $06, $06, $00, $00),
+          ($60, $E0, $60, $60, $F6, $0C, $18, $30, $6E, $DB, $06, $0C, $1F, $00, $00, $00),
+          ($70, $D8, $30, $D8, $76, $0C, $18, $30, $66, $CE, $1A, $3F, $06, $06, $00, $00),
+          ($00, $00, $00, $00, $30, $30, $00, $30, $30, $30, $60, $C6, $C6, $7C, $00, $00),
+          ($60, $30, $00, $38, $6C, $C6, $C6, $FE, $C6, $C6, $C6, $C6, $00, $00, $00, $00),
+          ($0C, $18, $00, $38, $6C, $C6, $C6, $FE, $C6, $C6, $C6, $C6, $00, $00, $00, $00),
+          ($10, $38, $6C, $00, $38, $6C, $C6, $C6, $FE, $C6, $C6, $C6, $00, $00, $00, $00),
+          ($76, $DC, $00, $38, $6C, $C6, $C6, $FE, $C6, $C6, $C6, $C6, $00, $00, $00, $00),
+          ($00, $6C, $00, $38, $6C, $C6, $C6, $FE, $C6, $C6, $C6, $C6, $00, $00, $00, $00),
+          ($38, $6C, $38, $00, $38, $6C, $C6, $C6, $FE, $C6, $C6, $C6, $00, $00, $00, $00),
+          ($00, $00, $3E, $78, $D8, $D8, $FC, $D8, $D8, $D8, $D8, $DE, $00, $00, $00, $00),
+          ($00, $00, $3C, $66, $C2, $C0, $C0, $C0, $C0, $C2, $66, $3C, $0C, $66, $3C, $00),
+          ($60, $30, $00, $FE, $66, $60, $60, $7C, $60, $60, $66, $FE, $00, $00, $00, $00),
+          ($0C, $18, $00, $FE, $66, $60, $60, $7C, $60, $60, $66, $FE, $00, $00, $00, $00),
+          ($10, $38, $6C, $00, $FE, $66, $60, $7C, $60, $60, $66, $FE, $00, $00, $00, $00),
+          ($00, $6C, $00, $FE, $66, $60, $60, $7C, $60, $60, $66, $FE, $00, $00, $00, $00),
+          ($60, $30, $00, $3C, $18, $18, $18, $18, $18, $18, $18, $3C, $08, $00, $00, $00),
+          ($06, $0C, $00, $3C, $18, $18, $18, $18, $18, $18, $18, $3C, $00, $00, $00, $00),
+          ($18, $3C, $66, $00, $3C, $18, $18, $18, $18, $18, $18, $3C, $00, $00, $00, $00),
+          ($00, $66, $00, $3C, $18, $18, $18, $18, $18, $18, $18, $3C, $00, $00, $00, $00),
+          ($00, $00, $F8, $6C, $66, $66, $F6, $66, $66, $66, $6C, $F8, $00, $00, $00, $00),
+          ($76, $DC, $00, $C6, $E6, $F6, $FE, $DE, $CE, $C6, $C6, $C6, $00, $00, $00, $00),
+          ($60, $30, $00, $7C, $C6, $C6, $C6, $C6, $C6, $C6, $C6, $7C, $00, $00, $00, $00),
+          ($0C, $18, $00, $7C, $C6, $C6, $C6, $C6, $C6, $C6, $C6, $7C, $00, $00, $00, $00),
+          ($10, $38, $6C, $00, $7C, $C6, $C6, $C6, $C6, $C6, $C6, $7C, $00, $00, $00, $00),
+          ($76, $DC, $00, $7C, $C6, $C6, $C6, $C6, $C6, $C6, $C6, $7C, $00, $00, $00, $00),
+          ($00, $6C, $00, $7C, $C6, $C6, $C6, $C6, $C6, $C6, $C6, $7C, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $66, $3C, $18, $3C, $66, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $7E, $C6, $CE, $CE, $DE, $F6, $E6, $E6, $C6, $FC, $00, $00, $00, $00),
+          ($60, $30, $00, $C6, $C6, $C6, $C6, $C6, $C6, $C6, $C6, $7C, $00, $00, $00, $00),
+          ($0C, $18, $00, $C6, $C6, $C6, $C6, $C6, $C6, $C6, $C6, $7C, $00, $00, $00, $00),
+          ($10, $38, $6C, $00, $C6, $C6, $C6, $C6, $C6, $C6, $C6, $7C, $00, $00, $00, $00),
+          ($00, $6C, $00, $C6, $C6, $C6, $C6, $C6, $C6, $C6, $C6, $7C, $00, $00, $00, $00),
+          ($06, $0C, $00, $66, $66, $66, $66, $3C, $18, $18, $18, $3C, $00, $00, $00, $00),
+          ($00, $00, $F0, $60, $7C, $66, $66, $66, $66, $7C, $60, $F0, $00, $00, $00, $00),
+          ($00, $00, $7C, $C6, $C6, $C6, $CC, $C6, $C6, $C6, $D6, $DC, $80, $00, $00, $00),
+          ($00, $60, $30, $18, $00, $78, $0C, $7C, $CC, $CC, $CC, $76, $00, $00, $00, $00),
+          ($00, $18, $30, $60, $00, $78, $0C, $7C, $CC, $CC, $CC, $76, $00, $00, $00, $00),
+          ($00, $10, $38, $6C, $00, $78, $0C, $7C, $CC, $CC, $CC, $76, $00, $00, $00, $00),
+          ($00, $00, $76, $DC, $00, $78, $0C, $7C, $CC, $CC, $CC, $76, $00, $00, $00, $00),
+          ($00, $00, $00, $6C, $00, $78, $0C, $7C, $CC, $CC, $CC, $76, $00, $00, $00, $00),
+          ($00, $38, $6C, $38, $00, $78, $0C, $7C, $CC, $CC, $CC, $76, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $7E, $DB, $1B, $7F, $D8, $DB, $7E, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $7C, $C6, $C0, $C0, $C0, $C6, $7C, $18, $6C, $38, $00),
+          ($00, $60, $30, $18, $00, $7C, $C6, $FE, $C0, $C0, $C6, $7C, $00, $00, $00, $00),
+          ($00, $0C, $18, $30, $00, $7C, $C6, $FE, $C0, $C0, $C6, $7C, $00, $00, $00, $00),
+          ($00, $10, $38, $6C, $00, $7C, $C6, $FE, $C0, $C0, $C6, $7C, $00, $00, $00, $00),
+          ($00, $00, $00, $6C, $00, $7C, $C6, $FE, $C0, $C0, $C6, $7C, $00, $00, $00, $00),
+          ($00, $60, $30, $18, $00, $38, $18, $18, $18, $18, $18, $3C, $00, $00, $00, $00),
+          ($00, $0C, $18, $30, $00, $38, $18, $18, $18, $18, $18, $3C, $00, $00, $00, $00),
+          ($00, $18, $3C, $66, $00, $38, $18, $18, $18, $18, $18, $3C, $00, $00, $00, $00),
+          ($00, $00, $00, $6C, $00, $38, $18, $18, $18, $18, $18, $3C, $00, $00, $00, $00),
+          ($00, $78, $30, $78, $0C, $7E, $C6, $C6, $C6, $C6, $C6, $7C, $00, $00, $00, $00),
+          ($00, $00, $76, $DC, $00, $DC, $66, $66, $66, $66, $66, $66, $00, $00, $00, $00),
+          ($00, $60, $30, $18, $00, $7C, $C6, $C6, $C6, $C6, $C6, $7C, $00, $00, $00, $00),
+          ($00, $0C, $18, $30, $00, $7C, $C6, $C6, $C6, $C6, $C6, $7C, $00, $00, $00, $00),
+          ($00, $10, $38, $6C, $00, $7C, $C6, $C6, $C6, $C6, $C6, $7C, $00, $00, $00, $00),
+          ($00, $00, $76, $DC, $00, $7C, $C6, $C6, $C6, $C6, $C6, $7C, $00, $00, $00, $00),
+          ($00, $00, $00, $6C, $00, $7C, $C6, $C6, $C6, $C6, $C6, $7C, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $18, $00, $7E, $00, $18, $00, $00, $00, $00, $00, $00),
+          ($00, $00, $00, $00, $00, $7E, $CE, $DE, $FE, $F6, $E6, $FC, $00, $00, $00, $00),
+          ($00, $60, $30, $18, $00, $CC, $CC, $CC, $CC, $CC, $CC, $76, $00, $00, $00, $00),
+          ($00, $18, $30, $60, $00, $CC, $CC, $CC, $CC, $CC, $CC, $76, $00, $00, $00, $00),
+          ($00, $30, $78, $CC, $00, $CC, $CC, $CC, $CC, $CC, $CC, $76, $00, $00, $00, $00),
+          ($00, $00, $00, $CC, $00, $CC, $CC, $CC, $CC, $CC, $CC, $76, $00, $00, $00, $00),
+          ($00, $0C, $18, $30, $00, $C6, $C6, $C6, $C6, $C6, $C6, $7E, $06, $0C, $F8, $00),
+          ($00, $00, $F0, $60, $60, $7C, $66, $66, $66, $66, $7C, $60, $60, $F0, $00, $00),
+          ($00, $00, $00, $6C, $00, $C6, $C6, $C6, $C6, $C6, $C6, $7E, $06, $0C, $F8, $00))
+    );
+
 var
-  {Variables needed for WIFI}
-SSID : string;
-key : string;
-Country : string;
+  SSID : string;
+  key : string;
+  Country : string;
+  topwindow : THandle;
+  Winsock2TCPClient : TWinsock2TCPClient;
   IPAddress : string;
+  i : integer;
   HTTPListener : THTTPListener;
-ScanResultList : TStringList;
-Status : Longword;
-Winsock2TCPClient : TWinsock2TCPClient;
-CYW43455Network: PCYW43455Network;
-BSSIDStr : string;
+  ScanResultList : TStringList;
+  Status : Longword;
+  CYW43455Network: PCYW43455Network;
+  BSSIDStr : string;
 
-i : integer;
-BSSID : ether_addr;
+  {Openjpeg variable}
+  jpegHandle : THandle;
+  GrHandle : THandle;
+  DECOMP: Integer;
+  ENCODE: Integer;
+  TCP_DISTORATIO: Integer;
+  FILTER: Integer;
+  COMPRESSION_RATIO : Integer;
+  DIS_CR_FLG : Integer;
+  X:LongWord;
+  Y:LongWord;
+  Width:LongWord;
+  Height:LongWord;
+  da_x0,da_y0,da_x1,da_y1:LongWord;
+  ff:string;
 
-{Variables needed for WIFI
-WIFIScanCallback }
 
- Handle:THandle;
- Handle1:THandle;
- {Handle2:THandle;}
- Window:TWindowHandle;
-
-
-  
-
- DECOMP: Integer;
- ENCODE: Integer;
- TCP_DISTORATIO: Integer;
- FILTER: Integer;
- COMPRESSION_RATIO : Integer;
- DIS_CR_FLG : Integer;
- X:LongWord;
- Y:LongWord;
- Width:LongWord;
- Height:LongWord;
- da_x0,da_y0,da_x1,da_y1:LongWord;
- ff:string;
- {
- function WaitForIPComplete : string;
-
-var
-
-  TCP : TWinsock2TCPClient;
-
-begin
-
-  TCP := TWinsock2TCPClient.Create;
-
-  Result := TCP.LocalAddress;
-
-  if (Result = '') or (Result = '0.0.0.0') or (Result = '255.255.255.255') then
-
-    begin
-
-      while (Result = '') or (Result = '0.0.0.0') or (Result = '255.255.255.255') do
-
-        begin
-
-          sleep (1500);
-
-          Result := TCP.LocalAddress;
-
-        end;
-
-    end;
-
-  TCP.Free;
-
-end;
-}
 procedure WIFIScanCallback(ssid : string; ScanResultP : pwl_escan_result);
 var
   ssidstr : string;
@@ -142,75 +385,69 @@ begin
        and (length(Winsock2TCPClient.LocalAddress) > 0)
        and (Winsock2TCPClient.LocalAddress <> ' ') then
     begin
-      ConsoleWindowWriteLn(Handle, 'IP address='+Winsock2TCPClient.LocalAddress);
+      ConsoleWindowWriteLn(topwindow, 'IP address='+Winsock2TCPClient.LocalAddress);
       IPAddress := Winsock2TCPClient.LocalAddress;
       break;
     end;
   end;
 end;
 
-procedure Msg (Sender : TObject; s : string);
-
+procedure DumpIP;
+var
+  i, j, c : integer;
+  s : string;
 begin
-
-  ConsoleWindowWriteLn (Handle1, s);
-
+  for i := 0 to 15 do
+  begin
+    s := '';
+    for c := 1 to length(ipaddress) do
+    begin
+      for j := 7 downto 0 do
+      begin
+        if (FONT_LATIN1_8X16_DATA.data[ord(ipaddress[c]), i] and (1 shl j) = (1 shl j)) then
+          s := s + '#'
+        else
+          s := s + ' ';
+      end;
+    end;
+    consolewindowwriteln(topwindow, s);
+  end;
 end;
 
-
-
-procedure WaitForSDDrive;
-
-begin
-
-  while not DirectoryExists ('C:\') do sleep (500);
-
-end;
-
-
+var
+  BSSID : ether_addr;
 
 begin
- Handle:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_TOPLEFT,True);
- Handle1:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_TOPRIGHT,True);
- ConsoleWindowWriteLn (Handle1, 'TFTP Demo.');
- ConsoleFramebufferDeviceAdd(FramebufferDeviceGetDefault);
- {Handle2:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_BOTTOMLEFT,True);}
- //Handle3:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_BOTTOMRIGHT,True);
- ConsoleWindowWriteLn(Handle1, 'writing top right handle1');
- {ConsoleWindowWriteLn(Handle2, 'writing bottom left handle2');}
- //ConsoleWindowWriteLn(Handle3, 'writing bottom right handle3');
- ConsoleWindowWriteLn(Handle, TimeToStr(Time));
+  ConsoleFramebufferDeviceAdd(FramebufferDeviceGetDefault);
 
-{
- The following 3 lines are logging to the console
- CONSOLE_REGISTER_LOGGING:=True;
- LoggingConsoleDeviceAdd(ConsoleDeviceGetDefault);
- LoggingDeviceSetDefault(LoggingDeviceFindByType(LOGGING_TYPE_CONSOLE));
- }
+  topwindow := ConsoleWindowCreate(ConsoleDeviceGetDefault, CONSOLE_POSITION_TOPLEFT,TRUE);
+  jpegHandle:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_TOPRIGHT,True);
 
- {The following 2 lines are logging to a file}
- LoggingDeviceSetTarget(LoggingDeviceFindByType(LOGGING_TYPE_FILE),'c:\ultibologging.log');
- LoggingDeviceSetDefault(LoggingDeviceFindByType(LOGGING_TYPE_FILE));
+
+  LOGGING_INCLUDE_TICKCOUNT := True;
+  {$IFDEF SERIAL_LOGGING}
+  SERIAL_REGISTER_LOGGING := True;
+  SerialLoggingDeviceAdd(SerialDeviceGetDefault);
+  LoggingDeviceSetDefault(LoggingDeviceFindByType(LOGGING_TYPE_SERIAL));
+  {$ELSE}
+  CONSOLE_LOGGING_POSITION := CONSOLE_POSITION_BOTTOM;
+  LoggingConsoleDeviceAdd(ConsoleDeviceGetDefault);
+  LoggingDeviceSetDefault(LoggingDeviceFindByType(LOGGING_TYPE_CONSOLE));
+  {$ENDIF}
+
+  // Filter the logs so we only see the WiFi and MMC device events
+  // (Primarily development use, otherwise you don't see network events etc)
+  //LoggingOutputExHandler:= @myloggingoutputhandler;
+
   HTTPListener:=THTTPListener.Create;
   HTTPListener.Active:=True;
   WebStatusRegister(HTTPListener,'','',True);
 
 
- // wait for IP address and SD Card to be initialised.
- WaitForSDDrive;
- {IPAddress := WaitForIPComplete;}
- {Wait a few seconds for all initialization (like filesystem and network) to be done}
- Sleep(5000);
+  WIFI_LOG_ENABLED := true;
 
- {Create a graphics window to display our bitmap, let's use the new CONSOLE_POSITION_FULLSCREEN option}
- Window:=GraphicsWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_BOTTOM);
-
- {Call our bitmap drawing function and pass the name of our bitmap file on the SD card,
-  we also pass the handle for our graphics console window and the X and Y locations to
-  draw the bitmap.
-
-  What happens if the bitmap is bigger than the window? It will be trimmed to fit, try it
-  yourself and see}
+  // Because we disabled auto start of the MMC subsystem we need to start the SD card driver
+  // now to provide access to the firmware files on the SD card.
 
   WIFIPreInit;
 
@@ -219,13 +456,12 @@ begin
   // is if you use USB boot. So that's a pre-requisite at the moment until we make the
   // SD card work off the other SDHost controller.
 
-  ConsoleWindowWriteln(Handle, 'Waiting for file system...');
-  Sleep(5000);
+  ConsoleWindowWriteln(topwindow, 'Waiting for file system...');
   while not directoryexists('c:\') do
   begin
     Sleep(0);
   end;
-  ConsoleWindowWriteln(Handle, 'File system ready. Initialize Wifi Device.');
+  ConsoleWindowWriteln(topwindow, 'File system ready. Initialize Wifi Device.');
 
   try
     // WIFIInit has to be done from the main application because the initialisation
@@ -246,7 +482,7 @@ begin
     // whole network device integration stuff is complete.
     // Certainly can't stay the way it is.
 
-    ConsoleWindowWriteln(Handle, 'Waiting for Wifi Device to be opened.');
+    ConsoleWindowWriteln(topwindow, 'Waiting for Wifi Device to be opened.');
 
     // spin until the wifi device is actually ready to do stuff.
     repeat
@@ -263,36 +499,36 @@ begin
 
     if (SysUtils.GetEnvironmentVariable('WIFISCAN') = '1') then
     begin
-      ConsoleWindowWriteln(Handle, 'Performing a WIFI network scan...');
+      ConsoleWindowWriteln(topwindow, 'Performing a WIFI network scan...');
       ScanResultList := TStringList.Create;
 
       WirelessScan(@WIFIScanCallback);
 
       for i := 0 to ScanResultList.Count-1 do
-        ConsoleWindowWriteln(Handle, 'Found access point: ' + ScanResultList[i]);
+        ConsoleWindowWriteln(topwindow, 'Found access point: ' + ScanResultList[i]);
 
       ScanResultList.Free;
     end
     else
-      ConsoleWindowWriteln(Handle, 'Network scan not enabled in cmdline.txt (add the WIFISCAN=1 entry)');
+      ConsoleWindowWriteln(topwindow, 'Network scan not enabled in cmdline.txt (add the WIFISCAN=1 entry)');
 
     SSID := SysUtils.GetEnvironmentVariable('SSID');
     key := SysUtils.GetEnvironmentVariable('KEY');
     Country := SysUtils.GetEnvironmentVariable('COUNTRY');
     BSSIDStr := SysUtils.GetEnvironmentVariable('BSSID');
 
-    ConsoleWindowWriteln(Handle, 'Attempting to join WIFI network ' + SSID + ' (Country='+Country+')');
+    ConsoleWindowWriteln(topwindow, 'Attempting to join WIFI network ' + SSID + ' (Country='+Country+')');
 
     if (Key = '') then
-      ConsoleWindowWriteln(Handle, 'Warning: Key not specified - expecting the network to be unencrypted.');
+      ConsoleWindowWriteln(topwindow, 'Warning: Key not specified - expecting the network to be unencrypted.');
 
     if (SSID = '') or (Country='') then
-       ConsoleWindowWriteln(Handle, 'Cant join a network without SSID, Key, and Country Code.')
+       ConsoleWindowWriteln(topwindow, 'Cant join a network without SSID, Key, and Country Code.')
     else
     begin
       if (BSSIDStr <> '') then
       begin
-        ConsoleWindowWriteln(Handle, 'Using BSSID configuration ' + BSSIDStr + ' from cmdline.txt');
+        ConsoleWindowWriteln(topwindow, 'Using BSSID configuration ' + BSSIDStr + ' from cmdline.txt');
         bssid.octet[0] := hex2dec(copy(BSSIDStr, 1, 2));
         bssid.octet[1] := hex2dec(copy(BSSIDStr, 4, 2));
         bssid.octet[2] := hex2dec(copy(BSSIDStr, 7, 2));
@@ -301,31 +537,53 @@ begin
         bssid.octet[5] := hex2dec(copy(BSSIDStr, 16, 2));
       end
       else
-        ConsoleWindowWriteln(Handle, 'Letting the Cypress firmware determine the best network interface from the SSID');
+        ConsoleWindowWriteln(topwindow, 'Letting the Cypress firmware determine the best network interface from the SSID');
 
       status := WirelessJoinNetwork(SSID, Key, Country, WIFIJoinBlocking, WIFIReconnectAlways, BSSID, (BSSIDStr <> ''));
       IPAddress := '0.0.0.0';
       if (status = WIFI_STATUS_SUCCESS) then
       begin
 
-        ConsoleWindowWriteln(Handle, 'Network joined, waiting for an IP address...');
+        ConsoleWindowWriteln(topwindow, 'Network joined, waiting for an IP address...');
 
         WaitForIP;
 
-        //DumpIP;
+        DumpIP;
       end
       else
       begin
-        ConsoleWindowWriteLn(Handle,'Failed to join the WIFI network. Status='+inttostr(status));
-        ConsoleWindowWriteln(Handle, 'Waiting for auto retry...');
+        ConsoleWindowWriteLn(topwindow,'Failed to join the WIFI network. Status='+inttostr(status));
+        ConsoleWindowWriteln(topwindow, 'Waiting for auto retry...');
 
         WaitForIP;
 
-        //DumpIP;
+        DumpIP;
       end;
 
       // Setup a slow blink of the activity LED to give an indcation that the Pi is still alive
       ActivityLEDEnable;
+      DECOMP:=6;
+      ENCODE:=1;
+      //should not be set lower than  30 which is compressiong over 1500
+      //
+      //		38	189.4093899116
+      //		44	44.058396563
+      //		50	15.9377967826
+      //		54	8.6079098426
+      //		58	6.0368784486
+      //		60	5.5454244973
+
+      TCP_DISTORATIO:=60;
+      //FILTER 0 5/3 DWT
+      //FILTER 1 9/7 DWT
+      FILTER:= 0;
+      COMPRESSION_RATIO := 125;
+      //DIS_CR_FLG 0 COMPRESSION_RATIO
+      //DIS_CR_FLG 1 TCP_DISTORATIO
+      DIS_CR_FLG := 0;
+      ConsoleWindowWriteln(jpegHandle,'Openjpeg WiFi Demo');
+      //DrawBitmap(Window,'C:\MyBitmap.bmp',0,0,DECOMP,ENCODE,TCP_DISTORATIO,FILTER, COMPRESSION_RATIO,DIS_CR_FLG);
+
 
       while True do
       begin
@@ -339,63 +597,10 @@ begin
 
   except
     on e : exception do
-      ConsoleWindowWriteln(Handle, 'Exception: ' + e.message + ' at ' + inttohex(longword(exceptaddr), 8));
+      ConsoleWindowWriteln(topwindow, 'Exception: ' + e.message + ' at ' + inttohex(longword(exceptaddr), 8));
   end;
 
-//end.
 
-
- DECOMP:=6;
- ENCODE:=1;
- //should not be set lower than  30 which is compressiong over 1500
- //
- //		38	189.4093899116
- //		44	44.058396563
- //		50	15.9377967826
- //		54	8.6079098426
- //		58	6.0368784486
- //		60	5.5454244973
-
- TCP_DISTORATIO:=60;
- //FILTER 0 5/3 DWT
- //FILTER 1 9/7 DWT
- FILTER:= 0;
- COMPRESSION_RATIO := 125;
- //DIS_CR_FLG 0 COMPRESSION_RATIO
- //DIS_CR_FLG 1 TCP_DISTORATIO
- DIS_CR_FLG := 0;
- if (ENCODE = 1) then
-
- DrawBitmap(Window,'C:\MyBitmap.bmp',0,0,DECOMP,ENCODE,TCP_DISTORATIO,FILTER, COMPRESSION_RATIO,DIS_CR_FLG);
-
- if(ENCODE = 0) then
- begin
- da_x0:=0;
- da_y0:=0;
- da_x1:=2048;
- da_y1:=2048;
- ff:='t_2048.j2k';
- decom_test(da_x0,da_y0,da_x1,da_y1,ff);
- DrawBitmap(Window,'C:\test_wr.bmp',0,0,DECOMP,ENCODE,TCP_DISTORATIO,FILTER, COMPRESSION_RATIO,DIS_CR_FLG);
- end;
- {ConsoleWindowWriteLn (Handle1, 'Local Address ' + IPAddress);
- SetOnMsg (@Msg);}
- ConsoleWindowWriteLn(Handle, TimeToStr(Time));
- {-----------------------------------
- X:= 0;
- y:= 0;
- Width:= 1024;
- Height:= 1024;
-  if SaveBitmap(Window,'C:\MySavedBitmap.bmp',X,Y,Width,Height,24) then
-  begin
-   {Output a message when the file is saved}
-   GraphicsWindowDrawTextEx(Window,GraphicsWindowGetFont(Window),'Bitmap file saved successfully',260,100,COLOR_BLACK,COLOR_WHITE);
-
-  end;
- -------------------------------------------}
-
-
- ThreadHalt(0);
 end.
 
 
