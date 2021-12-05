@@ -12,12 +12,12 @@ uses
   RaspberryPi,
   BCM2835,
   BCM2708,
-  uTFTP,
   {$ENDIF}
   {$IFDEF RPI3}
   RaspberryPi3,
   BCM2837,
   BCM2710,
+  uTFTP,
   {$ENDIF}
   {$IFDEF RPI4}
   RaspberryPi4,
@@ -51,6 +51,8 @@ uses
   HTTP,
   WebStatus,
   Serial,
+  FileSystem,  {Include the file system core and interfaces}
+  FATFS,       {Include the FAT file system driver}
   uLiftBitmap,
   {Include the GraphicsConsole unit so we can create a graphics window}
   GraphicsConsole,
@@ -356,6 +358,12 @@ var
   Width:LongWord;
   Height:LongWord;
   da_x0,da_y0,da_x1,da_y1:LongWord;
+
+  Filename:String;
+  SearchRec:TSearchRec;
+  StringList:TStringList;
+  FileStream:TFileStream;
+  CR, enc, xx0, yy0, xx1, yy1:LongWord;
   ff:string;
 
 
@@ -581,8 +589,46 @@ begin
       //DIS_CR_FLG 0 COMPRESSION_RATIO
       //DIS_CR_FLG 1 TCP_DISTORATIO
       DIS_CR_FLG := 0;
+
       ConsoleWindowWriteln(jpegHandle,'Openjpeg WiFi Demo');
       //DrawBitmap(Window,'C:\MyBitmap.bmp',0,0,DECOMP,ENCODE,TCP_DISTORATIO,FILTER, COMPRESSION_RATIO,DIS_CR_FLG);
+      try
+         Filename:='C:\testfile';
+         try
+            FileStream:=TFileStream.Create(Filename,fmOpenRead);
+            FileStream.Read(CR,sizeof(CR));
+            COMPRESSION_RATIO:=CR;
+            ConsoleWindowWriteLn(jpegHandle, 'xx0 ' + intToStr(xx0));
+            FileStream.Read(enc,sizeof(enc));
+            ENCODE:=enc;
+            ConsoleWindowWriteLn(jpegHandle, 'xx0 ' + intToStr(xx0));
+            FileStream.Read(xx0,sizeof(xx0));
+            da_x0:=xx0;
+            ConsoleWindowWriteLn(jpegHandle, 'xx0 ' + intToStr(xx0));
+            FileStream.Read(yy0,sizeof(yy0));
+            da_y0:=yy0;
+            ConsoleWindowWriteLn(jpegHandle, 'yy0 ' + intToStr(yy0));
+            FileStream.Read(xx1,sizeof(xx1));
+            da_x1:=xx1;
+            ConsoleWindowWriteLn(jpegHandle, 'xx1 ' + intToStr(xx1));
+            FileStream.Read(yy1,sizeof(yy1));
+            da_y1:=yy1;
+            ConsoleWindowWriteLn(jpegHandle, 'yy1 ' + intToStr(yy1));
+
+            {FileStream.Read(decompstr,1);
+            ConsoleWindowWriteLn(Handle, 'decomp file ' + decompstr); }
+
+            FileStream.Free;
+
+            finally
+            end;
+            except
+                  on E: Exception do
+                  begin
+                       ConsoleWindowWriteLn(jpegHandle, 'Error: ' + E.Message);
+                  end;
+            end;
+
 
 
       while True do
