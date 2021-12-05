@@ -3,41 +3,41 @@ program DWT_LIFT_RPi;
 {$mode objfpc}{$H+}
 {define RPI}
 uses
+ overrides,
  RaspberryPi, {<-- Change this to suit which model you have!!}
+  BCM2835,
+  BCM2708,
+  uTFTP,
  GlobalConfig,
  GlobalConst,
  GlobalTypes,
  Platform,
  Threads,
- Console,
+ StrUtils,
  SysUtils,  { TimeToStr & Time }
- { needed by bitmap }
+ Classes,
+ 
+ Shell,
+ ShellFilesystem,
+ ShellUpdate,
+ RemoteShell,
+ 
+ Console,
+ framebuffer,
+  gpio,
+  mmc,
+ devices,
+ wifidevice,
+ ultibo,
+ Logging,
+ network,
+ Winsock2,
+  HTTP,
+  WebStatus,
+ Serial,
+ uLiftBitmap, 
  GraphicsConsole, {Include the GraphicsConsole unit so we can create a graphics window}
  BMPcomn,         {Include the BMPcomn unit from the fpc-image package to give the Bitmap headers}
- Classes,
- { needed by bitmap }
- { needed to use ultibo-tftp  }
- uTFTP,
- Winsock2,
- { needed to use ultibo-tftp  }
- { needed for telnet }
-      Shell,
-     ShellFilesystem,
-     ShellUpdate,
-     RemoteShell,
-  { needed for telnet }
- uLiftBitmap,
- Logging,
- BCM2835,
- BCM2708,
- network,
- overrides,
- wifidevice,
- StrUtils,
- gpio,
- devices,
- ultibo,
- framebuffer,
  Syscalls;
 
 {$linklib dwtlift}
@@ -49,13 +49,17 @@ var
 SSID : string;
 key : string;
 Country : string;
+  IPAddress : string;
+  HTTPListener : THTTPListener;
 ScanResultList : TStringList;
+Status : Longword;
 Winsock2TCPClient : TWinsock2TCPClient;
 CYW43455Network: PCYW43455Network;
 BSSIDStr : string;
+
 i : integer;
 BSSID : ether_addr;
-Status : Longword;
+
 {Variables needed for WIFI
 WIFIScanCallback }
 
@@ -65,7 +69,7 @@ WIFIScanCallback }
  Window:TWindowHandle;
 
 
- IPAddress : string;
+  
 
  DECOMP: Integer;
  ENCODE: Integer;
@@ -166,6 +170,16 @@ end;
 
 
 begin
+ Handle:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_TOPLEFT,True);
+ Handle1:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_TOPRIGHT,True);
+ ConsoleWindowWriteLn (Handle1, 'TFTP Demo.');
+ ConsoleFramebufferDeviceAdd(FramebufferDeviceGetDefault);
+ {Handle2:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_BOTTOMLEFT,True);}
+ //Handle3:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_BOTTOMRIGHT,True);
+ ConsoleWindowWriteLn(Handle1, 'writing top right handle1');
+ {ConsoleWindowWriteLn(Handle2, 'writing bottom left handle2');}
+ //ConsoleWindowWriteLn(Handle3, 'writing bottom right handle3');
+ ConsoleWindowWriteLn(Handle, TimeToStr(Time));
 
 {
  The following 3 lines are logging to the console
@@ -177,6 +191,9 @@ begin
  {The following 2 lines are logging to a file}
  LoggingDeviceSetTarget(LoggingDeviceFindByType(LOGGING_TYPE_FILE),'c:\ultibologging.log');
  LoggingDeviceSetDefault(LoggingDeviceFindByType(LOGGING_TYPE_FILE));
+  HTTPListener:=THTTPListener.Create;
+  HTTPListener.Active:=True;
+  WebStatusRegister(HTTPListener,'','',True);
 
 
  // wait for IP address and SD Card to be initialised.
@@ -195,16 +212,6 @@ begin
   What happens if the bitmap is bigger than the window? It will be trimmed to fit, try it
   yourself and see}
 
- Handle:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_TOPLEFT,True);
- Handle1:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_TOPRIGHT,True);
- ConsoleWindowWriteLn (Handle1, 'TFTP Demo.');
- ConsoleFramebufferDeviceAdd(FramebufferDeviceGetDefault);
- {Handle2:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_BOTTOMLEFT,True);}
- //Handle3:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_BOTTOMRIGHT,True);
- ConsoleWindowWriteLn(Handle1, 'writing top right handle1');
- {ConsoleWindowWriteLn(Handle2, 'writing bottom left handle2');}
- //ConsoleWindowWriteLn(Handle3, 'writing bottom right handle3');
- ConsoleWindowWriteLn(Handle, TimeToStr(Time));
   WIFIPreInit;
 
   // We've gotta wait for the file system to be alive because that's where the firmware is.
