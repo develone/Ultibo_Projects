@@ -1,4 +1,5 @@
 binary
 trace
-put kernel.img
+put kernel7:wq
+.img
 quit
