@@ -93,7 +93,7 @@ var
 begin
  {}
  Result:=False;
- 
+ ConsoleWindowWriteLn(Handle, 'Debug in uliftBitmap');
  {There are a few different ways to load a bitmap file and draw it on the screen in Ultibo, in this example
   we'll use a TFileStream class to read the file and then load the image data (the pixels) into a memory
   buffer that we allocate. Finally we'll put the pixels onto the screen using the GraphicsWindowDrawImage()
@@ -220,11 +220,12 @@ begin
          Inc(Offset,LineSize);
         end;
       end;       
-     
+       ConsoleWindowWrite(Handle, 'Debug in uliftBitmap checking ENCODE ' + intToStr(ENCODE));
      {Draw the entire image onto our graphics console window in one request}
-     if GraphicsWindowDrawImage(Handle,X,Y,Buffer,BitMapInfoHeader.Width,BitMapInfoHeader.Height,Format) <> ERROR_SUCCESS then Exit;
+     //if GraphicsWindowDrawImage(Handle,X,Y,Buffer,BitMapInfoHeader.Width,BitMapInfoHeader.Height,Format) <> ERROR_SUCCESS then Exit;
  
      if(ENCODE=1) then lift_config(DECOMP,ENCODE,COMP1,COMP2,COMP3,COMP4,IBPP,Size,HImage,WImage,Buffer);
+     ConsoleWindowWrite(Handle, 'Debug in uliftBitmap Calling C lift_config');
      //if GraphicsWindowDrawImage(Handle,X,Y,Buffer,BitMapInfoHeader.Width,BitMapInfoHeader.Height,Format) <> ERROR_SUCCESS then Exit;
      Result:=True;
     finally
