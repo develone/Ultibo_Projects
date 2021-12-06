@@ -589,33 +589,45 @@ begin
       //DIS_CR_FLG 0 COMPRESSION_RATIO
       //DIS_CR_FLG 1 TCP_DISTORATIO
       DIS_CR_FLG := 0;
-      ConsoleWindowWriteln(jpegHandle,'Openjpeg WiFi Demo');
+      ConsoleWindowWrite(jpegHandle,'Openjpeg WiFi Demo ');
       //DrawBitmap(Window,'C:\MyBitmap.bmp',0,0,DECOMP,ENCODE,TCP_DISTORATIO,FILTER, COMPRESSION_RATIO,DIS_CR_FLG);
+
+      {Contents of binary file 256com used for compression
+		   COMPRESSION_RATIO   ENCODE	    da_x0        da_y0
+      00000000   19 00 00 00         01 00 00 00  00 00 00 00  00 00 00 00
+		   da_x1	da_y1
+      00000010   00 01 00 00  00 01 00 00
+
+      Contents of binary file 256decom used for de-compression
+		   COMPRESSION_RATIO   ENCODE	    da_x0        da_y0
+      00000000   19 00 00 00         00 00 00 00  00 00 00 00  00 00 00 00
+		   da_x1	da_y1
+      00000010   00 01 00 00  00 01 00 00}
       try
          Filename:='C:\testfile';
          try
             FileStream:=TFileStream.Create(Filename,fmOpenRead);
             FileStream.Read(CR,sizeof(CR));
             COMPRESSION_RATIO:=CR;
-            ConsoleWindowWriteLn(jpegHandle, 'COMPRESSION_RATIO ' + intToStr(CR));
+            ConsoleWindowWrite(jpegHandle, 'COMPRESSION_RATIO ' + intToStr(CR));
             FileStream.Read(enc,sizeof(enc));
             ENCODE:=enc;
-            ConsoleWindowWriteLn(jpegHandle, 'ENCODE ' + intToStr(ENCODE));
+            ConsoleWindowWrite(jpegHandle, ' ENCODE ' + intToStr(ENCODE));
             FileStream.Read(xx0,sizeof(xx0));
             da_x0:=xx0;
-            ConsoleWindowWriteLn(jpegHandle, 'da_x0 ' + intToStr(da_x0));
+            ConsoleWindowWrite(jpegHandle, ' da_x0 ' + intToStr(da_x0));
             FileStream.Read(yy0,sizeof(yy0));
             da_y0:=yy0;
-            ConsoleWindowWriteLn(jpegHandle, 'da_y0 ' + intToStr(da_y0));
+            ConsoleWindowWrite(jpegHandle, ' da_y0 ' + intToStr(da_y0));
             FileStream.Read(xx1,sizeof(xx1));
             da_x1:=xx1;
-            ConsoleWindowWriteLn(jpegHandle, 'da_x1 ' + intToStr(da_x1));
+            ConsoleWindowWrite(jpegHandle, ' da_x1 ' + intToStr(da_x1));
             FileStream.Read(yy1,sizeof(yy1));
             da_y1:=yy1;
-            ConsoleWindowWriteLn(jpegHandle, 'yy1 ' + intToStr(yy1));
+            ConsoleWindowWriteLn(jpegHandle, ' da_y1 ' + intToStr(da_y1));
 
             {FileStream.Read(decompstr,1);
-            ConsoleWindowWriteLn(Handle, 'decomp file ' + decompstr); }
+            ConsoleWindowWrite(Handle, 'decomp file ' + decompstr); }
 
             FileStream.Free;
 
@@ -628,11 +640,11 @@ begin
                   end;
             end;
 
-            ConsoleWindowWriteLn(jpegHandle, 'DECOMP ' + intToStr(DECOMP));
-            ConsoleWindowWriteLn(jpegHandle, 'TCP_DISTORATIO ' + intToStr(TCP_DISTORATIO));
-            ConsoleWindowWriteLn(jpegHandle, 'FILTER ' + intToStr(FILTER));
-            ConsoleWindowWriteLn(jpegHandle, 'TCP_DISTORATIO ' + intToStr(TCP_DISTORATIO));
-            ConsoleWindowWriteLn(jpegHandle, 'DIS_CR_FLG ' + intToStr(DIS_CR_FLG));
+            ConsoleWindowWrite(jpegHandle, 'DECOMP ' + intToStr(DECOMP));
+            ConsoleWindowWrite(jpegHandle, ' TCP_DISTORATIO ' + intToStr(TCP_DISTORATIO));
+            ConsoleWindowWrite(jpegHandle, ' FILTER ' + intToStr(FILTER));
+            //ConsoleWindowWrite(jpegHandle, ' TCP_DISTORATIO ' + intToStr(TCP_DISTORATIO));
+            ConsoleWindowWriteLn(jpegHandle, ' DIS_CR_FLG ' + intToStr(DIS_CR_FLG));
             DrawBitmap(jpegHandle,'C:\MyBitmap.bmp',0,0,DECOMP,ENCODE,TCP_DISTORATIO,FILTER, COMPRESSION_RATIO,DIS_CR_FLG);
 
 
