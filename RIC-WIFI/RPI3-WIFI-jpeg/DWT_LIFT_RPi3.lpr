@@ -346,7 +346,8 @@ var
 
   {Openjpeg variable}
   jpegHandle : THandle;
-  GrHandle : THandle;
+  Window:TWindowHandle;
+
   DECOMP: Integer;
   ENCODE: Integer;
   TCP_DISTORATIO: Integer;
@@ -429,7 +430,9 @@ begin
   ConsoleFramebufferDeviceAdd(FramebufferDeviceGetDefault);
 
   topwindow := ConsoleWindowCreate(ConsoleDeviceGetDefault, CONSOLE_POSITION_TOPLEFT,TRUE);
-  jpegHandle:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_TOPRIGHT,True);
+  //jpegHandle:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_TOPRIGHT,True);
+  jpegHandle:=GraphicsWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_TOPRIGHT);
+
 
 
   LOGGING_INCLUDE_TICKCOUNT := True;
@@ -589,8 +592,8 @@ begin
       //DIS_CR_FLG 0 COMPRESSION_RATIO
       //DIS_CR_FLG 1 TCP_DISTORATIO
       DIS_CR_FLG := 0;
-      ConsoleWindowWrite(jpegHandle,'Openjpeg WiFi Demo ');
-      //DrawBitmap(Window,'C:\MyBitmap.bmp',0,0,DECOMP,ENCODE,TCP_DISTORATIO,FILTER, COMPRESSION_RATIO,DIS_CR_FLG);
+      ConsoleWindowWrite(topwindow,'Openjpeg WiFi Demo ');
+      //DrawBitmap(Window,'C:\MyBitmap.bmp',0,0,DECOMP,ENCODE,jpegHandle,FILTER, COMPRESSION_RATIO,DIS_CR_FLG);
 
       {Contents of binary file 256com used for compression
 		   COMPRESSION_RATIO   ENCODE	    da_x0        da_y0
@@ -612,19 +615,19 @@ begin
             ConsoleWindowWrite(jpegHandle, 'COMPRESSION_RATIO ' + intToStr(CR));
             FileStream.Read(enc,sizeof(enc));
             ENCODE:=enc;
-            ConsoleWindowWrite(jpegHandle, ' ENCODE ' + intToStr(ENCODE));
+            ConsoleWindowWrite(topwindow, ' ENCODE ' + intToStr(ENCODE));
             FileStream.Read(xx0,sizeof(xx0));
             da_x0:=xx0;
-            ConsoleWindowWrite(jpegHandle, ' da_x0 ' + intToStr(da_x0));
+            ConsoleWindowWrite(topwindow, ' da_x0 ' + intToStr(da_x0));
             FileStream.Read(yy0,sizeof(yy0));
             da_y0:=yy0;
-            ConsoleWindowWrite(jpegHandle, ' da_y0 ' + intToStr(da_y0));
+            ConsoleWindowWrite(topwindow, ' da_y0 ' + intToStr(da_y0));
             FileStream.Read(xx1,sizeof(xx1));
             da_x1:=xx1;
-            ConsoleWindowWrite(jpegHandle, ' da_x1 ' + intToStr(da_x1));
+            ConsoleWindowWrite(topwindow, ' da_x1 ' + intToStr(da_x1));
             FileStream.Read(yy1,sizeof(yy1));
             da_y1:=yy1;
-            ConsoleWindowWriteLn(jpegHandle, ' da_y1 ' + intToStr(da_y1));
+            ConsoleWindowWriteLn(topwindow, ' da_y1 ' + intToStr(da_y1));
 
             {FileStream.Read(decompstr,1);
             ConsoleWindowWrite(Handle, 'decomp file ' + decompstr); }
@@ -636,15 +639,15 @@ begin
             except
                   on E: Exception do
                   begin
-                       ConsoleWindowWriteLn(jpegHandle, 'Error: ' + E.Message);
+                       ConsoleWindowWriteLn(topwindow, 'Error: ' + E.Message);
                   end;
             end;
 
-            ConsoleWindowWrite(jpegHandle, 'DECOMP ' + intToStr(DECOMP));
-            ConsoleWindowWrite(jpegHandle, ' TCP_DISTORATIO ' + intToStr(TCP_DISTORATIO));
+            ConsoleWindowWrite(topwindow, 'DECOMP ' + intToStr(DECOMP));
+            ConsoleWindowWrite(topwindow, ' TCP_DISTORATIO ' + intToStr(TCP_DISTORATIO));
             ConsoleWindowWrite(jpegHandle, ' FILTER ' + intToStr(FILTER));
             //ConsoleWindowWrite(jpegHandle, ' TCP_DISTORATIO ' + intToStr(TCP_DISTORATIO));
-            ConsoleWindowWriteLn(jpegHandle, ' DIS_CR_FLG ' + intToStr(DIS_CR_FLG));
+            ConsoleWindowWriteLn(topwindow, ' DIS_CR_FLG ' + intToStr(DIS_CR_FLG));
             DrawBitmap(jpegHandle,'C:\MyBitmap.bmp',0,0,DECOMP,ENCODE,TCP_DISTORATIO,FILTER, COMPRESSION_RATIO,DIS_CR_FLG);
 
 
@@ -660,7 +663,7 @@ begin
 
   except
     on e : exception do
-      ConsoleWindowWriteln(topwindow, 'Exception: ' + e.message + ' at ' + inttohex(longword(exceptaddr), 8));
+      ConsoleWindowWriteln(jpegHandle, 'Exception: ' + e.message + ' at ' + inttohex(longword(exceptaddr), 8));
   end;
 
 
