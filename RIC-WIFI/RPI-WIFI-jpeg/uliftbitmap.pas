@@ -226,7 +226,7 @@ begin
  
      if(ENCODE=1) then lift_config(DECOMP,ENCODE,COMP1,COMP2,COMP3,COMP4,IBPP,Size,HImage,WImage,Buffer);
      ConsoleWindowWrite(Handle, 'Debug in uliftBitmap Calling C lift_config');
-     //if GraphicsWindowDrawImage(Handle,X,Y,Buffer,BitMapInfoHeader.Width,BitMapInfoHeader.Height,Format) <> ERROR_SUCCESS then Exit;
+     if GraphicsWindowDrawImage(Handle,X,Y,Buffer,BitMapInfoHeader.Width,BitMapInfoHeader.Height,Format) <> ERROR_SUCCESS then Exit;
      Result:=True;
     finally
      FreeMem(Buffer);
