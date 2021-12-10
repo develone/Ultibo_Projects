@@ -1,67 +1,57 @@
-program Srv_Crypto_WiFI_RPi3;
+program Crypto_WiFI_RPi3;
 
-{$mode delphi}{$H+}
+{$mode objfpc}{$H+}
 {define RPI3}
-{needed to include C}
-
+{ Raspberry Pi 2 Application                                                   }
+{  Add your program code below, add additional units to the "uses" section if  }
+{  required and create new units by selecting File, New Unit from the menu.    }
+{                                                                              }
+{  To compile your program select Run, Compile (or Run, Build) from the menu.  }
 
 uses
-  overrides,
-  {$IFDEF RPI}
-  RaspberryPi,
-  BCM2835,
-  BCM2708,
-  {$ENDIF}
-  {$IFDEF RPI3}
+
   RaspberryPi3,
-  BCM2837,
-  BCM2710,
-  uTFTP,
-  {$ENDIF}
-  {$IFDEF RPI4}
-  RaspberryPi4,
-  BCM2838,
-  BCM2711,
-  {$ENDIF}
   GlobalConfig,
   GlobalConst,
   GlobalTypes,
   Platform,
   Threads,
-  StrUtils,
   SysUtils,
+  BCM2837,
+  BCM2710,
   Classes,
+  Console,
+   HTTP,         {Include HTTP and WebStatus so we can see from a web browser what is happening}
+  uTFTP,
+  WebStatus,
+  { needed for telnet }
+  Shell,
   ShellFilesystem,
   ShellUpdate,
   RemoteShell,
-  logoutput,
-  console,
-  framebuffer,
-  gpio,
-  mmc,
-  devices,
-  wifidevice,
-  Ultibo,
-//  vishell,
-  Logging,
-  Network,
-  Winsock2,
-  font,
-  HTTP,
-  WebStatus,
-  Serial,
-  FileSystem,  {Include the file system core and interfaces}
-  FATFS,       {Include the FAT file system driver}
-
+  { needed for telnet }
+  FileSystem,
+  FATFS,
+  MMC,
+  Syscalls,
+  GPIO,      {Include the GPIO unit to allow access to the functions}
+  Spi,
   syncobjs,
   blcksock,
   synsock,
+
   crypto,
   APICrypto,
-  Syscalls;
-
-
-
+  Winsock2,
+  framebuffer,
+  font,
+  wifidevice,
+  Ultibo
+  { Add additional units here };
+{var
+  WindowHandle:TWindowHandle;
+  Fn:String;
+  flg1:Boolean;}
 
   type
 
@@ -100,7 +90,7 @@ TTCPThread = class(TManagedThread)
      Property Number: integer read Fnumber Write FNumber;
 end;
 
-    { TListenerThread }
+ { TListenerThread }
 
  TListenerThread = class(TThread)
   private
@@ -239,9 +229,9 @@ begin
  Result := erroneous_;
 end;
 
+{ TListenerThread }
 
-
-//{$DEFINE SERIAL_LOGGING}
+procedure TListenerThread.Execute;
 
 const
    // copied from font as it's in the implementation section there.
@@ -504,21 +494,8 @@ const
           ($00, $00, $00, $6C, $00, $C6, $C6, $C6, $C6, $C6, $C6, $7E, $06, $0C, $F8, $00))
     );
 
+
 var
-  SSID : string;
-  key : string;
-  Country : string;
-  topwindow : THandle;
-  Winsock2TCPClient : TWinsock2TCPClient;
-  IPAddress : string;
-  i : integer;
-  HTTPListener : THTTPListener;
-  ScanResultList : TStringList;
-  Status : Longword;
-  CYW43455Network: PCYW43455Network;
-  BSSIDStr : string;
-
-
 
 ClientSock : TSocket;
 ClientThread : TTCPThread;
@@ -531,6 +508,19 @@ rdp : ^Byte;
 CmdArray : array [0..11] of Byte;
 RDArray : array [0..11] of Byte;
 ff : Boolean;
+SSID : string;
+  key : string;
+  Country : string;
+  topwindow : THandle;
+  Winsock2TCPClient : TWinsock2TCPClient;
+  IPAddress : string;
+  i : integer;
+  HTTPListener : THTTPListener;
+  ScanResultList : TStringList;
+  Status : Longword;
+  CYW43455Network: PCYW43455Network;
+  BSSIDStr : string;
+  BSSID : ether_addr;
 {0xc1 0xb1 0xb0 0xb0 0xb9 0xd7 0xb7 0xb0 0xb0 0xb0 0xb7 0x8a < A1009W70007
 0xc1 0xb1 0xb0 0xb0 0xb9 0xd7 0xb3 0xb0 0xb0 0xb0 0xb3 0x8a < A1009W30003
 0xc1 0xb1 0xb0 0xb0 0xb9 0xd7 0xb1 0xb0 0xb0 0xb0 0xb1 0x8a < A1009W10001
@@ -538,27 +528,165 @@ ff : Boolean;
 0xc1 0xb1 0xb0 0xb0 0xb9 0xd7 0xb7 0xb0 0xb0 0xb0 0xb0 0x8a < A1009W70000
 0xc1 0xb1 0xb0 0xb0 0xb9 0xd7 0xb3 0xb0 0xb0 0xb0 0xb0 0x8a < A1009W30000
 0xc1 0xb1 0xb0 0xb0 0xb9 0xd7 0xb1 0xb0 0xb0 0xb0 0xb0 0x8a < A1009W10000}
+  procedure DumpIP;
+var
+  i, j, c : integer;
+  s : string;
+begin
+  for i := 0 to 15 do
+  begin
+    s := '';
+    for c := 1 to length(ipaddress) do
+    begin
+      for j := 7 downto 0 do
+      begin
+        if (FONT_LATIN1_8X16_DATA.data[ord(ipaddress[c]), i] and (1 shl j) = (1 shl j)) then
+          s := s + '#'
+        else
+          s := s + ' ';
+      end;
+    end;
+    consolewindowwriteln(topwindow, s);
+  end;
+end;
+  procedure WaitForIP;
+begin
+  Winsock2TCPClient:=TWinsock2TCPClient.Create;
+
+  while (true) do
+  begin
+    sleep(200);
+    if (Winsock2TCPClient.LocalAddress <> IPAddress)
+       and (length(Winsock2TCPClient.LocalAddress) > 0)
+       and (Winsock2TCPClient.LocalAddress <> ' ') then
+    begin
+      ConsoleWindowWriteLn(topwindow, 'IP address='+Winsock2TCPClient.LocalAddress);
+      IPAddress := Winsock2TCPClient.LocalAddress;
+      break;
+    end;
+  end;
+end;
+
+  procedure WIFIScanCallback(ssid : string; ScanResultP : pwl_escan_result);
+  var
+    ssidstr : string;
+  begin
+    ssidstr := ssid + ' ' + inttohex(ScanResultP^.bss_info[1].BSSID.octet[0],2) + ':'
+                              + inttohex(ScanResultP^.bss_info[1].BSSID.octet[1],2) + ':'
+                              + inttohex(ScanResultP^.bss_info[1].BSSID.octet[2],2) + ':'
+                              + inttohex(ScanResultP^.bss_info[1].BSSID.octet[3],2) + ':'
+                              + inttohex(ScanResultP^.bss_info[1].BSSID.octet[4],2) + ':'
+                              + inttohex(ScanResultP^.bss_info[1].BSSID.octet[5],2);
+
+    if (ScanResultList <> nil) and (ScanResultList.Indexof(ssidstr) < 0) then
+      ScanResultList.Add(ssidstr);
+  end;
 
 
-  cryptstr: AnsiString;
-  tagstr: AnsiString;
-  newstr: AnsiString;
-  teststr: AnsiString;
-  DatainLen:LongWord;
-  comindex:Integer;
-  MyKey: AnsiString = '1234567890123456'; {Must be 16, 24 or 32 bytes}
-  MyIV: AnsiString = 'My Secret IV';
-  MyAAD: AnsiString = 'My Extra Secret AAD';
-  MyData: AnsiString = 'The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.';
-  MyResult: AnsiString;
-  EOL: AnsiString;
-  //Key: PByte;
-  IV: PByte;
-  AAD: PByte;
-  Plain: PByte;
-  Crypt: PByte;
-  Tag: PByte;
-  testptr:PByte;
+ begin
+
+  bp := @CmdArray;
+  rdp := @RDArray;
+  {0xc1 0xb1 0xb0 0xb0 0xb9 0xd7 0xb7 0xb0 0xb0 0xb0 0xb7 0x8a < A1009W70007}
+  CmdArray[0] := 193; // 0xC1 0x41
+  CmdArray[1] := 177; // 0xB1 0x31
+  CmdArray[2] := 176; // 0xB0 0x30
+  CmdArray[3] := 176; // 0xB0 0x30
+  CmdArray[4] := 185; // 0xB9 0x39
+  CmdArray[5] := 215; // 0xD7 0x57
+  CmdArray[6] := 183; // 0xB7 0x37 0xB1 0xB3
+  CmdArray[7] := 176; // 0xB0 0x30
+  CmdArray[8] := 176; // 0xB0 0x30
+  CmdArray[9] := 176; // 0xB0 0x30
+  CmdArray[10] := 183; // 0xB7 0x37 0xB1 0xB3
+  CmdArray[11] := 138; // 0x8A 0x0a
+
+  //lclfn:='speechpp.bin';
+  //lclfn:='catzip.bin';
+  ConsoleFramebufferDeviceAdd(FramebufferDeviceGetDefault);
+
+  topwindow := ConsoleWindowCreate(ConsoleDeviceGetDefault, CONSOLE_POSITION_TOPLEFT,TRUE);
+  WindowHandle:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_TOPRIGHT,True);
+
+
+
+  nr := 11;
+
+
+
+  //if (ff )  then ConsoleWindowWriteLn(WindowHandle,'FPGA was program');
+   with ListenerSocket do
+     begin
+       CreateSocket;
+        if LastError = 0 then
+           begin
+           ConsoleWindowWriteLn(WindowHandle,'Socket successfully initialized');
+
+           end
+          else
+           ConsoleWindowWriteLn(WindowHandle,'An error occurred while initializing the socket: '+GetErrorDescEx);
+   Family := SF_IP4;
+   setLinger(true,10000);
+   bind('0.0.0.0', '5050');
+    if LastError = 0 then
+      begin
+      ConsoleWindowWriteLn(WindowHandle,'Bind on 5050');
+      end
+     else
+      ConsoleWindowWriteLn(WindowHandle,'Bind error: '+GetErrorDescEx);
+      listen;
+      repeat
+        if CanRead(100) then
+         begin
+           ClientSock := Accept;
+            if LastError = 0
+             then
+              begin
+              //TTCPThread.Create()
+             ClientThread:=FThreadManager.GetSuspendThread(ClientSock);
+              ConsoleWindowWriteLn(WindowHandle,'We have '+ IntToStr(FThreadManager.GetActiveThreadCount)+#32+'client threads!');
+              end
+             else
+              ConsoleWindowWriteLn(WindowHandle,'TCP thread creation error: '+GetErrorDescEx);
+         end;
+        FThreadManager.clearFinishedThreads;
+      sleep(10);
+     until false;
+    end;
+end;
+
+constructor TListenerThread.Create;
+begin
+FreeOnTerminate := True;
+ListenerSocket := TTCPBlockSocket.Create;
+FThreadManager:=TThreadManager.Create(20000);
+if ListenerSocket.LastError = 0
+  then
+     WriteLn('Listener has been created')
+  else
+      WriteLn('Listener creation error: '+ListenerSocket.GetErrorDescEx);
+inherited Create(False);
+end;
+
+destructor TListenerThread.Destroy;
+begin
+ ListenerSocket.Free;
+   if
+     ListenerSocket.LastError = 0
+       then
+           WriteLn('Listener has been deleted')
+          else
+            WriteLn('Listener deleting error: '+ListenerSocket.GetErrorDescEx);
+  inherited;
+end;
+
+{ TTCPThread }
+
+procedure TTCPThread.SetSocket(aSock: TSocket);
+begin
+   fSock.Socket := aSock;
+   fSock.GetSins;
+end;
 
 procedure TTCPThread.Execute;
 var
@@ -643,227 +771,436 @@ var
   tagstr: AnsiString; 
   newstr: AnsiString;
   teststr: AnsiString;
-procedure WIFIScanCallback(ssid : string; ScanResultP : pwl_escan_result);
-var
-  ssidstr : string;
+  DatainLen:LongWord;
+  comindex:Integer;
+  MyKey: AnsiString = '1234567890123456'; {Must be 16, 24 or 32 bytes}
+  MyIV: AnsiString = 'My Secret IV';
+  MyAAD: AnsiString = 'My Extra Secret AAD';
+  MyData: AnsiString = 'The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.';
+  MyResult: AnsiString;
+  EOL: AnsiString;
+  Key: PByte;
+  IV: PByte;
+  AAD: PByte;
+  Plain: PByte;
+  Crypt: PByte;
+  Tag: PByte;
+  testptr:PByte;
+  SSID : string;
+  wifikey : string;
+  Country : string;
+
+
 begin
-  ssidstr := ssid + ' ' + inttohex(ScanResultP^.bss_info[1].BSSID.octet[0],2) + ':'
-                            + inttohex(ScanResultP^.bss_info[1].BSSID.octet[1],2) + ':'
-                            + inttohex(ScanResultP^.bss_info[1].BSSID.octet[2],2) + ':'
-                            + inttohex(ScanResultP^.bss_info[1].BSSID.octet[3],2) + ':'
-                            + inttohex(ScanResultP^.bss_info[1].BSSID.octet[4],2) + ':'
-                            + inttohex(ScanResultP^.bss_info[1].BSSID.octet[5],2);
+  EOL:='  ';
+  EOL[1]:=char(13);
+  EOL[2]:=char(10); 
+  DatainLen:=Length(SockData);
+  newstr:=RightStr(SockData,DatainLen-1);
+  teststr:=LeftStr(SockData,1);
+  //WriteLn(teststr);
+  //WriteLn(IntToStr(DatainLen));
+  //WriteLn(newstr);
+//chgs planned for Srv.lpr which is the same as Srv.lpr.tmp3
+ 
 
-  if (ScanResultList <> nil) and (ScanResultList.Indexof(ssidstr) < 0) then
-    ScanResultList.Add(ssidstr);
-end;
+{**************************encryption**************************}  
+  if (teststr='1') then
+begin  
+  WriteLn('1'); 
+GCM1.SockData:=SockData;      
+WriteLn('Key '+MyKey);
+WriteLn('IV '+MyIV);
+WriteLn('AAD '+MyAAD);
+WriteLn('Data '+MyData);
+comindex:=LastDelimiter('\.:',SockData);
 
-procedure WaitForIP;
-begin
-  Winsock2TCPClient:=TWinsock2TCPClient.Create;
 
-  while (true) do
+WriteLn('index where data ' +IntToStr(comindex));
+MyData:=RightStr(SockData,DatainLen-comindex);
+ 
+DatainLen:=Length(MyData);
+WriteLn('MyData '+MyData+ 'Length with EOL '+IntToStr(DatainLen));
+{Since MyData has EOL.  The above WriteLn writes the DatainLen on a new line}
+SockData:=LeftStr(SockData,comindex-1);
+ 
+DatainLen:=Length(SockData);
+WriteLn('SockData '+SockData + ' '+IntToStr(DatainLen));
+
+comindex:=LastDelimiter('\.:',SockData);
+WriteLn('index where AAD ' +IntToStr(comindex));
+MyAAD:=RightStr(SockData,DatainLen-comindex);
+WriteLn('MyAAD '+MyAAD);
+SockData:=LeftStr(SockData,comindex-1);
+ 
+DatainLen:=Length(SockData);
+WriteLn('SockData '+SockData+ ' '+IntToStr(DatainLen));
+comindex:=LastDelimiter('\.:',SockData);
+WriteLn('index where IV ' +IntToStr(comindex));
+MyIV:=RightStr(SockData,DatainLen-comindex);
+WriteLn('MyIV '+MyIV);
+SockData:=LeftStr(SockData,comindex-1);
+
+DatainLen:=Length(SockData);
+WriteLn('SockData '+SockData+ ' '+IntToStr(DatainLen));
+MyKey:=RightStr(SockData,DatainLen-1);
+WriteLn('MyKey '+MyKey);
+
+lendata:=Length(MyData) - 2;
+ 
+WriteLn('without no EOL lendata ',IntToStr(lendata)); 
+  {Allocate buffers}
+  Key := AllocMem(Length(MyKey));
+  IV := AllocMem(Length(MyIV));
+  AAD := AllocMem(Length(MyAAD));
+  Plain := AllocMem(lendata);
+  Crypt := AllocMem(lendata);
+  Tag := AllocMem(AES_BLOCK_SIZE);
+  testptr := AllocMem(lendata);
+  {Copy the values}
+  Move(MyKey[1], Key^, Length(MyKey));
+  Move(MyIV[1], IV^, Length(MyIV));
+  Move(MyAAD[1], AAD^, Length(MyAAD));
+  Move(MyData[1], Plain^, lendata);
+  WriteLn('Key '+MyKey+' '+IntToStr(Length(MyKey)));
+  WriteLn('IV '+MyIV+' '+IntToStr(Length(MyIV)));
+  WriteLn('AAD '+MyAAD+' '+IntToStr(Length(MyAAD)));
+  
+  GCM1.MyKey:=MyKey;
+  GCM1.MyIV:=MyIV;
+  GCM1.MyAAD:=MyAAD;
+  
+  {Clear the crypt buffer}
+  FillChar(Crypt^, lendata, 0);
+  {Encrypt the data}
+  if AESGCMEncryptData(Key, Length(MyKey), IV, AAD, Plain, Crypt, Length(MyIV), Length(MyAAD), lendata, Tag) then
   begin
-    sleep(200);
-    if (Winsock2TCPClient.LocalAddress <> IPAddress)
-       and (length(Winsock2TCPClient.LocalAddress) > 0)
-       and (Winsock2TCPClient.LocalAddress <> ' ') then
+    WriteLn('AES GCM Encrypt Success');
+    BinCryptStr1:=BytesToString(Crypt,lendata);
+    fSock.SendString(BinCryptStr1);
+    fSock.SendString(EOL); 
+    WriteLn('Bytes from Crypt ');
+    {Clear the plain buffer}
+    FillChar(Plain^, lendata, 0);
+    for CC:= 0 to lendata - 1 do
     begin
-      ConsoleWindowWriteLn(topwindow, 'IP address='+Winsock2TCPClient.LocalAddress);
-      IPAddress := Winsock2TCPClient.LocalAddress;
-      break;
+    mybyte:=Crypt^;
+    Inc(Crypt);
+    Write(IntToStr(mybyte)+' ');
     end;
-  end;
-end;
-
-procedure DumpIP;
-var
-  i, j, c : integer;
-  s : string;
-begin
-  for i := 0 to 15 do
-  begin
-    s := '';
-    for c := 1 to length(ipaddress) do
+    Dec(Crypt,lendata);
+    WriteLn(' ');
+    EncryptionTag:=BytesToString(Tag,AES_BLOCK_SIZE);
+    GCM1.EncryptionTag1:=EncryptionTag;
+    WriteLn('EncryptionTag ', EncryptionTag);
+    {Decrypt the Data}
+    if AESGCMDecryptData(Key, Length(MyKey), IV, AAD, Crypt, Plain, Length(MyIV), Length(MyAAD), lendata, Tag) then
     begin
-      for j := 7 downto 0 do
-      begin
-        if (FONT_LATIN1_8X16_DATA.data[ord(ipaddress[c]), i] and (1 shl j) = (1 shl j)) then
-          s := s + '#'
-        else
-          s := s + ' ';
-      end;
+      WriteLn('AES GCM Decrypt Success');
+    WriteLn('Tag '+Hexstr(@Tag));  
+    for CC:= 0 to AES_BLOCK_SIZE - 1 do
+    begin
+    mybyte:=Tag^;
+    Inc(Tag);
+    Write(IntToStr(mybyte)+' ');
     end;
-    consolewindowwriteln(topwindow, s);
-  end;
-end;
-
-var
-  BSSID : ether_addr;
-
-begin
-  ConsoleFramebufferDeviceAdd(FramebufferDeviceGetDefault);
-
-  topwindow := ConsoleWindowCreate(ConsoleDeviceGetDefault, CONSOLE_POSITION_TOPLEFT,TRUE);
-  WindowHandle:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_TOPRIGHT,True);
-
-
-
-  LOGGING_INCLUDE_TICKCOUNT := True;
-  {$IFDEF SERIAL_LOGGING}
-  SERIAL_REGISTER_LOGGING := True;
-  SerialLoggingDeviceAdd(SerialDeviceGetDefault);
-  LoggingDeviceSetDefault(LoggingDeviceFindByType(LOGGING_TYPE_SERIAL));
-  {$ELSE}
-  CONSOLE_LOGGING_POSITION := CONSOLE_POSITION_BOTTOM;
-  LoggingConsoleDeviceAdd(ConsoleDeviceGetDefault);
-  LoggingDeviceSetDefault(LoggingDeviceFindByType(LOGGING_TYPE_CONSOLE));
-  {$ENDIF}
-
-  // Filter the logs so we only see the WiFi and MMC device events
-  // (Primarily development use, otherwise you don't see network events etc)
-  //LoggingOutputExHandler:= @myloggingoutputhandler;
-
-  HTTPListener:=THTTPListener.Create;
-  HTTPListener.Active:=True;
-  WebStatusRegister(HTTPListener,'','',True);
-
-
-  WIFI_LOG_ENABLED := true;
-
-  // Because we disabled auto start of the MMC subsystem we need to start the SD card driver
-  // now to provide access to the firmware files on the SD card.
-
-  WIFIPreInit;
-
-  // We've gotta wait for the file system to be alive because that's where the firmware is.
-  // Because the WIFI uses the Arasan host, the only way you'll get a drive C
-  // is if you use USB boot. So that's a pre-requisite at the moment until we make the
-  // SD card work off the other SDHost controller.
-
-  ConsoleWindowWriteln(topwindow, 'Waiting for file system...');
-  while not directoryexists('c:\') do
-  begin
-    Sleep(0);
-  end;
-  ConsoleWindowWriteln(topwindow, 'File system ready. Initialize Wifi Device.');
-
-  try
-    // WIFIInit has to be done from the main application because the initialisation
-    // process needs access to the c: drive in order to load the firmware, regulatory file
-    // and configuration file.
-    // There is the option of adding the files as binary blobs to be compiled into
-    // the kernel, but that would need to be an option I think really (easily done
-    // by choosing to add a specific unit to the uses clause)
-    // We'll need to work out what the best solution is later.
-
-    WIFIInit;
-
-    // warning, after wifiinit is called, the deviceopen() stuff will happen on
-    // a different thread, so the code below will execute regardless of whether
-    // the device is open or not. Consequently we are going to spin until the
-    // wifi device has been fully initialized. This is a bit of a dirty hack
-    // but hopefully we can change it to a proper 'link is up' check once the
-    // whole network device integration stuff is complete.
-    // Certainly can't stay the way it is.
-
-    ConsoleWindowWriteln(topwindow, 'Waiting for Wifi Device to be opened.');
-
-    // spin until the wifi device is actually ready to do stuff.
-    repeat
-      CYW43455Network := PCYW43455Network(NetworkDeviceFindByDescription(CYW43455_NETWORK_DESCRIPTION));
-      if CYW43455Network = nil then
-        Sleep(100);
-    until CYW43455Network <> nil;
-
-    while CYW43455Network^.Network.NetworkState <> NETWORK_STATE_OPEN do
+    Dec(Tag,AES_BLOCK_SIZE);
+    WriteLn(' ');
+WriteLn('Tag '+Hexstr(@Tag));
+      {Copy the result}
+      SetString(PlainStr, PAnsiChar(Plain), lendata);
+      fSock.SendString(PlainStr);
+      fSock.SendString(EOL);
+      WriteLn('Ascii PlainStr is ' + PlainStr);
+      GCM1.PlainStr:=PlainStr;
+      //SetString(MyResult, PAnsiChar(Crypt), lendata);
+      EncryptionTag:=BytesToString(Tag,AES_BLOCK_SIZE);
+      GCM1.EncryptionTag2:=EncryptionTag;
+      fSock.SendString(EncryptionTag);
+      fSock.SendString(EOL);
+    WriteLn('EncryptionTag ', EncryptionTag);
+      for CC:= 0 to lendata - 1 do
     begin
-      Sleep(0);
+    mybyte:=Plain^;
+    Inc(Plain);
+    Write(IntToStr(mybyte)+' ');
     end;
-
-
-    if (SysUtils.GetEnvironmentVariable('WIFISCAN') = '1') then
-    begin
-      ConsoleWindowWriteln(topwindow, 'Performing a WIFI network scan...');
-      ScanResultList := TStringList.Create;
-
-      WirelessScan(@WIFIScanCallback);
-
-      for i := 0 to ScanResultList.Count-1 do
-        ConsoleWindowWriteln(topwindow, 'Found access point: ' + ScanResultList[i]);
-
-      ScanResultList.Free;
+    Dec(Plain,lendata);
+    WriteLn(' ');
+    
+      {Convert Crypt from Bytes to a String}
+      MyResult:=BytesToString(Crypt,lendata);
+      WriteLn('BytesToString Crypt '+ MyResult );
+      
     end
     else
-      ConsoleWindowWriteln(topwindow, 'Network scan not enabled in cmdline.txt (add the WIFISCAN=1 entry)');
+    begin
+      WriteLn('AES GCM Decrypt Failure');
+    end;
+  end
+  else
+  begin
+    WriteLn('AES GCM Encrypt Failure');
+  end;
 
-    SSID := SysUtils.GetEnvironmentVariable('SSID');
-    key := SysUtils.GetEnvironmentVariable('KEY');
-    Country := SysUtils.GetEnvironmentVariable('COUNTRY');
-    BSSIDStr := SysUtils.GetEnvironmentVariable('BSSID');
+FreeMem(Key);
+FreeMem(IV);
+FreeMem(AAD);
+FreeMem(Plain);
+FreeMem(Crypt);
+FreeMem(Tag);
+FreeMem(testptr);
+end;
+{**************************End encryption**************************}
+{**************************decryption**************************}
+if (teststr='2') then
+begin
+  WriteLn('2');
+  GCM2.SockData:=SockData;
+WriteLn('Key '+MyKey);
+WriteLn('IV '+MyIV);
+WriteLn('AAD '+MyAAD);
+WriteLn('Data '+MyData);
 
-    ConsoleWindowWriteln(topwindow, 'Attempting to join WIFI network ' + SSID + ' (Country='+Country+')');
+comindex:=LastDelimiter('\.:',SockData);
+WriteLn('index where tag ' +IntToStr(comindex));
+tagstr:=RightStr(SockData,DatainLen-comindex);
+GCM2.tagstr:=tagstr;
+WriteLn('tagstr '+tagstr+' '+IntToStr(Length(tagstr)));
+SockData:=LeftStr(SockData,comindex-1);
+DatainLen:=Length(SockData);
 
-    if (Key = '') then
-      ConsoleWindowWriteln(topwindow, 'Warning: Key not specified - expecting the network to be unencrypted.');
+comindex:=LastDelimiter('\.:',SockData);
+WriteLn('index where data '+IntToStr(comindex));
+MyData:=RightStr(SockData,DatainLen-comindex);
+WriteLn('MyData '+MyData+' '+IntToStr(Length(MyData)));
+SockData:=LeftStr(SockData,comindex-1);
+DatainLen:=Length(SockData);
+ 
+comindex:=LastDelimiter('\.:',SockData);
+WriteLn('index where AAD '+IntToStr(comindex));
+MyAAD:=RightStr(SockData,DatainLen-comindex);
+WriteLn('MyAAD '+MyAAD+' '+IntToStr(Length(MyAAD)));
+SockData:=LeftStr(SockData,comindex-1);
+DatainLen:=Length(SockData);
+ 
+comindex:=LastDelimiter('\.:',SockData);
+WriteLn('index where IV '+IntToStr(comindex));
+MyIV:=RightStr(SockData,DatainLen-comindex);
+WriteLn('MyIV '+MyIV+' '+IntToStr(Length(MyIV)));
+SockData:=LeftStr(SockData,comindex-1);
+DatainLen:=Length(SockData);
+ 
+WriteLn('SockData '+SockData+' '+IntToStr(DatainLen));
+MYKey:=RightStr(SockData,DatainLen-1);
+WriteLn('MYKey '+MYKey+' '+IntToStr(Length(MYKey)));
+ 
+  
+  GCM2.MyKey:=MyKey;
+  GCM2.MyIV:=MyIV;
+  GCM2.MyAAD:=MyAAD;
+  
 
-    if (SSID = '') or (Country='') then
-       ConsoleWindowWriteln(topwindow, 'Cant join a network without SSID, Key, and Country Code.')
+
+cryptstr:=MyData;
+
+{WriteLn('cryptstr '+cryptstr + ' ' + IntToStr(Length(cryptstr)));}
+WriteLn('cryptstr '+cryptstr);
+DatainLen:=Length(cryptstr);
+ 
+lendata:=(Length(MyData) ) div 2;
+WriteLn('without no EOL lendata ',IntToStr(lendata));  
+  testptr := AllocMem(lendata);
+  Crypt := AllocMem(lendata);
+StringToBytes(cryptstr,PByte(testptr),lendata);
+MyResult:=BytesToString(testptr,lendata);
+WriteLn('MyResult '+MyResult);
+
+StringToBytes(cryptstr,PByte(Crypt),lendata);
+{
+WriteLn('testptr '+Hexstr(@testptr)+ 'Crypt '+Hexstr(@Crypt));
+    for CC:= 0 to lendata - 1 do
+    begin
+    mybyte:=testptr^;
+    Inc(testptr);
+    Write(IntToStr(mybyte)+' ');
+    end;
+    Dec(testptr,lendata);
+    WriteLn(' ');
+    for CC:= 0 to lendata - 1 do
+    begin
+    mybyte:=Crypt^;
+    Inc(Crypt);
+    Write(IntToStr(mybyte)+' ');
+    end;
+    Dec(Crypt,lendata);
+    WriteLn(' ');
+WriteLn('testptr '+Hexstr(@testptr)+ 'Crypt '+Hexstr(@Crypt));
+} 
+  Key := AllocMem(Length(MyKey));
+  IV := AllocMem(Length(MyIV));
+  AAD := AllocMem(Length(MyAAD));
+  Plain := AllocMem(lendata);
+   
+  Tag := AllocMem(AES_BLOCK_SIZE);
+  StringToBytes(tagstr,PByte(Tag),AES_BLOCK_SIZE);
+  {Copy the values}
+  Move(MyKey[1], Key^, Length(MyKey));
+  Move(MyIV[1], IV^, Length(MyIV));
+  Move(MyAAD[1], AAD^, Length(MyAAD));
+  
+
+{
+WriteLn('IV '+Hexstr(@IV));  
+
+    for CC:= 0 to (Length(MyIV) -1) do
+    begin
+    mybyte:=IV^;
+    Inc(IV);
+    Write(IntToStr(mybyte)+' ');
+    end;
+    Dec(IV,(Length(MyIV) -1));
+    WriteLn(' ');
+WriteLn('IV '+Hexstr(@IV));  
+WriteLn('AAD '+Hexstr(@AAD));  
+
+    for CC:= 0 to (Length(MyAAD) -1) do
+    begin
+    mybyte:=AAD^;
+    Inc(AAD);
+    Write(IntToStr(mybyte)+' ');
+    end;
+    Dec(AAD,(Length(MyAAD) -1));
+    WriteLn(' ');
+WriteLn('AAD '+Hexstr(@AAD)); 
+ 
+WriteLn('Key '+Hexstr(@Key));  
+
+    for CC:= 0 to (Length(MyKey) -1) do
+    begin
+    mybyte:=Key^;
+    Inc(Key);
+    Write(IntToStr(mybyte)+' ');
+    end;
+    Dec(Key,(Length(MyKey) -1));
+    WriteLn(' ');
+WriteLn('Key '+Hexstr(@Key)); 
+ 
+  {Clear the plain buffer}
+  FillChar(Plain^, lendata, 0);
+WriteLn('Plain '+Hexstr(@Plain));  
+    for CC:= 0 to lendata - 1 do
+    begin
+    mybyte:=Plain^;
+    Inc(Plain);
+    Write(IntToStr(mybyte)+' ');
+    end;
+    Dec(Plain,lendata);
+    WriteLn(' ');
+WriteLn('Plain '+Hexstr(@Plain)); 
+}
+  
+{This did not help 
+StringToBytes('d495df0bc8a0f10d5aba11764e898070',PByte(Tag),AES_BLOCK_SIZE);
+
+going to test adding the encryption here}
+  WriteLn('Key '+MyKey+' '+IntToStr(Length(MyKey)));
+  WriteLn('IV '+MyIV+' '+IntToStr(Length(MyIV)));
+  WriteLn('AAD '+MyAAD+' '+IntToStr(Length(MyAAD)));
+  GCM2.MyKey:=MyKey;
+  GCM2.MyIV:=MyIV;
+  GCM2.MyAAD:=MyAAD;
+ FillChar(Plain^, lendata, 0);
+StringToBytes(cryptstr,PByte(Crypt),lendata);
+StringToBytes(tagstr,PByte(Tag),AES_BLOCK_SIZE); 
+//StringToBytes('d495df0bc8a0f10d5aba11764e898070',PByte(Tag),AES_BLOCK_SIZE);
+EncryptionTagToDecrypt:=BytesToString(PByte(Tag),AES_BLOCK_SIZE);
+GCM2.EncryptionTagToDecrypt:=EncryptionTagToDecrypt;
+WriteLn('Tag '+Hexstr(@Tag));  
+    for CC:= 0 to AES_BLOCK_SIZE - 1 do
+    begin
+    mybyte:=Tag^;
+    Inc(Tag);
+    Write(IntToStr(mybyte)+' ');
+    end;
+    Dec(Tag,AES_BLOCK_SIZE);
+    WriteLn(' ');
+WriteLn('Tag '+Hexstr(@Tag));
+{Decrypt the Data}
+    if AESGCMDecryptData(Key, Length(MyKey), IV, AAD, Crypt, Plain, Length(MyIV), Length(MyAAD), lendata, Tag) then
+    begin
+      WriteLn('AES GCM Decrypt Success');
+
+      {Copy the result}
+      SetString(PlainStr, PAnsiChar(Plain), lendata);
+      fSock.SendString(PlainStr);
+      fSock.SendString(EOL);
+      WriteLn('Ascii PlainStr is ' + PlainStr);
+      GCM2.PlainStr:=PlainStr;
+      //SetString(MyResult, PAnsiChar(Crypt), lendata);
+      EncryptionTag:=BytesToString(Tag,AES_BLOCK_SIZE);
+      GCM2.EncryptionTag2:=EncryptionTag;
+      {
+      for CC:= 0 to lendata - 1 do
+    begin
+    mybyte:=Plain^;
+    Inc(Plain);
+    Write(IntToStr(mybyte)+' ');
+    end;
+    Dec(Plain,lendata);
+    WriteLn(' ');
+    }
+      {Convert Crypt from Bytes to a String}
+      CryptStr:=BytesToString(Crypt,lendata);
+      WriteLn('BytesToString Crypt '+ CryptStr );
+      
+    end
     else
     begin
-      if (BSSIDStr <> '') then
-      begin
-        ConsoleWindowWriteln(topwindow, 'Using BSSID configuration ' + BSSIDStr + ' from cmdline.txt');
-        bssid.octet[0] := hex2dec(copy(BSSIDStr, 1, 2));
-        bssid.octet[1] := hex2dec(copy(BSSIDStr, 4, 2));
-        bssid.octet[2] := hex2dec(copy(BSSIDStr, 7, 2));
-        bssid.octet[3] := hex2dec(copy(BSSIDStr, 10, 2));
-        bssid.octet[4] := hex2dec(copy(BSSIDStr, 13, 2));
-        bssid.octet[5] := hex2dec(copy(BSSIDStr, 16, 2));
-      end
-      else
-        ConsoleWindowWriteln(topwindow, 'Letting the Cypress firmware determine the best network interface from the SSID');
-
-      status := WirelessJoinNetwork(SSID, Key, Country, WIFIJoinBlocking, WIFIReconnectAlways, BSSID, (BSSIDStr <> ''));
-      IPAddress := '0.0.0.0';
-      if (status = WIFI_STATUS_SUCCESS) then
-      begin
-
-        ConsoleWindowWriteln(topwindow, 'Network joined, waiting for an IP address...');
-
-        WaitForIP;
-
-        DumpIP;
-      end
-      else
-      begin
-        ConsoleWindowWriteLn(topwindow,'Failed to join the WIFI network. Status='+inttostr(status));
-        ConsoleWindowWriteln(topwindow, 'Waiting for auto retry...');
-
-        WaitForIP;
-
-        DumpIP;
-      end;
-
-      // Setup a slow blink of the activity LED to give an indcation that the Pi is still alive
-      ActivityLEDEnable;
-
-
-      while True do
-      begin
-        ActivityLEDOn;
-        Sleep(500);
-        ActivityLEDOff;
-        Sleep(500);
-      end;
-
+      WriteLn('AES GCM Decrypt Failure');
     end;
+ 
+FreeMem(Key);
+FreeMem(IV);
+FreeMem(AAD);
+FreeMem(Plain);
+FreeMem(Crypt);
+FreeMem(Tag);
+FreeMem(testptr);
+
+end;
+{**************************end decryption**************************}
+{**************************3**************************}
+if (teststr='3') then
+begin
 
 
+end;
+{**************************end 3**************************}
+if (teststr='4') then
+    WriteLn('4');
 
 
-//end.
+end;
+procedure TTCPThread.ProcessingData(procSock: TSocket; SockData: string);
+begin
+  if SockData <> '' then
+
+   begin
+   WriteLn(SockData+#32+'we get it from '+IntToStr(number)+' thread');
+   //ProcessFpga(Data,TTCPThread.WindowHandle);
+   //WriteLn('Calling ProcessFpga');
+   ProcessEncryptDecrypt(procSock,SockData);
+   //WriteLn(SockData);
+   end;
+end;
 
 
-
+ var
+   Server: TListenerThread;
+begin
+   Server:=TListenerThread.Create;
+   ReadLn;
+end.
+.
 

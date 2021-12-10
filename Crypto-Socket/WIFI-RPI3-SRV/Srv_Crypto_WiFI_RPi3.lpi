@@ -35,6 +35,7 @@
       <Unit0>
         <Filename Value="Srv_Crypto_WiFI_RPi3.lpr"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="Crypto_WiFI_RPi3"/>
       </Unit0>
     </Units>
   </ProjectOptions>
