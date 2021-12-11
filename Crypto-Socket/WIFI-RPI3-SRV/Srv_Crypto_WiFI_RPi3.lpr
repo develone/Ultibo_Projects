@@ -1,4 +1,4 @@
-program Crypto_WiFI_RPi3;
+program Srv_Crypto_WiFi;
 
 {$mode delphi}{$H+}
 {define RPI3}

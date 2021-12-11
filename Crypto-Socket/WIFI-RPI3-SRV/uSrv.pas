@@ -78,7 +78,7 @@ TTCPThread = class(TManagedThread)
      constructor Create();
      destructor Destroy; override;
      procedure ProcessingData(procSock: TSocket;SockData: string);
-     {procedure ProcessEncryptDecrypt(SockData: string;ProgWindow:TWindowHandle);}
+     {procedure ProcessEncryptDecrypt(SockData: string;ProgWindow:TCryptowindow);}
      procedure ProcessEncryptDecrypt(procSock: TSocket;SockData: string);
      Property Number: integer read Fnumber Write FNumber;
 end;
@@ -251,7 +251,7 @@ var
 
 ClientSock : TSocket;
 ClientThread : TTCPThread;
-WindowHandle : TWindowHandle;
+Cryptowindow : THandle;
 lclfn : String;
 nr : integer;
 datab : Byte;
@@ -289,7 +289,7 @@ ff : Boolean;
 
   //lclfn:='speechpp.bin';
   //lclfn:='catzip.bin';
-  WindowHandle:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_FULL,True);
+  //Cryptowindow:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_FULL,True);
 
 
 
@@ -297,26 +297,26 @@ ff : Boolean;
 
 
 
-  //if (ff )  then ConsoleWindowWriteLn(WindowHandle,'FPGA was program');
+  //if (ff )  then ConsoleWindowWriteLn(Cryptowindow,'FPGA was program');
    with ListenerSocket do
      begin
        CreateSocket;
         if LastError = 0 then
            begin
-           ConsoleWindowWriteLn(WindowHandle,'Socket successfully initialized');
+           ConsoleWindowWriteLn(Cryptowindow,'Socket successfully initialized');
 
            end
           else
-           ConsoleWindowWriteLn(WindowHandle,'An error occurred while initializing the socket: '+GetErrorDescEx);
+           ConsoleWindowWriteLn(Cryptowindow,'An error occurred while initializing the socket: '+GetErrorDescEx);
    Family := SF_IP4;
    setLinger(true,10000);
    bind('0.0.0.0', '5050');
     if LastError = 0 then
       begin
-      ConsoleWindowWriteLn(WindowHandle,'Bind on 5050');
+      ConsoleWindowWriteLn(Cryptowindow,'Bind on 5050');
       end
      else
-      ConsoleWindowWriteLn(WindowHandle,'Bind error: '+GetErrorDescEx);
+      ConsoleWindowWriteLn(Cryptowindow,'Bind error: '+GetErrorDescEx);
       listen;
       repeat
         if CanRead(100) then
@@ -327,10 +327,10 @@ ff : Boolean;
               begin
               //TTCPThread.Create()
              ClientThread:=FThreadManager.GetSuspendThread(ClientSock);
-              ConsoleWindowWriteLn(WindowHandle,'We have '+ IntToStr(FThreadManager.GetActiveThreadCount)+#32+'client threads!');
+              ConsoleWindowWriteLn(Cryptowindow,'We have '+ IntToStr(FThreadManager.GetActiveThreadCount)+#32+'client threads!');
               end
              else
-              ConsoleWindowWriteLn(WindowHandle,'TCP thread creation error: '+GetErrorDescEx);
+              ConsoleWindowWriteLn(Cryptowindow,'TCP thread creation error: '+GetErrorDescEx);
          end;
         FThreadManager.clearFinishedThreads;
       sleep(10);
@@ -405,7 +405,7 @@ begin
   inherited;
 end;
 
-{procedure TTCPThread.ProcessEncryptDecrypt(SockData : string;ProgWindow:TWindowHandle);}
+{procedure TTCPThread.ProcessEncryptDecrypt(SockData : string;ProgWindow:TCryptowindow);}
 procedure TTCPThread.ProcessEncryptDecrypt(procSock: TSocket;SockData: string);
 {112345678901234567890123456789012:My Secret IV:My Extra Secret AAD:The quick brown The quick brown The quick brown The quick brown The quick brown The quick brown}
 {212345678901234567890123456789012:My Secret IV:My Extra Secret AAD:}
@@ -866,7 +866,7 @@ begin
 
    begin
    WriteLn(SockData+#32+'we get it from '+IntToStr(number)+' thread');
-   //ProcessFpga(Data,TTCPThread.WindowHandle);
+   //ProcessFpga(Data,TTCPThread.Cryptowindow);
    //WriteLn('Calling ProcessFpga');
    ProcessEncryptDecrypt(procSock,SockData);
    //WriteLn(SockData);
@@ -874,6 +874,6 @@ begin
 end;
 
 
- 
+
 end.
 
