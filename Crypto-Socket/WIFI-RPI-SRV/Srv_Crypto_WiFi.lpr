@@ -355,6 +355,7 @@ rdp : ^Byte;
  CmdArray : array [0..11] of Byte;
  RDArray : array [0..11] of Byte;
  ff : Boolean;
+ Server: TListenerThread;
 
 
 
@@ -563,11 +564,15 @@ begin
 
       // Setup a slow blink of the activity LED to give an indcation that the Pi is still alive
       ActivityLEDEnable;
+      Server:=TListenerThread.Create;
+
+
 
 
 
       while True do
       begin
+        ReadLn;
         ActivityLEDOn;
         Sleep(500);
         ActivityLEDOff;
