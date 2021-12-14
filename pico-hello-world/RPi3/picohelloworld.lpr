@@ -161,14 +161,18 @@ begin
       case state of
         stFind :
           begin
-            SerialDevice :=  SerialDeviceFindByDescription('USB CDC ACM Serial');
+            SerialDevice :=  SerialDeviceFindByName('Serial1');
 
 
             if SerialDevice <> nil then state := stOpen;
           end;
         stOpen :
           begin
+            sleep(2000);
              res := SerialDeviceOpen (SerialDevice, 115200, SERIAL_DATA_8BIT, SERIAL_STOP_1BIT, SERIAL_PARITY_NONE, SERIAL_FLOW_NONE, 0, 0);
+             characters := 'You said ' + Characters + #13#10;
+             SerialDeviceWrite (SerialDevice, PChar (Characters),Length (Characters), SERIAL_WRITE_NONE, Count);
+             Characters:='';
             //res := SerialDeviceOpen (SerialDevice, 9600, SERIAL_DATA_8BIT, SERIAL_STOP_1BIT, SERIAL_PARITY_NONE, SERIAL_FLOW_NONE, 0, 0);
             if res = ERROR_SUCCESS then state := stOpened
             else if res = ERROR_INVALID_PARAMETER then state := stFind;
@@ -178,7 +182,7 @@ begin
             res := SerialDeviceRead (SerialDevice, @Character, SizeOf (Character), SERIAL_READ_NON_BLOCK, Count);
             if (res = ERROR_SUCCESS) and (Count > 0) then  // non blocking so count may be 0
               begin
-                if Character = #13 then
+                if (Character = #13) or (Character = #10) then
                   begin
                     ConsoleWindowWriteLn (WindowHandle, 'Received a line: ' + Characters);
                     Characters := 'You said ' + Characters + #13#10;
