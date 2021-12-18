@@ -161,7 +161,8 @@ begin
       case state of
         stFind :
           begin
-            SerialDevice :=  SerialDeviceFindByName('Serial1');
+            SerialDevice :=  SerialDeviceFindByName('USB CDC ACM Serial');
+            ConsoleWindowWriteLn (WindowHandle, 'trying to find USB CDC ACM Serial');
 
 
             if SerialDevice <> nil then state := stOpen;
