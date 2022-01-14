@@ -170,7 +170,7 @@ begin
         stOpen :
           begin
             sleep(2000);
-             res := SerialDeviceOpen (SerialDevice, 115200, SERIAL_DATA_8BIT, SERIAL_STOP_1BIT, SERIAL_PARITY_NONE, SERIAL_FLOW_NONE, 0, 0);
+             res := SerialDeviceOpen (SerialDevice, 115200, SERIAL_DATA_8BIT, SERIAL_STOP_1BIT, SERIAL_PARITY_NONE, SERIAL_FLOW_DSR_DTR, 0, 0);
              //characters := 'You said ' + Characters + #13#10;
              //SerialDeviceWrite (SerialDevice, PChar (Characters),Length (Characters), SERIAL_WRITE_NONE, Count);
              //Characters:='';
