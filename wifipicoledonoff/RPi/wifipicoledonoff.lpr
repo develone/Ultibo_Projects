@@ -9,12 +9,13 @@ uses
   RaspberryPi,
   BCM2835,
   BCM2708,
+  uTFTP,
   {$ENDIF}
   {$IFDEF RPI3}
   RaspberryPi3,
   BCM2837,
   BCM2710,
-  uTFTP,
+
   {$ENDIF}
   {$IFDEF RPI4}
   RaspberryPi4,
