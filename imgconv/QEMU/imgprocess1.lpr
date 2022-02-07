@@ -34,9 +34,44 @@ uses
   RemoteShell,
   { needed for telnet }
   Logging,
-  Syscalls     {Include the Syscalls unit to provide C library support}
+  Syscalls,     {Include the Syscalls unit to provide C library support}
+  Crypto,
+  APICrypto
 
   { Add additional units here };
+type
+
+CBC = record
+  {0123456789abcdef0123456789abcdef}
+  StrKeyAsc:String[32];
+  {0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef}
+  StrKeyHex:String[80];
+  {0123456789abcdef}
+  Strplaintext:array [1..1024] of String[16];
+  StrIV:array [1..1024] of String[32];
+  StrEnc:array [1..1024] of String[32];
+  StrDec:array [1..1024] of String[32];
+end;
+GCM = record
+  {128Bit Key}
+
+  {Now we are engag}
+  StrKeyAsc:array [1..32] of String[16];
+  {01234567890123456789012345678901
+   4e6f772077652061726520656e676167}
+  StrKeyHex:array [1..32] of String[32];
+  Strplaintext:array [1..32] of String[16];
+  StrData:array [1..32] of String[32];
+  StrEnc:array [1..32] of String[32];
+  StrDec:array [1..32] of String[32];
+  StrIV:String[32];
+
+  StrAAD: String[32];
+  Actual:array [1..32] of String[80];
+  Expected:array [1..32] of String[80];
+  ActualTag:array [1..32] of String[80];
+  ExpectedTag:array [1..32] of String[80];
+end;
 
 var img : TFPMemoryImage;
 reader : TFPCustomImageReader;
@@ -55,6 +90,58 @@ ReadFile, WriteFile, WriteOptions : string;
     clr: TFPColor;
     i, j: Integer;
     Red, Blue, Green : word;
+
+ MyKey: AnsiString = '1234567890123456'; {Must be 16, 24 or 32 bytes}
+  MyIV: AnsiString = 'My Secret IV';
+  MyAAD: AnsiString = 'My Extra Secret AAD';
+  MyData: AnsiString = 'The quick brown fox jumps over the lazy dog.The quick brown fox jumps over the lazy dog.';
+  MyResult: AnsiString;
+   Key: PByte;
+  IV: PByte;
+  AAD: PByte;
+  Plain: PByte;
+  Crypt: PByte;
+  Tag: PByte;
+
+  PCBC:^CBC;
+  PGCM:^GCM;
+  CBC1:CBC;
+  GCM1:GCM;
+
+  AESECBKey:PByte;
+
+ AESECBData:PByte;
+ AESECBAESKey:TAESKey;
+
+ AESCBCKey:PByte;
+ AESCBCData:PByte;
+ AESCBCVector:PByte;
+
+ AESGCMKey:PByte;
+ AESGCMIV:PByte;
+ AESGCMAAD:PByte;
+ AESGCMData:PByte;
+ AESGCMTag:PByte;
+
+ Cipher:PCipherContext;
+
+
+ Actual:String;
+
+ PStrIV64:^Char;
+ InKey:LongWord;
+ InKeyStr:String;
+ InDataStr:String;
+ InIVStr:String;
+ EncryptDecrypt:LongWord;
+
+ Filename:String;
+ StringList:TStringList;
+ FileStream:TFileStream;
+ S1,S2:String;
+
+
+
 
     function WaitForIPComplete : string;
 
@@ -328,6 +415,12 @@ begin
  Clean;
 
  {Halt the main thread here}
+ CBC1.StrKeyAsc:='Now we are engaged in a great ci';
+  S1:=CBC1.StrKeyAsc;
+  S2:=BytesToString(PByte(S1),Length(S1) * SizeOf(Char));
+  ConsoleWindowWriteLn (WindowHandle, 'CBC1.StrKeyAsc ' + CBC1.StrKeyAsc);
+  ConsoleWindowWriteLn (WindowHandle, 'CBC1.StrKeyHex ' + CBC1.StrKeyHex);
+  ConsoleWindowWriteLn (WindowHandle,S2);
  ThreadHalt(0);
 
 end.
