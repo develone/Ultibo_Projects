@@ -1,6 +1,7 @@
 program imgprocess1;
 
 {$mode objfpc}{$H+}
+{$linklib cvtutils}
 
 { Raspberry Pi 3 Application                                                   }
 {  Add your program code below, add additional units to the "uses" section if  }
@@ -39,6 +40,8 @@ uses
   APICrypto
 
   { Add additional units here };
+
+function asciiValueToBinary(x0:LongWord):LongWord; cdecl; external 'libcvtutils' name 'asciiValueToBinary';
 type
 
 CBC = record
@@ -139,6 +142,7 @@ ReadFile, WriteFile, WriteOptions : string;
  StringList:TStringList;
  FileStream:TFileStream;
  S1,S2:String;
+ xx : LongWord;
 
 
 
@@ -421,6 +425,13 @@ begin
   ConsoleWindowWriteLn (WindowHandle, 'CBC1.StrKeyAsc ' + CBC1.StrKeyAsc);
   ConsoleWindowWriteLn (WindowHandle, 'CBC1.StrKeyHex ' + CBC1.StrKeyHex);
   ConsoleWindowWriteLn (WindowHandle,S2);
+
+  xx := 52;
+
+ ConsoleWindowWriteLn (WindowHandle,'first digit is ascii 4 52 dec is 00110100 ' + intToStr(xx));
+
+ xx:= asciiValueToBinary(xx);
+ ConsoleWindowWriteLn (WindowHandle,intToStr(xx));
  ThreadHalt(0);
 
 end.
