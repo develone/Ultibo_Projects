@@ -1,0 +1,148 @@
+This project Goal: To learn steganogrphy based on code 
+https://github.com/TheAlgorithms/MATLAB-Octave/blob/master/algorithms/ImageProcessing/LSB%20based%20Image%20Steganography/steganography.m
+The The steganography.m RPi4B Octave only works by commenting come lines 
+%len=strlength(message)*8;
+
+%for i=1:strlength(message)
+    %binary_sequence=append(binary_sequence,ascii2binary(i,:));
+%end
+and providing binary_sequence manually. 
+
+I have written a C program for the Raspberry Pico.
+https://github.com/develone/rp2040-freertos-project/blob/master/crc/CRC-Files/cvtutils.c 
+
+The above code is compiled and provided in the libcrc.a
+The decrypt program works correctly.octave:1> steganography
+
+ascii2binary =
+
+00110010
+00110011
+01000001
+01000101
+00110001
+00110100
+01000110
+00110100
+01000001
+00110111
+01000010
+00110010
+01000100
+01000011
+00110111
+01000110
+00110001
+01000100
+01000100
+00111000
+00111001
+01000011
+01000110
+00110110
+01000110
+00110000
+00110111
+01000101
+00110100
+00110000
+00110100
+00111000
+octave:2> decrypt
+
+Enter the length (character count) of the message you are looking for: 32
+The original message is: 23AE14F4A7B2DC7F1DD89CF6F07E4048
+octave:3>
+This information is part of readme.md provided in the original repo.
+The encoding is done using the following steps:
+
+    1. Convert the image to greyscale
+    2. Resize the image if needed
+    3. Convert the message to its binary format
+    4. Initialize output image same as input image
+    5. Traverse through each pixel of the image and do the following:
+       - Convert the pixel value to binary
+       - Get the next bit of the message to be embedded
+       - Create a variable temp
+        If the message bit and the LSB of the pixel are same, set temp = 0
+				If the message bit and the LSB of the pixel are different, set temp = 1
+ 				This setting of temp can be done by taking XOR of message bit and the LSB of the pixel
+        Update the pixel of output image to input image pixel value + temp
+        
+    Keep updating the output image till all the bits in the message are embedded
+    Finally, write the input as well as the output image to local system.
+The decoding/decryption is done using the following steps:
+
+    1. Get the output image which was encoded earlier.
+    2. Input the length of the encoded message (character count).
+    3. Retrieve the LSBs of each pixel
+    4. Form a bit sequence from these LSBs
+    5. Arrange the bit sequence into a matrix of 8 rows and total_message_bits/8 columns 
+        (each column will represent a character of 8 bits, hence 8 rows)
+       - Convert the binary value to decimal
+       - Get the corresponding char from ascii
+  
+        
+    Finally, display the original message.
+
+https://en.wikipedia.org/wiki/YCbCr
+red 0.299,green 0.587 blue 0.114
+
+The script "picoultibo.sh" adds to the PATH openocd for the pico and QEMU for Ultibo.
+
+. Ultibo_Projects/picoultibo.sh
+
+
+
+The Lazarus IDE (Ultibo Edition) is used to create the "kernel.bin"
+
+From the main menu Run/Compile. If no errors a green bar appers.
+
+cd Ultibo_Projects/imgconv/QEMU
+
+~/Ultibo_Projects/imgconv/QEMU $ ./startqemu.sh
+
+While QEMU is running telnet, tftp and a webserver are provided.
+
+~/Ultibo_Projects/imgconv/QEMU $ telnet xx.xx.xx.xx 5023
+ (Type HELP for a list of available commands)
+>dir
+  Directory of C:\
+
+ 28-7-21 18:41:54                  53  Another File.txt
+ 28-7-21 18:41:54                  31  Test File.txt
+ 28-7-21 18:41:54       <DIR>          www
+ 10-1-22 12:25:18                  24  testfile
+ 10-1-22 23:54:30                  24  junk
+ 10-1-22 12:25:18                  24  256com
+ 5-2-22 17:32:46                65536  red
+ 28-7-21 18:44:28                  24  256decom
+ 28-7-21 18:44:28              196730  lena_rgb_256.bmp
+ 28-7-21 18:44:28              196730  MyBitmap.bmp
+ 5-2-22 17:41:56                 7848  test.j2k
+ 5-2-22 17:32:48                65536  green
+ 5-2-22 17:32:48                65536  blue
+ 5-2-22 17:32:48               196730  test_wr.bmp
+ 5-2-22 17:57:08               125663  lena_rgb_256.png
+ 7-2-22 12:54:36               196662  lena_rgb_256_fpng.bmp
+          15 file(s) 1117151 bytes
+          1 dir(s)
+
+C:\>logout
+Goodbye!
+Connection closed by foreign host.
+
+~/Ultibo_Projects/imgconv/QEMU $ tftp xx.xx.xx.xx 5069 
+tftp> binary
+tftp> get lena_rgb_256_fpng.bmp
+Received 196662 bytes in 2.8 seconds
+tftp> quit
+
+http://xx.xx.xx.xx:5080/status
+
+Uncommenting line 314 and recompiling provides debug information.
+red 0.299,green 0.587 blue 0.114
+ 
+Commenting 312 & 313 and recompiling shows the col row r g b valus
+of the input image.
+
