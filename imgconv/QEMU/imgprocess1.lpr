@@ -306,8 +306,11 @@ begin
         //R*0.29900 + Line[x].G*0.58700 + Line[x].B*0.11400
 
         clr.red:=round(clr.red*0.29900);
-        clr.blue:=round(clr.blue*0.58700);
-        clr.green:=round(clr.green*0.11400);
+        clr.blue:=round(clr.blue*0.11400);
+        clr.green:=round(clr.green*0.58700);
+        clr.green:=clr.red+clr.blue+clr.green;
+        clr.red:=0;
+        clr.blue:=0;
         //ConsoleWindowWriteLn(WindowHandle,intToStr(i)+' '+intToStr(j)+' '+intToStr(clr.red)+' '+intToStr(clr.blue) + ' ' +intToStr(clr.green) );
         //ConsoleWindowWriteLn(WindowHandle,intToStr(RED));
         //clr.Red=1;
