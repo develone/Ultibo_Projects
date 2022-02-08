@@ -42,6 +42,7 @@ uses
   { Add additional units here };
 
 function asciiValueToBinary(x0:LongWord):LongWord; cdecl; external 'libcvtutils' name 'asciiValueToBinary';
+procedure processstr(s:String); cdecl; external 'libcvtutils' name 'processstr';
 type
 
 CBC = record
@@ -425,7 +426,7 @@ begin
   ConsoleWindowWriteLn (WindowHandle, 'CBC1.StrKeyAsc ' + CBC1.StrKeyAsc);
   ConsoleWindowWriteLn (WindowHandle, 'CBC1.StrKeyHex ' + CBC1.StrKeyHex);
   ConsoleWindowWriteLn (WindowHandle,S2);
-
+  processstr(S2);
   xx := 52;
 
  ConsoleWindowWriteLn (WindowHandle,'first digit is ascii 4 52 dec is 00110100 ' + intToStr(xx));
