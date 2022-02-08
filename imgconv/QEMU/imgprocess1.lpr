@@ -432,6 +432,22 @@ begin
 
  xx:= asciiValueToBinary(xx);
  ConsoleWindowWriteLn (WindowHandle,intToStr(xx));
+
+ xx := 101;
+
+ ConsoleWindowWriteLn (WindowHandle,'2nd digit is ascii e 101 dec is 01100101 ' + intToStr(xx));
+
+ xx:= asciiValueToBinary(xx);
+ ConsoleWindowWriteLn (WindowHandle,intToStr(xx));
+
+
+
+ xx := 54;
+
+ ConsoleWindowWriteLn (WindowHandle,'3rd digit is ascii 6 54 dec is 01100110 ' + intToStr(xx));
+
+ xx:= asciiValueToBinary(xx);
+ ConsoleWindowWriteLn (WindowHandle,intToStr(xx));
  ThreadHalt(0);
 
 end.
