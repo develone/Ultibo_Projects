@@ -43,6 +43,7 @@ uses
 
 function asciiValueToBinary(x0:LongWord):LongWord; cdecl; external 'libcvtutils' name 'asciiValueToBinary';
 procedure processstr(s:String); cdecl; external 'libcvtutils' name 'processstr';
+ //function processstr(s:String):String; cdecl; external 'libcvtutils' name 'processstr';
 type
 
 CBC = record
@@ -421,34 +422,14 @@ begin
 
  {Halt the main thread here}
  CBC1.StrKeyAsc:='Now we are engaged in a great ci';
+ //CBC1.StrKeyAsc:='23AE14F4A7B2DC7F1DD89CF6F07E4048';
   S1:=CBC1.StrKeyAsc;
   S2:=BytesToString(PByte(S1),Length(S1) * SizeOf(Char));
   ConsoleWindowWriteLn (WindowHandle, 'CBC1.StrKeyAsc ' + CBC1.StrKeyAsc);
   ConsoleWindowWriteLn (WindowHandle, 'CBC1.StrKeyHex ' + CBC1.StrKeyHex);
   ConsoleWindowWriteLn (WindowHandle,S2);
-  processstr(S2);
-  xx := 52;
+  processstr(S1);
 
- ConsoleWindowWriteLn (WindowHandle,'first digit is ascii 4 52 dec is 00110100 ' + intToStr(xx));
-
- xx:= asciiValueToBinary(xx);
- ConsoleWindowWriteLn (WindowHandle,intToStr(xx));
-
- xx := 101;
-
- ConsoleWindowWriteLn (WindowHandle,'2nd digit is ascii e 101 dec is 01100101 ' + intToStr(xx));
-
- xx:= asciiValueToBinary(xx);
- ConsoleWindowWriteLn (WindowHandle,intToStr(xx));
-
-
-
- xx := 54;
-
- ConsoleWindowWriteLn (WindowHandle,'3rd digit is ascii 6 54 dec is 01100110 ' + intToStr(xx));
-
- xx:= asciiValueToBinary(xx);
- ConsoleWindowWriteLn (WindowHandle,intToStr(xx));
  ThreadHalt(0);
 
 end.

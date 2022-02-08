@@ -17,11 +17,13 @@ int asciiValueToBinary(int asciiInput)
 }
 
 void processstr(char  *x) {
-int i;
-//printf("%d %d\n",sizeof(x),strlen(x));
-//printf("%s\n",x);
-for(i=0;i<strlen(x);i++) {
-	printf("%08d",asciiValueToBinary(*x));
+int i,l;
+l=strlen(x); 
+ 
+//printf("C %d %s\n",l,x);
+for(i=0;i<l;i++) {
+	printf("%d %08d ",i,asciiValueToBinary(*x));
+  //printf("%08d",asciiValueToBinary(*x));
 	x++;
 }
 printf("\n");
