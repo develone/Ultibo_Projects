@@ -9,18 +9,21 @@ end
 L=256;
 image_hide=I;
 
-message=input('Please enter the message you want to hide: ','s');
+%message=input('Please enter the message you want to hide: ','s');
+message='Now we are engaged in a great ci';
 % Each character occupies a byte, so total bits can be found by multiplying
 % string length by 8
-len=strlength(message)*8; 
+%len=strlength(message)*8;
+len=256; 
 ascii_values=uint8(message);   
 ascii2binary=dec2bin(ascii_values,8);
 
 % Append all binary equivalents of ascii values into one string
-binary_sequence='';  
-for i=1:strlength(message)
-    binary_sequence=append(binary_sequence,ascii2binary(i,:));
-end
+%binary_sequence='';
+binary_sequence='0100111001101111011101110010000001110111011001010010000001100001011100100110010100100000011001010110111001100111011000010110011101100101011001000010000001101001011011100010000001100001001000000110011101110010011001010110000101110100001000000110001101101001'; 
+%for i=1:strlength(message)
+    %binary_sequence=append(binary_sequence,ascii2binary(i,:));
+%end
 
 % To track how many bits of message have been hidden
 bitCount=1;
