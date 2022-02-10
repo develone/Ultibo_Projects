@@ -365,14 +365,14 @@ begin
  WebStatusRegister(HTTPListener,'','',True);
 
  ConsoleWindowWriteLn(WindowHandle,'Initing');
- Reader := TFPReaderPNG.create;
- ConsoleWindowWriteLn(WindowHandle,'Reader bmp');
- Writer := TFPWriterBMP.Create;
+ Reader := TFPReaderPNM.create;
+ ConsoleWindowWriteLn(WindowHandle,'Reader pnm');
+ Writer := TFPWriterPNG.Create;
  ConsoleWindowWriteLn(WindowHandle,'Writer png');
 
- ReadFile := 'lena_rgb_256.png';
- WriteFile := 'lena_rgb_256_fpng.bmp';
- WriteOptions := 'B';
+ ReadFile := 'lena_256.pnm';
+ WriteFile := 'lena_256_fpnm.png';
+ WriteOptions := 'P';
 
  img := TFPMemoryImage.Create(0,0);
 
@@ -398,12 +398,12 @@ begin
         clr := img.Colors[i, j];
         //R*0.29900 + Line[x].G*0.58700 + Line[x].B*0.11400
 
-        clr.red:=round(clr.red*0.29900);
-        clr.blue:=round(clr.blue*0.11400);
-        clr.green:=round(clr.green*0.58700);
-        clr.green:=clr.red+clr.blue+clr.green;
-        clr.red:=0;
-        clr.blue:=0;
+        //clr.red:=round(clr.red*0.29900);
+        //clr.blue:=round(clr.blue*0.11400);
+        //clr.green:=round(clr.green*0.58700);
+        //clr.green:=clr.red+clr.blue+clr.green;
+        //clr.red:=0;
+        //clr.blue:=0;
         //ConsoleWindowWriteLn(WindowHandle,intToStr(i)+' '+intToStr(j)+' '+intToStr(clr.red)+' '+intToStr(clr.blue) + ' ' +intToStr(clr.green) );
         //ConsoleWindowWriteLn(WindowHandle,intToStr(RED));
         //clr.Red=1;
