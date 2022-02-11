@@ -37,13 +37,16 @@ uses
   Logging,
   Syscalls,     {Include the Syscalls unit to provide C library support}
   Crypto,
-  APICrypto
+  APICrypto,
+  uFromC
+
 
   { Add additional units here };
 
 function asciiValueToBinary(x0:LongWord):LongWord; cdecl; external 'libcvtutils' name 'asciiValueToBinary';
 procedure processstr(s:String); cdecl; external 'libcvtutils' name 'processstr';
- //function processstr(s:String):String; cdecl; external 'libcvtutils' name 'processstr';
+//procedure ReturnFromProcessStr(Value: PChar); cdecl; public name 'returnfromprocessstr';
+
 type
 
 CBC = record
@@ -78,7 +81,7 @@ GCM = record
   ExpectedTag:array [1..32] of String[80];
 end;
 
-var img : TFPMemoryImage;
+var img: TFPMemoryImage;
 reader : TFPCustomImageReader;
 Writer : TFPCustomimageWriter;
 ReadFile, WriteFile, WriteOptions : string;
@@ -143,8 +146,10 @@ ReadFile, WriteFile, WriteOptions : string;
  Filename:String;
  StringList:TStringList;
  FileStream:TFileStream;
+
  S1,S2:String;
  xx : LongWord;
+ databuffer :PChar;
 
 
 
@@ -365,14 +370,15 @@ begin
  WebStatusRegister(HTTPListener,'','',True);
 
  ConsoleWindowWriteLn(WindowHandle,'Initing');
- Reader := TFPReaderPNM.create;
- ConsoleWindowWriteLn(WindowHandle,'Reader pnm');
+ Reader := TFPReaderPNG.create;
+ ConsoleWindowWriteLn(WindowHandle,'Reader png');
  Writer := TFPWriterPNG.Create;
  ConsoleWindowWriteLn(WindowHandle,'Writer png');
 
- ReadFile := 'lena_256.pnm';
- WriteFile := 'lena_256_fpnm.png';
+ ReadFile := 'input.png';
+ WriteFile := 'GrayScale.png';
  WriteOptions := 'P';
+
 
  img := TFPMemoryImage.Create(0,0);
 
@@ -385,12 +391,12 @@ begin
  ConsoleWindowWriteLn(WindowHandle,'  img create & UsePalette false');
  ConsoleWindowWriteLn(WindowHandle,'Calling ReadImage ReadFile '+ReadFile);
  if assigned (reader) then
-    ConsoleWindowWriteLn(WindowHandle,'reader is assigned')
+    ConsoleWindowWriteLn(WindowHandle,'img reader is assigned')
  else
-    ConsoleWindowWriteLn(WindowHandle,'reader is not assigned');
+    ConsoleWindowWriteLn(WindowHandle,'img reader is not assigned');
  ReadImage;
    h:=img.Height;
- w:=img.Width;
+   w:=img.Width;
  ConsoleWindowWriteLn(WindowHandle,'Height ' + intToStr(h)+' Width '+intToStr(w));
  for j := 0 to img.Height - 1 do
       for i := 0 to img.Width - 1 do
@@ -398,12 +404,12 @@ begin
         clr := img.Colors[i, j];
         //R*0.29900 + Line[x].G*0.58700 + Line[x].B*0.11400
 
-        //clr.red:=round(clr.red*0.29900);
-        //clr.blue:=round(clr.blue*0.11400);
-        //clr.green:=round(clr.green*0.58700);
-        //clr.green:=clr.red+clr.blue+clr.green;
-        //clr.red:=0;
-        //clr.blue:=0;
+        clr.red:=round(clr.red*0.29900);
+        clr.blue:=round(clr.blue*0.11400);
+        clr.green:=round(clr.green*0.58700);
+        clr.green:=clr.red+clr.blue+clr.green;
+        clr.red:=clr.green;
+        clr.blue:=clr.green;
         //ConsoleWindowWriteLn(WindowHandle,intToStr(i)+' '+intToStr(j)+' '+intToStr(clr.red)+' '+intToStr(clr.blue) + ' ' +intToStr(clr.green) );
         //ConsoleWindowWriteLn(WindowHandle,intToStr(RED));
         //clr.Red=1;
@@ -414,13 +420,6 @@ begin
       end;
 
 
- ConsoleWindowWriteLn(WindowHandle,'Calling WriteImage WriteFile '+WriteFile +' ' + WriteOptions);
-
-
- WriteImage;
- Clean;
-
- {Halt the main thread here}
  CBC1.StrKeyAsc:='Now we are engaged in a great ci';
  //CBC1.StrKeyAsc:='23AE14F4A7B2DC7F1DD89CF6F07E4048';
   S1:=CBC1.StrKeyAsc;
@@ -429,6 +428,13 @@ begin
   ConsoleWindowWriteLn (WindowHandle, 'CBC1.StrKeyHex ' + CBC1.StrKeyHex);
   ConsoleWindowWriteLn (WindowHandle,S2);
   processstr(S1);
+  //returnfromprocessstr(databuffer);
+
+ ConsoleWindowWriteLn(WindowHandle,'Calling WriteImage WriteFile '+WriteFile +' ' + WriteOptions);
+
+ WriteImage;
+
+ Clean;
 
  ThreadHalt(0);
 
