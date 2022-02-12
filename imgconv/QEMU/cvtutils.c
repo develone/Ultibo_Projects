@@ -31,7 +31,7 @@ void processstr(char  *x)
     strbuf = bitstr;
     
     for(i=0;i<l;i++) {
-        printf("%d %08d ",i,asciiValueToBinary(*x));
+        //printf("%d %08d ",i,asciiValueToBinary(*x));
         //printf("%08d",asciiValueToBinary(*x));
         outstr[i]=asciiValueToBinary(*x);
         sprintf(strbuf, "%08d", outstr[i]);
@@ -39,38 +39,10 @@ void processstr(char  *x)
         strbuf+=8;
     }
 
-    printf("\n");
+   // printf("\n");
     //for(i=0;i<l;i++) printf("%08d",outstr[i]);
     printf(bitstr);
     printf("\n");
 }
 
-char * returnfromprocessstr(char  *x)
-{
-    int i, l;
-    l=strlen(x); 
-    
-    int outstr[l]; 
-    
-    char bitstr[l * 8];
-    char *strbuf;
-    
-    //printf("C %d %s\n",l,x);
-    
-    strbuf = bitstr;
-    
-    for(i=0;i<l;i++) {
-        printf("%d %08d ",i,asciiValueToBinary(*x));
-        //printf("%08d",asciiValueToBinary(*x));
-        outstr[i]=asciiValueToBinary(*x);
-        sprintf(strbuf, "%08d", outstr[i]);
-        x++;
-        strbuf+=8;
-    }
-
-    printf("\n");
-    //for(i=0;i<l;i++) printf("%08d",outstr[i]);
-    printf(bitstr);
-    printf("\n");
-		return(strbuf);
-}
+ 
