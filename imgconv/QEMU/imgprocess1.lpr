@@ -436,7 +436,8 @@ begin
   ConsoleWindowWriteLn (WindowHandle,'this was sent before '+S1);
   //B:=CBC1.StrKeyAsc;
   B:=S1;
-
+  BP:=@B;
+  ConsoleWindowWriteLn (WindowHandle,'checking that BP points to string '+BP^[1]+BP^[2]+BP^[3]);
   ConsoleWindowWriteLn (WindowHandle,'This is the data in the buffer B '+B);
   ConsoleWindowWriteLn (WindowHandle,'Setting PP to the value of BP the BufPtr ');
   PP:=BP;
