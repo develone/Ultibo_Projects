@@ -1,0 +1,82 @@
+Given Pascal procedure ReturnFromProcessStr(Value: PChar); cdecl; public name 'returnfromprocessstr'; where 
+'returnfromprocessstr' is C function declared in  cvtutlils.c linked to Pascal bare metal.  This procedure is
+defined in the uFromC.pas.
+Calling a 2nd C function declared in  cvtutlils.c linked to Pascal bare metal, which calls a C function to process 
+data sent from Pascal and then call the function in Pascal returning the data processed by C.  
+
+https://ultibo.org/forum/viewtopic.php?p=12678#p12678
+Hi, sorry for the confusion but you need to call the function from your C code in order for anything to happen.
+
+So if you modify your processstr() procedure to call returnfromprocessstr() like this:
+
+void returnfromprocessstr(char *x);
+
+void processstr(char  *x)
+{
+    int i, l;
+    l=strlen(x); 
+    
+    int outstr[l]; 
+    
+    char bitstr[l * 8];
+    char *strbuf;
+    
+    //printf("C %d %s\n",l,x);
+    
+    strbuf = bitstr;
+    
+    for(i=0;i<l;i++) {
+        //printf("%d %08d ",i,asciiValueToBinary(*x));
+        //printf("%08d",asciiValueToBinary(*x));
+        outstr[i]=asciiValueToBinary(*x);
+        sprintf(strbuf, "%08d", outstr[i]);
+        x++;
+        strbuf+=8;
+    }
+
+    //printf("\n");
+    //for(i=0;i<l;i++) printf("%08d",outstr[i]);
+    printf(bitstr);
+    printf("\n");
+    returnfromprocessstr(bitstr);
+}
+And then modify your ReturnFromProcessStr() to save the returned value, for the sake of the example I'm also printing it to the console.
+unit uFromC;
+
+{$mode objfpc}{$H+}
+{$linklib cvtutils}
+interface
+uses
+  GlobalConfig,
+  GlobalConst;
+  
+var
+  ProcessStrResult:String;
+
+procedure ReturnFromProcessStr(Value: PChar); cdecl; public name 'returnfromprocessstr';
+
+implementation
+
+procedure ReturnFromProcessStr(Value: PChar); cdecl;
+
+
+begin
+  // Do something with the value supplied
+  writeLn('In pascal ReturnFromProcessStr calling calling  C returnfromprocessstr');
+  
+  // Print the value to the console
+  writeLn('Value from C is ' + Value);
+  
+  // Save the value to a variable so it can be used elsewhere
+  ProcessStrResult := Value;
+end;
+
+end.
+
+If you then call processstr() from you application when the call returns the result will be in the ProcessStrResult variable.
+
+
+ processstr('Now we are engaged in a great ci');
+ ConsoleWindowWriteLn(WindowHandle,'ProcessStrResult = ' + ProcessStrResult);
+
+

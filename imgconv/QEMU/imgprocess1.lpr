@@ -44,7 +44,7 @@ uses
   { Add additional units here };
 
 function asciiValueToBinary(x0:LongWord):LongWord; cdecl; external 'libcvtutils' name 'asciiValueToBinary';
-//procedure processstr(s:String); cdecl; external 'libcvtutils' name 'processstr';
+procedure processstr(s:String); cdecl; external 'libcvtutils' name 'processstr';
 //procedure ReturnFromProcessStr(Value: PChar); cdecl; public name 'returnfromprocessstr';
 
 type
@@ -432,22 +432,22 @@ begin
   ConsoleWindowWriteLn (WindowHandle, 'CBC1.StrKeyAsc ' + CBC1.StrKeyAsc);
   ConsoleWindowWriteLn (WindowHandle, 'CBC1.StrKeyHex ' + CBC1.StrKeyHex);
   ConsoleWindowWriteLn (WindowHandle,S2);
-  //processstr(S1);
-  ConsoleWindowWriteLn (WindowHandle,'this was sent before '+S1);
-  //B:=CBC1.StrKeyAsc;
+
+
+
   B:=S1;
   BP:=@B;
-  ConsoleWindowWriteLn (WindowHandle,'checking that BP points to string '+BP^[1]+BP^[2]+BP^[3]);
+  //ConsoleWindowWriteLn (WindowHandle,'checking that BP points to string '+BP^[1]+BP^[2]+BP^[3]);
   ConsoleWindowWriteLn (WindowHandle,'This is the data in the buffer B '+B);
   ConsoleWindowWriteLn (WindowHandle,'Setting PP to the value of BP the BufPtr ');
   PP:=BP;
   ConsoleWindowWriteLn (WindowHandle,'PP is the pointer passed to returnfromprocessstr ');
-  returnfromprocessstr(PP);
-  ConsoleWindowWriteLn (WindowHandle,'Not seeing the value of bitstr displayed like ./bitstring');
-  {./bitstring 0100111001101111011101110010000001110111011001010010000001100001011100100110010100100000011001010110111001100111011000010110011101100101011001000010000001101001011011100010000001100001001000000110011101110010011001010110000101110100001000000110001101101001}
-  S1:='0100111001101111011101110010000001110111011001010010000001100001011100100110010100100000011001010110111001100111011000010110011101100101011001000010000001101001011011100010000001100001001000000110011101110010011001010110000101110100001000000110001101101001';
-  ConsoleWindowWriteLn(WindowHandle,'');
-  ConsoleWindowWriteLn(WindowHandle,'This is what should be displayed twice '+S1);
+
+ processstr('Now we are engaged in a great ci');
+ ConsoleWindowWriteLn(WindowHandle,'ProcessStrResult = ' + ProcessStrResult);
+
+
+
 
   ConsoleWindowWriteLn(WindowHandle,'Calling WriteImage WriteFile '+WriteFile +' ' + WriteOptions);
 

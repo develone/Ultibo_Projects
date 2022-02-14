@@ -1,0 +1,48 @@
+Program pointers;  
+type  
+  Buffer = String[255];  
+  BufPtr = ^Buffer;  
+Var B  : Buffer;  
+    BP : BufPtr;  
+    PP : Pointer; 
+In this example, BP is a pointer to a Buffer type; while B is a variable of type Buffer. B takes 256 bytes memory, and BP only takes 4 (or 8) bytes of memory: enough memory to store an address. 
+The expression
+ BP^
+
+is known as the dereferencing of BP. The result is of type Buffer, so
+ BP^[23]
+
+Denotes the 23rd character in the string pointed to by BP. 
+
+https://techpubs.jurassic.nl/manuals/0530/developer/Pascal_PG/sgi_html/ch04.html
+So suppose you have a procedure in Ultibo called ReturnFromProcessStr() like this:
+
+interface
+
+procedure ReturnFromProcessStr(Value: PChar);
+
+implementation
+
+procedure ReturnFromProcessStr(Value: PChar);
+begin
+  // Do something with the value supplied
+end;
+
+You can make that procedure accessible to the C code by changing the declaration to use C calling convention (cdecl) and making it public like this:
+
+interface
+
+procedure ReturnFromProcessStr(Value: PChar); cdecl; public name 'returnfromprocessstr';
+
+implementation
+
+procedure ReturnFromProcessStr(Value: PChar); cdecl;
+begin
+  // Do something with the value supplied
+end;
+
+Then you simply call the function from C like this:
+
+
+  returnfromprocessstr(databuffer);
+  

@@ -16,6 +16,8 @@ int asciiValueToBinary(int asciiInput)
 	return(res);
 }
 
+void returnfromprocessstr(char *x);
+
 void processstr(char  *x)
 {
     int i, l;
@@ -39,10 +41,11 @@ void processstr(char  *x)
         strbuf+=8;
     }
 
-   // printf("\n");
+    //printf("\n");
     //for(i=0;i<l;i++) printf("%08d",outstr[i]);
     printf(bitstr);
     printf("\n");
+    returnfromprocessstr(bitstr);
 }
 
  

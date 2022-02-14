@@ -44,7 +44,7 @@ Disassembly of section .text:
   84:	e3a0400a 	mov	r4, #10
   88:	e5f53001 	ldrb	r3, [r5, #1]!
   8c:	e3530000 	cmp	r3, #0
-  90:	0a000014 	beq	e8 <processstr+0xb4>
+  90:	0a000016 	beq	f0 <processstr+0xbc>
   94:	e3a0c000 	mov	ip, #0
   98:	e3a02001 	mov	r2, #1
   9c:	e2031001 	and	r1, r3, #1
@@ -64,7 +64,9 @@ Disassembly of section .text:
   d4:	ebfffffe 	bl	0 <printf>
   d8:	e3a0000a 	mov	r0, #10
   dc:	ebfffffe 	bl	0 <putchar>
-  e0:	e24bd024 	sub	sp, fp, #36	; 0x24
-  e4:	e8bd8ff8 	pop	{r3, r4, r5, r6, r7, r8, r9, sl, fp, pc}
-  e8:	e1a0c003 	mov	ip, r3
-  ec:	eaffffef 	b	b0 <processstr+0x7c>
+  e0:	e1a00009 	mov	r0, r9
+  e4:	ebfffffe 	bl	0 <returnfromprocessstr>
+  e8:	e24bd024 	sub	sp, fp, #36	; 0x24
+  ec:	e8bd8ff8 	pop	{r3, r4, r5, r6, r7, r8, r9, sl, fp, pc}
+  f0:	e1a0c003 	mov	ip, r3
+  f4:	eaffffed 	b	b0 <processstr+0x7c>
