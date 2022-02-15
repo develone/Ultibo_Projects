@@ -22,7 +22,7 @@ begin
   writeLn('In pascal ReturnFromProcessStr calling calling  C returnfromprocessstr');
 
   // Print the value to the console
-  writeLn('Value from C is ' + Value);
+  //writeLn('Value from C is ' + Value);
 
   // Save the value to a variable so it can be used elsewhere
   ProcessStrResult := Value;

@@ -48,7 +48,14 @@ procedure processstr(s:String); cdecl; external 'libcvtutils' name 'processstr';
 //procedure ReturnFromProcessStr(Value: PChar); cdecl; public name 'returnfromprocessstr';
 
 type
-
+  MODR = array[0..255,0..255] of word;
+  MODRPtr = ^MODR;
+  XORR = array[0..255,0..255] of word;
+  XORRPtr = ^XORR;
+  TLSB = array[0..255,0..255] of word;
+  TLSBPtr = ^TLSB;
+  Lsb = array[0..31] of byte;
+  lsbPtr = ^Lsb;
   Buffer = String[255];
   BufPtr = ^Buffer;
 
@@ -156,8 +163,11 @@ ReadFile, WriteFile, WriteOptions : string;
  B  : Buffer;
  BP : BufPtr;
  PP : Pointer;
-
-
+ bb : Lsb;
+ bbp : LsbPtr;
+ modbuf : MODR;
+ xorbuf : XORR;
+ tlsbbuf : TLSB;
 
     function WaitForIPComplete : string;
 
@@ -400,29 +410,6 @@ begin
  else
     ConsoleWindowWriteLn(WindowHandle,'img reader is not assigned');
  ReadImage;
-   h:=img.Height;
-   w:=img.Width;
- ConsoleWindowWriteLn(WindowHandle,'Height ' + intToStr(h)+' Width '+intToStr(w));
- for j := 0 to img.Height - 1 do
-      for i := 0 to img.Width - 1 do
-      begin
-        clr := img.Colors[i, j];
-        //R*0.29900 + Line[x].G*0.58700 + Line[x].B*0.11400
-
-        clr.red:=round(clr.red*0.29900);
-        clr.blue:=round(clr.blue*0.11400);
-        clr.green:=round(clr.green*0.58700);
-        clr.green:=clr.red+clr.blue+clr.green;
-        clr.red:=clr.green;
-        clr.blue:=clr.green;
-        //ConsoleWindowWriteLn(WindowHandle,intToStr(i)+' '+intToStr(j)+' '+intToStr(clr.red)+' '+intToStr(clr.blue) + ' ' +intToStr(clr.green) );
-        //ConsoleWindowWriteLn(WindowHandle,intToStr(RED));
-        //clr.Red=1;
-        //((clr.Red / 65535)**AGamma)*65535);
-        //clr.Green := round(((clr.Green / 65535)**AGamma)*65535);
-        //clr.Blue := round(((clr.Blue / 65535)**AGamma)*65535);
-        img.Colors[i, j] := clr;
-      end;
 
 
  CBC1.StrKeyAsc:='Now we are engaged in a great ci';
@@ -444,9 +431,47 @@ begin
   ConsoleWindowWriteLn (WindowHandle,'PP is the pointer passed to returnfromprocessstr ');
 
  processstr('Now we are engaged in a great ci');
- ConsoleWindowWriteLn(WindowHandle,'ProcessStrResult = ' + ProcessStrResult);
+ //ConsoleWindowWriteLn(WindowHandle,'ProcessStrResult = ' + ProcessStrResult);
+ i:=length(ProcessStrResult);
+ B:=ProcessStrResult;
+ BP:=@B;
+ bbp:=@bb;
+ i:=8;
+ while(i<256) do
+ begin
+      S1:=BP^[i];
+      bbp^[i-8]:=strToInt(S1);
+      ConsoleWindowWrite(WindowHandle,intToStr(i)+' '+S1+' '+intToStr(bbp^[i-8]) +' ');
+      i:=i+8;
 
+ end;
 
+ ConsoleWindowWriteLn(WindowHandle,' ');
+
+   h:=img.Height;
+   w:=img.Width;
+ ConsoleWindowWriteLn(WindowHandle,'Height ' + intToStr(h)+' Width '+intToStr(w));
+ for j := 0 to img.Height - 1 do
+      for i := 0 to img.Width - 1 do
+      begin
+        clr := img.Colors[i, j];
+        //R*0.29900 + Line[x].G*0.58700 + Line[x].B*0.11400
+
+        clr.red:=round(clr.red*0.29900);
+        clr.blue:=round(clr.blue*0.11400);
+        clr.green:=round(clr.green*0.58700);
+        clr.green:=clr.red+clr.blue+clr.green;
+        clr.red:=clr.green;
+        clr.blue:=clr.green;
+        modbuf[i,j] := clr.red mod 2;
+        xorbuf[i,j] := modbuf[i,j] xor 0;
+        {x mod y 42668 (0) even 0 odd 1 40859 (1)
+        ModRed 0 XORRed 1 temp 1 ModRed 1 XORRed 1 temp 0
+        ModRed 0 XORRed 0 temp 0 ModRed 1 XORRed 0 temp 1}
+        ConsoleWindowWriteLn(WindowHandle,intToStr(i)+' '+intToStr(j)+' '+intToStr(modbuf[i,j])+' '+intToStr(xorbuf[i,j])+' '+intToStr(clr.red));
+
+        img.Colors[i, j] := clr;
+      end;
 
 
   ConsoleWindowWriteLn(WindowHandle,'Calling WriteImage WriteFile '+WriteFile +' ' + WriteOptions);
