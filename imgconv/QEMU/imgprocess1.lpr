@@ -54,7 +54,7 @@ type
   XORRPtr = ^XORR;
   TLSB = array[0..255,0..255] of word;
   TLSBPtr = ^TLSB;
-  Lsb = array[0..31] of byte;
+  Lsb = array[0..255] of byte;
   lsbPtr = ^Lsb;
   Buffer = String[255];
   BufPtr = ^Buffer;
@@ -104,7 +104,7 @@ ReadFile, WriteFile, WriteOptions : string;
     TCP : TWinsock2TCPClient;
     IPAddress : string;
 
-    h, w: Integer;
+    h, w, bitcount,xorbit : Integer;
     clr: TFPColor;
     i, j: Integer;
     Red, Blue, Green : word;
@@ -158,7 +158,7 @@ ReadFile, WriteFile, WriteOptions : string;
  FileStream:TFileStream;
 
  S1,S2:String;
- xx : LongWord;
+ xx,yy : LongWord;
  databuffer :PChar;
  B  : Buffer;
  BP : BufPtr;
@@ -338,8 +338,11 @@ begin
 end;
 
 begin
-  { Add your program code here }
-
+  { Add your program code here
+  LoggingDeviceSetTarget(LoggingDeviceFindByType(LOGGING_TYPE_FILE),'c:\ultibologging.log');
+ LoggingDeviceSetDefault(LoggingDeviceFindByType(LOGGING_TYPE_FILE));
+ MyPLoggingDevice:=LoggingDeviceGetDefault;
+ LoggingDeviceRedirectOutput(MyPLoggingDevice);}
   {Create a console window as usual}
   WindowHandle:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_FULL,True);
 
@@ -392,6 +395,7 @@ begin
 
  ReadFile := 'input.png';
  WriteFile := 'GrayScale.png';
+ //WriteOptions := 'P GrayScale';
  WriteOptions := 'P';
 
 
@@ -436,24 +440,47 @@ begin
  B:=ProcessStrResult;
  BP:=@B;
  bbp:=@bb;
- i:=8;
+ i:=1;
+ j:=0;
  while(i<256) do
  begin
       S1:=BP^[i];
-      bbp^[i-8]:=strToInt(S1);
-      ConsoleWindowWrite(WindowHandle,intToStr(i)+' '+S1+' '+intToStr(bbp^[i-8]) +' ');
-      i:=i+8;
+
+
+      bbp^[j]:=strToInt(S1) and $0f;
+      ConsoleWindowWrite(WindowHandle,S1);
+      //ConsoleWindowWrite(WindowHandle,intToStr(i)+' '+intToStr(j)+' '+S1+' '+intToStr(bbp^[j]) +' ');
+      i:=i+1;
+      j:=j+1;
 
  end;
 
  ConsoleWindowWriteLn(WindowHandle,' ');
 
+ i:=0;
+
+ while(i<256) do
+ begin
+      //S1:=BP^[i];
+      //bbp^[i-8]:=strToInt(S1);
+      ConsoleWindowWrite(WindowHandle,intToStr(i)+ ' '+intToStr(bbp^[i]) +' ');
+      i:=i+1;
+
+
+ end;
+
+ ConsoleWindowWriteLn(WindowHandle,' ');
+
+
    h:=img.Height;
    w:=img.Width;
+   bitcount:=0;
  ConsoleWindowWriteLn(WindowHandle,'Height ' + intToStr(h)+' Width '+intToStr(w));
  for j := 0 to img.Height - 1 do
       for i := 0 to img.Width - 1 do
       begin
+        //if(i=0) then
+                //bitcount:=0;
         clr := img.Colors[i, j];
         //R*0.29900 + Line[x].G*0.58700 + Line[x].B*0.11400
 
@@ -464,12 +491,19 @@ begin
         clr.red:=clr.green;
         clr.blue:=clr.green;
         modbuf[i,j] := clr.red mod 2;
-        xorbuf[i,j] := modbuf[i,j] xor 0;
+        //bitcount:= i + 8;
+        {xorbit := bbp^[bitcount];
+         ConsoleWindowWriteLn(WindowHandle,intToStr(i)+' bitcount '+intToStr(bitcount)+' xorbit '+intToStr(xorbit)); }
+
+        xx := modbuf[i,j] xor bbp^[i];
+        clr.red:=clr.red+xx;
         {x mod y 42668 (0) even 0 odd 1 40859 (1)
         ModRed 0 XORRed 1 temp 1 ModRed 1 XORRed 1 temp 0
         ModRed 0 XORRed 0 temp 0 ModRed 1 XORRed 0 temp 1}
-        ConsoleWindowWriteLn(WindowHandle,intToStr(i)+' '+intToStr(j)+' '+intToStr(modbuf[i,j])+' '+intToStr(xorbuf[i,j])+' '+intToStr(clr.red));
-
+        //ConsoleWindowWriteLn(WindowHandle,intToStr(i)+' '+intToStr(j)+' '+intToStr(modbuf[i,j])+' '+intToStr(xx)+' '+intToStr(clr.red)+' '+intToStr(clr.green));
+        clr.green:=clr.red;
+        clr.blue:=clr.red;
+        //ConsoleWindowWriteLn(WindowHandle,intToStr(i)+' '+intToStr(j)+' '+intToStr(clr.red)+' '+intToStr(clr.green)+' '+intToStr(clr.blue));
         img.Colors[i, j] := clr;
       end;
 
