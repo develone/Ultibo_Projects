@@ -477,6 +477,7 @@ begin
    bitcount:=0;
  ConsoleWindowWriteLn(WindowHandle,'Height ' + intToStr(h)+' Width '+intToStr(w));
  for j := 0 to img.Height - 1 do
+     begin
       for i := 0 to img.Width - 1 do
       begin
         //if(i=0) then
@@ -506,7 +507,7 @@ begin
         //ConsoleWindowWriteLn(WindowHandle,intToStr(i)+' '+intToStr(j)+' '+intToStr(clr.red)+' '+intToStr(clr.green)+' '+intToStr(clr.blue));
         img.Colors[i, j] := clr;
       end;
-
+   end;
 
   ConsoleWindowWriteLn(WindowHandle,'Calling WriteImage WriteFile '+WriteFile +' ' + WriteOptions);
 
