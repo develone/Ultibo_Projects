@@ -395,8 +395,8 @@ begin
 
  ReadFile := 'input.png';
  WriteFile := 'GrayScale.png';
- //WriteOptions := 'P GrayScale';
- WriteOptions := 'P';
+ WriteOptions := 'P GrayScale';
+ //WriteOptions := 'P';
 
 
  img := TFPMemoryImage.Create(0,0);
@@ -508,7 +508,26 @@ begin
         img.Colors[i, j] := clr;
       end;
    end;
+   ConsoleWindowWriteLn(WindowHandle,'Decrypt Intial Steps');
+  //for j := 0 to img.Height - 1 do
+     begin
+      //for i := 0 to   1 do
+      for i := 0 to img.Width - 1 do
+      begin
+           clr := img.Colors[i, j];
+           modbuf[i,j] := clr.red mod 2 ;
+           S1:=intToStr(modbuf[i,j]);
+           //BP^[i]:=S1;
+           //ConsoleWindowWrite(WindowHandle,intToStr(modbuf[i,j])+' ');
+           ConsoleWindowWrite(WindowHandle,S1);
+           //BP^[i]:=intToStr(modbuf[i,j]);
+           //B[i]:=intToStr(modbuf[i,j]);
+           img.Colors[i, j] := clr;
 
+      end;
+      ConsoleWindowWriteLn(WindowHandle,' ');
+ end;
+ ConsoleWindowWriteLn(WindowHandle,' ');
   ConsoleWindowWriteLn(WindowHandle,'Calling WriteImage WriteFile '+WriteFile +' ' + WriteOptions);
 
  WriteImage;
