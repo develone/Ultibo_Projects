@@ -349,23 +349,9 @@ begin
  LoggingDeviceRedirectOutput(MyPLoggingDevice);}
   {Create a console window as usual}
   WindowHandle:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_FULL,True);
-  Filename:='C:\debug.txt';
-  if FileExists(Filename) then
-  begin
-   {If it does exist we can delete it}
-   ConsoleWindowWriteLn(WindowHandle,'Deleting the file ' + Filename);
-   DeleteFile('C:\debug.txt');
-  end;
-  {Now create the file, let's use a TFileStream class to do this. We pass both the
-  filename and the mode to TFileStream. fmCreate tells it to create a new file.}
- ConsoleWindowWriteLn(WindowHandle,'Creating a new file ' + Filename);
- {TFileStream will raise an exception if creating the file fails}
 
-   {If you remove the SD card and put in back in your computer, you should see the
-    file "Example 08 File Handling.txt" on it. If you open it in a notepad you should
-    see the contents exactly as they appeared on screen.}
 
-  ConsoleWindowWriteLn(WindowHandle,'Starting FPImage Imgconv');
+  ConsoleWindowWriteLn(WindowHandle,'Starting FPImage imgprocess1');
     // Prompt for file type
  {ConsoleWindowWrite(WindowHandle,'Enter Input file type (X for XPM, P for PNG, B for BMP, J for JPEG, T for TGA): ');
  ConsoleWindowReadLn(WindowHandle,INPUTFILEType);
@@ -391,7 +377,21 @@ begin
   Sleep(5000);
   ConsoleWindowWriteLn(WindowHandle,'C:\ drive is ready');
   ConsoleWindowWriteLn(WindowHandle,'');
+  Filename:='C:\debug.txt';
+  if FileExists(Filename) then
+  begin
+   {If it does exist we can delete it}
+   ConsoleWindowWriteLn(WindowHandle,'Deleting the file ' + Filename);
+   DeleteFile('C:\debug.txt');
+  end;
+  {Now create the file, let's use a TFileStream class to do this. We pass both the
+  filename and the mode to TFileStream. fmCreate tells it to create a new file.}
+ ConsoleWindowWriteLn(WindowHandle,'Creating a new file ' + Filename);
+ {TFileStream will raise an exception if creating the file fails}
 
+   {If you remove the SD card and put in back in your computer, you should see the
+    file "Example 08 File Handling.txt" on it. If you open it in a notepad you should
+    see the contents exactly as they appeared on screen.}
 
   ConsoleWindowWriteLn (WindowHandle, 'Local Address ' + IPAddress);
   SetOnMsg (@Msg);
@@ -414,8 +414,8 @@ begin
 
  ReadFile := 'input.png';
  WriteFile := 'GrayScale.png';
- WriteOptions := 'P GrayScale';
- //WriteOptions := 'P';
+ //WriteOptions := 'P GrayScale';
+ WriteOptions := 'P';
 
 
  img := TFPMemoryImage.Create(0,0);
@@ -452,9 +452,17 @@ begin
   ConsoleWindowWriteLn (WindowHandle,'Setting PP to the value of BP the BufPtr ');
   PP:=BP;
   ConsoleWindowWriteLn (WindowHandle,'PP is the pointer passed to returnfromprocessstr ');
+  try
+   FileStream:=TFileStream.Create(Filename,fmCreate);
 
+   {We've created the file, now we need to write some content to it, we can use
+    a TStringList for that but there are many other ways as well.}
+   StringList:=TStringList.Create;
+
+   {Add some text to our string list}
  processstr('Now we are engaged in a great ci');
  //ConsoleWindowWriteLn(WindowHandle,'ProcessStrResult = ' + ProcessStrResult);
+  StringList.Add(ProcessStrResult);
  i:=length(ProcessStrResult);
  B:=ProcessStrResult;
  BP:=@B;
@@ -469,6 +477,7 @@ begin
       bbp^[j]:=strToInt(S1) and $0f;
       ConsoleWindowWrite(WindowHandle,S1);
       //ConsoleWindowWrite(WindowHandle,intToStr(i)+' '+intToStr(j)+' '+S1+' '+intToStr(bbp^[j]) +' ');
+      StringList.Add( intToStr(i)+' '+intToStr(j)+' '+S1+' '+intToStr(bbp^[j]) +' ');
       i:=i+1;
       j:=j+1;
 
@@ -494,14 +503,7 @@ begin
    h:=img.Height;
    w:=img.Width;
    bitcount:=0;
-   try
-   FileStream:=TFileStream.Create(Filename,fmCreate);
 
-   {We've created the file, now we need to write some content to it, we can use
-    a TStringList for that but there are many other ways as well.}
-   StringList:=TStringList.Create;
-
-   {Add some text to our string list}
  StringList.Add( 'Height ' + intToStr(h)+' Width '+intToStr(w));
   ConsoleWindowWriteLn(WindowHandle,'Height ' + intToStr(h)+' Width '+intToStr(w));
  for j := 0 to img.Height - 1 do
@@ -539,11 +541,6 @@ begin
         img.Colors[i, j] := clr;
       end;
    end;
- StringList.SaveToStream(FileStream);
-  FileStream.Free;
-  StringList.Free;
-   finally
-   end;
 
    ConsoleWindowWriteLn(WindowHandle,'Decrypt Intial Steps');
   //for j := 0 to img.Height - 1 do
@@ -556,16 +553,23 @@ begin
            S1:=intToStr(modbuf[i,j]);
            //BP^[i]:=S1;
            //ConsoleWindowWrite(WindowHandle,intToStr(modbuf[i,j])+' ');
-           ConsoleWindowWrite(WindowHandle,S1);
+           ConsoleWindowWrite(WindowHandle,intToStr(i)+' '+S1);
+           //StringList.add(S1);
            //BP^[i]:=intToStr(modbuf[i,j]);
            //B[i]:=intToStr(modbuf[i,j]);
            img.Colors[i, j] := clr;
 
       end;
       ConsoleWindowWriteLn(WindowHandle,' ');
+      //StringList.Add(' ');
  end;
  ConsoleWindowWriteLn(WindowHandle,' ');
   ConsoleWindowWriteLn(WindowHandle,'Calling WriteImage WriteFile '+WriteFile +' ' + WriteOptions);
+ StringList.SaveToStream(FileStream);
+  FileStream.Free;
+  StringList.Free;
+   finally
+   end;
 
  WriteImage;
 
