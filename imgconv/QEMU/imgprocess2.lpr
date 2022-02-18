@@ -38,6 +38,8 @@ uses
   Syscalls,     {Include the Syscalls unit to provide C library support}
   Crypto,
   APICrypto,
+  FileSystem,
+  FATFS, 
   uFromC
 
 
@@ -91,7 +93,8 @@ GCM = record
   ExpectedTag:array [1..32] of String[80];
 end;
 
-var img: TFPMemoryImage;
+var Filename: String;
+img: TFPMemoryImage;
 reader : TFPCustomImageReader;
 Writer : TFPCustomimageWriter;
 ReadFile, WriteFile, WriteOptions : string;
@@ -153,7 +156,7 @@ ReadFile, WriteFile, WriteOptions : string;
  InIVStr:String;
  EncryptDecrypt:LongWord;
 
- Filename:String;
+
  StringList:TStringList;
  FileStream:TFileStream;
 
@@ -168,6 +171,7 @@ ReadFile, WriteFile, WriteOptions : string;
  modbuf : MODR;
  xorbuf : XORR;
  tlsbbuf : TLSB;
+ Count:Integer;
 
     function WaitForIPComplete : string;
 
@@ -345,6 +349,21 @@ begin
  LoggingDeviceRedirectOutput(MyPLoggingDevice);}
   {Create a console window as usual}
   WindowHandle:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_FULL,True);
+  Filename:='C:\debug1.txt';
+  if FileExists(Filename) then
+  begin
+   {If it does exist we can delete it}
+   ConsoleWindowWriteLn(WindowHandle,'Deleting the file ' + Filename);
+   DeleteFile('C:\debug1.txt');
+  end;
+  {Now create the file, let's use a TFileStream class to do this. We pass both the
+  filename and the mode to TFileStream. fmCreate tells it to create a new file.}
+ ConsoleWindowWriteLn(WindowHandle,'Creating a new file ' + Filename);
+ {TFileStream will raise an exception if creating the file fails}
+
+   {If you remove the SD card and put in back in your computer, you should see the
+    file "Example 08 File Handling.txt" on it. If you open it in a notepad you should
+    see the contents exactly as they appeared on screen.}
 
   ConsoleWindowWriteLn(WindowHandle,'Starting FPImage Imgconv');
     // Prompt for file type
@@ -432,13 +451,18 @@ begin
   PP:=BP;
 
   h:=img.Height;
-  h:=1;
-   w:=img.Width;
-  for j := 0 to  1 do
 
-  //for j := 0 to img.Height - 1 do
+  w:=img.Width;
+  try
+   FileStream:=TFileStream.Create(Filename,fmCreate);
+
+   {We've created the file, now we need to write some content to it, we can use
+    a TStringList for that but there are many other ways as well.}
+   StringList:=TStringList.Create;
+    StringList.Add( 'Height ' + intToStr(h)+' Width '+intToStr(w));
+  for j := 0 to img.Height - 1 do
      begin
-      //for i := 0 to   1 do
+
       for i := 0 to img.Width - 1 do
       begin
            clr := img.Colors[i, j];
@@ -446,16 +470,24 @@ begin
            S1:=intToStr(modbuf[i,j]);
            //BP^[i]:=S1;
            //ConsoleWindowWrite(WindowHandle,intToStr(modbuf[i,j])+' ');
-           ConsoleWindowWrite(WindowHandle,S1);
+
+           StringList.Add(intToStr(i)+' ' + intToStr(j)+' ' + intToStr(clr.red)+' ' + intToStr(clr.green) +' '+intToStr(clr.blue)+' '+intToStr(modbuf[i,j])+' '+S1);
+           //ConsoleWindowWrite(WindowHandle,S1);
+
+
            //BP^[i]:=intToStr(modbuf[i,j]);
            //B[i]:=intToStr(modbuf[i,j]);
            img.Colors[i, j] := clr;
 
       end;
-      ConsoleWindowWriteLn(WindowHandle,' ');
+      //ConsoleWindowWriteLn(WindowHandle,' ');
  end;
  ConsoleWindowWriteLn(WindowHandle,' ');
-
+ StringList.SaveToStream(FileStream);
+  FileStream.Free;
+  StringList.Free;
+   finally
+   end;
   ConsoleWindowWriteLn(WindowHandle,'Calling WriteImage WriteFile '+WriteFile +' ' + WriteOptions);
   WriteImage;
 
