@@ -60,6 +60,9 @@ type
   lsbPtr = ^Lsb;
   Buffer = String[255];
   BufPtr = ^Buffer;
+  BufferH = String[255];
+  BufPtrH = ^BufferH;
+
 
 CBC = record
   {0123456789abcdef0123456789abcdef}
@@ -166,12 +169,15 @@ ReadFile, WriteFile, WriteOptions : string;
  B  : Buffer;
  BP : BufPtr;
  PP : Pointer;
+ BH  : Buffer;
+ BPH : BufPtr;
+ PPH : Pointer;
  bb : Lsb;
  bbp : LsbPtr;
  modbuf : MODR;
  xorbuf : XORR;
  tlsbbuf : TLSB;
- Count:Integer;
+ Count,ERRCount:Integer;
 
     function WaitForIPComplete : string;
 
@@ -505,7 +511,8 @@ begin
    bitcount:=0;
 
  StringList.Add( 'Height ' + intToStr(h)+' Width '+intToStr(w));
-  ConsoleWindowWriteLn(WindowHandle,'Height ' + intToStr(h)+' Width '+intToStr(w));
+ ConsoleWindowWriteLn(WindowHandle,' ');
+ ConsoleWindowWriteLn(WindowHandle,'Height ' + intToStr(h)+' Width '+intToStr(w)+' This will take some time!');
  for j := 0 to img.Height - 1 do
      begin
       for i := 0 to img.Width - 1 do
@@ -541,8 +548,20 @@ begin
         img.Colors[i, j] := clr;
       end;
    end;
+   ConsoleWindowWriteLn(WindowHandle,' ');
+   ConsoleWindowWriteLn(WindowHandle,'Decrypt Intial Steps. These are the bits we need to find!');
+   ConsoleWindowWriteLn(WindowHandle,'Decrypt Intial Steps. These are the bits we need to find!');
+   ConsoleWindowWriteLn(WindowHandle,'Decrypt Intial Steps. These are the bits we need to find!');
+   B:=ProcessStrResult;
+   BP:=@B;
+   PP:=BP;
 
-   ConsoleWindowWriteLn(WindowHandle,'Decrypt Intial Steps');
+   BH:='';
+   BPH:=@BH;
+   PPH:=BPH;  //Pointer to hidden string
+   ConsoleWindowWriteLn(WindowHandle,ProcessStrResult);
+   ConsoleWindowWriteLn(WindowHandle,' ');
+   ERRCount:=0;
   //for j := 0 to img.Height - 1 do
      begin
       //for i := 0 to   1 do
@@ -551,16 +570,27 @@ begin
            clr := img.Colors[i, j];
            modbuf[i,j] := clr.red mod 2 ;
            S1:=intToStr(modbuf[i,j]);
+           BPH^[i+1]:=S1[1];
+           ConsoleWindowWrite(WindowHandle,BPH^[i+1] + '=' + BP^[i+1]+',');
+           if(BPH^[i+1] <> BP^[i+1]) then
+           begin
+                ERRCount:=ERRCount+1;
+
+           end;
+
            //BP^[i]:=S1;
            //ConsoleWindowWrite(WindowHandle,intToStr(modbuf[i,j])+' ');
-           ConsoleWindowWrite(WindowHandle,intToStr(i)+' '+S1);
-           //StringList.add(S1);
+           //ConsoleWindowWrite(WindowHandle,intToStr(i)+' '+S1+' ');
+           //ConsoleWindowWrite(WindowHandle,S1 );
+           StringList.add(S1);
            //BP^[i]:=intToStr(modbuf[i,j]);
            //B[i]:=intToStr(modbuf[i,j]);
            img.Colors[i, j] := clr;
 
       end;
       ConsoleWindowWriteLn(WindowHandle,' ');
+      ConsoleWindowWriteLn(WindowHandle,' ');
+      ConsoleWindowWriteln(WindowHandle,'ERRORS '+intToStr(ERRCount));
       //StringList.Add(' ');
  end;
  ConsoleWindowWriteLn(WindowHandle,' ');
