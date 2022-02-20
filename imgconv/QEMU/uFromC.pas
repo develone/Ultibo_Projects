@@ -8,9 +8,11 @@ uses
   GlobalConst;
 
 var
-  ProcessStrResult:String;
+  ProcessStrResult,ProcessBinStrResult:String;
 
 procedure ReturnFromProcessStr(Value: PChar); cdecl; public name 'returnfromprocessstr';
+
+procedure ReturnAsciiFromProcessStr(Value: PChar); cdecl; public name 'returnasciifromprocessstr';
 
 implementation
 
@@ -27,6 +29,15 @@ begin
   // Save the value to a variable so it can be used elsewhere
   ProcessStrResult := Value;
 end;
+
+procedure ReturnAsciiFromProcessStr(Value: PChar); cdecl;
+
+
+begin
+  // Do something with the value supplied
+  ProcessBinStrResult := Value;
+end;
+
 
 end.
 

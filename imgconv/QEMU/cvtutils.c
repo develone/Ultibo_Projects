@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <string.h>
-
+#include <stdlib.h>
 int asciiValueToBinary(int asciiInput)
 {
 	int res = 0, i = 1, rem;
@@ -17,6 +17,8 @@ int asciiValueToBinary(int asciiInput)
 }
 
 void returnfromprocessstr(char *x);
+
+void returnasciifromprocessstr(char *x);
 
 void processstr(char  *x)
 {
@@ -46,6 +48,61 @@ void processstr(char  *x)
     printf(bitstr);
     printf("\n");
     returnfromprocessstr(bitstr);
+}
+
+unsigned long binaryToDecimal(char *binary, int length)
+{
+	int i;
+	unsigned long decimal = 0;
+	unsigned long weight = 1;
+	binary += length - 1;
+	weight = 1;
+	for(i = 0; i < length; ++i, --binary)
+	{
+		if(*binary == '1')
+			decimal += weight;
+		weight *= 2;
+	}
+	
+	return decimal;
+}
+
+
+
+void binaryToText(char *binary, int binaryLength, char *text, int symbolCount)
+{
+     
+    int i;
+		 
+    for(i = 0; i < binaryLength; i+=8, binary += 8)
+    {
+        char *byte = binary;
+        byte[8] = '\0';
+        *text++ = binaryToDecimal(byte, 8);
+    }
+		 
+    text -= symbolCount;
+		 
+ 
+}
+void processbinascstr(char  *binary) {
+/*
+processbinascstr is going to be called from Pascal.
+This is doing the main function from the program bin2ascii.c
+Calls binaryToText(char *binary, int binaryLength, char *text, int symbolCount)
+*/
+
+int binaryLength;
+
+binaryLength = strlen(binary);
+int symbolCount = binaryLength / 8;
+char text[symbolCount+1];
+char *textptr;
+*textptr=text[0];
+printf("In C %d %d\n",binaryLength,symbolCount);
+printf("%s\n",binary);
+//binaryToText(binary,binaryLength,text,symbolCount);
+//printf("%s in binary is the following text:\n%s\n", binary, text);
 }
 
  

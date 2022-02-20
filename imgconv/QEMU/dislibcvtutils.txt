@@ -70,3 +70,82 @@ Disassembly of section .text:
   ec:	e8bd8ff8 	pop	{r3, r4, r5, r6, r7, r8, r9, sl, fp, pc}
   f0:	e1a0c003 	mov	ip, r3
   f4:	eaffffed 	b	b0 <processstr+0x7c>
+
+000000f8 <binaryToDecimal>:
+  f8:	e3510000 	cmp	r1, #0
+  fc:	e241c001 	sub	ip, r1, #1
+ 100:	e080c00c 	add	ip, r0, ip
+ 104:	da00000b 	ble	138 <binaryToDecimal+0x40>
+ 108:	e2613001 	rsb	r3, r1, #1
+ 10c:	e0801001 	add	r1, r0, r1
+ 110:	e08cc003 	add	ip, ip, r3
+ 114:	e3a00000 	mov	r0, #0
+ 118:	e3a03001 	mov	r3, #1
+ 11c:	e5712001 	ldrb	r2, [r1, #-1]!
+ 120:	e3520031 	cmp	r2, #49	; 0x31
+ 124:	00800003 	addeq	r0, r0, r3
+ 128:	e15c0001 	cmp	ip, r1
+ 12c:	e1a03083 	lsl	r3, r3, #1
+ 130:	1afffff9 	bne	11c <binaryToDecimal+0x24>
+ 134:	e12fff1e 	bx	lr
+ 138:	e3a00000 	mov	r0, #0
+ 13c:	e12fff1e 	bx	lr
+
+00000140 <binaryToText>:
+ 140:	e3510000 	cmp	r1, #0
+ 144:	d12fff1e 	bxle	lr
+ 148:	e241c001 	sub	ip, r1, #1
+ 14c:	e52de004 	push	{lr}		; (str lr, [sp, #-4]!)
+ 150:	e082c1ac 	add	ip, r2, ip, lsr #3
+ 154:	e28cc001 	add	ip, ip, #1
+ 158:	e3a0e000 	mov	lr, #0
+ 15c:	e5d03007 	ldrb	r3, [r0, #7]
+ 160:	e5d01006 	ldrb	r1, [r0, #6]
+ 164:	e2433031 	sub	r3, r3, #49	; 0x31
+ 168:	e5c0e008 	strb	lr, [r0, #8]
+ 16c:	e16f3f13 	clz	r3, r3
+ 170:	e3510031 	cmp	r1, #49	; 0x31
+ 174:	e5d01005 	ldrb	r1, [r0, #5]
+ 178:	e1a032a3 	lsr	r3, r3, #5
+ 17c:	02833002 	addeq	r3, r3, #2
+ 180:	e3510031 	cmp	r1, #49	; 0x31
+ 184:	e5d01004 	ldrb	r1, [r0, #4]
+ 188:	02833004 	addeq	r3, r3, #4
+ 18c:	e3510031 	cmp	r1, #49	; 0x31
+ 190:	e5d01003 	ldrb	r1, [r0, #3]
+ 194:	02833008 	addeq	r3, r3, #8
+ 198:	e3510031 	cmp	r1, #49	; 0x31
+ 19c:	e5d01002 	ldrb	r1, [r0, #2]
+ 1a0:	02833010 	addeq	r3, r3, #16
+ 1a4:	e3510031 	cmp	r1, #49	; 0x31
+ 1a8:	e5d01001 	ldrb	r1, [r0, #1]
+ 1ac:	02833020 	addeq	r3, r3, #32
+ 1b0:	e3510031 	cmp	r1, #49	; 0x31
+ 1b4:	e5d01000 	ldrb	r1, [r0]
+ 1b8:	02833040 	addeq	r3, r3, #64	; 0x40
+ 1bc:	e3510031 	cmp	r1, #49	; 0x31
+ 1c0:	0a000004 	beq	1d8 <binaryToText+0x98>
+ 1c4:	e4c23001 	strb	r3, [r2], #1
+ 1c8:	e152000c 	cmp	r2, ip
+ 1cc:	e2800008 	add	r0, r0, #8
+ 1d0:	1affffe1 	bne	15c <binaryToText+0x1c>
+ 1d4:	e49df004 	pop	{pc}		; (ldr pc, [sp], #4)
+ 1d8:	e2833080 	add	r3, r3, #128	; 0x80
+ 1dc:	e4c23001 	strb	r3, [r2], #1
+ 1e0:	e15c0002 	cmp	ip, r2
+ 1e4:	e2800008 	add	r0, r0, #8
+ 1e8:	1affffdb 	bne	15c <binaryToText+0x1c>
+ 1ec:	e49df004 	pop	{pc}		; (ldr pc, [sp], #4)
+
+000001f0 <processbinascstr>:
+ 1f0:	e92d4010 	push	{r4, lr}
+ 1f4:	e1a04000 	mov	r4, r0
+ 1f8:	ebfffffe 	bl	0 <strlen>
+ 1fc:	e1a01000 	mov	r1, r0
+ 200:	e3000000 	movw	r0, #0
+ 204:	e1a021c1 	asr	r2, r1, #3
+ 208:	e3400000 	movt	r0, #0
+ 20c:	ebfffffe 	bl	0 <printf>
+ 210:	e1a00004 	mov	r0, r4
+ 214:	e8bd4010 	pop	{r4, lr}
+ 218:	eafffffe 	b	0 <puts>

@@ -48,6 +48,8 @@ uses
 function asciiValueToBinary(x0:LongWord):LongWord; cdecl; external 'libcvtutils' name 'asciiValueToBinary';
 procedure processstr(s:String); cdecl; external 'libcvtutils' name 'processstr';
 //procedure ReturnFromProcessStr(Value: PChar); cdecl; public name 'returnfromprocessstr';
+//binaryToText(formattedBinary, strlen(formattedBinary), text, symbolCount);
+procedure processbinascstr(SBIN:String);  cdecl; external 'libcvtutils' name 'processbinascstr';
 
 type
   MODR = array[0..255,0..255] of word;
@@ -163,7 +165,7 @@ ReadFile, WriteFile, WriteOptions : string;
  StringList:TStringList;
  FileStream:TFileStream;
 
- S1,S2:String;
+ S1,S2,SBIN:String;
  xx,yy : LongWord;
  databuffer :PChar;
  B  : Buffer;
@@ -441,7 +443,7 @@ begin
  ReadImage;
 
 
- CBC1.StrKeyAsc:='Now we are engaged in a great ci';
+ CBC1.StrKeyAsc:='abcdefghijklmnopqrstuvwxyz012345';
  //CBC1.StrKeyAsc:='23AE14F4A7B2DC7F1DD89CF6F07E4048';
   S1:=CBC1.StrKeyAsc;
   S2:=BytesToString(PByte(S1),Length(S1) * SizeOf(Char));
@@ -550,8 +552,8 @@ begin
    end;
    ConsoleWindowWriteLn(WindowHandle,' ');
    ConsoleWindowWriteLn(WindowHandle,'Decrypt Intial Steps. These are the bits we need to find!');
-   ConsoleWindowWriteLn(WindowHandle,'Decrypt Intial Steps. These are the bits we need to find!');
-   ConsoleWindowWriteLn(WindowHandle,'Decrypt Intial Steps. These are the bits we need to find!');
+   ConsoleWindowWriteLn(WindowHandle,'The String hidden will not be known');
+   ConsoleWindowWriteLn(WindowHandle,'Using the String hidden to test the hidden string');
    B:=ProcessStrResult;
    BP:=@B;
    PP:=BP;
@@ -562,6 +564,7 @@ begin
    ConsoleWindowWriteLn(WindowHandle,ProcessStrResult);
    ConsoleWindowWriteLn(WindowHandle,' ');
    ERRCount:=0;
+
   //for j := 0 to img.Height - 1 do
      begin
       //for i := 0 to   1 do
@@ -594,13 +597,21 @@ begin
       //StringList.Add(' ');
  end;
  ConsoleWindowWriteLn(WindowHandle,' ');
-  ConsoleWindowWriteLn(WindowHandle,'Calling WriteImage WriteFile '+WriteFile +' ' + WriteOptions);
+
  StringList.SaveToStream(FileStream);
   FileStream.Free;
   StringList.Free;
    finally
    end;
+    SBIN:='0110000101100010011000110110010001100101011001100110011101101000011010010110101001101011011011000110110101101110011011110111000001110001011100100111001101110100011101010111011001110111011110000111100101111010001100000011000100110010001100110011010000110101';
+    ConsoleWindowWriteLn(WindowHandle,'Calling C processbinascstr passing SBIN a string of zeros & ones extracted from the image');
+    ConsoleWindowWriteLn(WindowHandle,SBIN);
+   processbinascstr(SBIN);
 
+   BP:=@B;
+   PP:=BP;
+
+ ConsoleWindowWriteLn(WindowHandle,'Calling WriteImage WriteFile '+WriteFile +' ' + WriteOptions);
  WriteImage;
 
  Clean;
