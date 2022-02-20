@@ -92,17 +92,24 @@ This is doing the main function from the program bin2ascii.c
 Calls binaryToText(char *binary, int binaryLength, char *text, int symbolCount)
 */
 
-int binaryLength;
-
+int binaryLength,l;
+l=strlen(binary); 
+    
+    int outstr[l]; 
+    
+    char ascstr[l / 8];
+    char *strbuf;
+		strbuf = ascstr;
 binaryLength = strlen(binary);
-int symbolCount = binaryLength / 8;
-char text[symbolCount+1];
-char *textptr;
-*textptr=text[0];
-printf("In C %d %d\n",binaryLength,symbolCount);
+//int symbolCount = binaryLength / 8;
+//char text[symbolCount+1];
+//char *textptr;
+//*textptr=text[0];
+printf("In C %d %d\n",binaryLength,l);
 printf("%s\n",binary);
-//binaryToText(binary,binaryLength,text,symbolCount);
+//binaryToText(binary,binaryLength,strbuf,l);
 //printf("%s in binary is the following text:\n%s\n", binary, text);
+//returnasciifromprocessstr(ascstr);
 }
 
  
