@@ -115,7 +115,8 @@ if(validate(binary)) {
    	char text[symbolCount];
 	//printf("%d %d %s\n",binaryLength,symbolCount,binary); 
 	binaryToText(binary,binaryLength,text,symbolCount);
-	printf("%s\n",text); 
+	//printf("%s\n",text); 
+returnasciifromprocessstr(text);
 }          
          
    

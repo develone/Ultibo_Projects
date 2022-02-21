@@ -468,9 +468,9 @@ begin
    StringList:=TStringList.Create;
 
    {Add some text to our string list}
- processstr('Now we are engaged in a great ci');
+ //processstr('Now we are engaged in a great ci');
  //processstr('abcdefghijklmnopqrstuvwxyz012345');
- //processstr('Now is the time for all good me ');
+ processstr('Now is the time for all good men');
  //ConsoleWindowWriteLn(WindowHandle,'ProcessStrResult = ' + ProcessStrResult);
   StringList.Add(ProcessStrResult);
  i:=length(ProcessStrResult);
@@ -566,7 +566,7 @@ begin
    ConsoleWindowWriteLn(WindowHandle,ProcessStrResult);
    ConsoleWindowWriteLn(WindowHandle,' ');
    ERRCount:=0;
-
+   S2:='';
   //for j := 0 to img.Height - 1 do
      begin
       //for i := 0 to   1 do
@@ -575,6 +575,7 @@ begin
            clr := img.Colors[i, j];
            modbuf[i,j] := clr.red mod 2 ;
            S1:=intToStr(modbuf[i,j]);
+           S2:=S2+S1;
            BPH^[i+1]:=S1[1];
            ConsoleWindowWrite(WindowHandle,BPH^[i+1] + '=' + BP^[i+1]+',');
            if(BPH^[i+1] <> BP^[i+1]) then
@@ -594,25 +595,27 @@ begin
 
       end;
       ConsoleWindowWriteLn(WindowHandle,' ');
-      ConsoleWindowWriteLn(WindowHandle,' ');
+
       ConsoleWindowWriteln(WindowHandle,'ERRORS '+intToStr(ERRCount));
+      ConsoleWindowWriteLn(WindowHandle,S2);
       //StringList.Add(' ');
  end;
  ConsoleWindowWriteLn(WindowHandle,' ');
 
- StringList.SaveToStream(FileStream);
+ {
+ S2 is the hidden string that is sent C code to convert to ASCII
+ Now we are engaged in a great ci should be Now we are engaged in a great ch
+ abcdefghijklmnopqrstuvwxyz012344 should be abcdefghijklmnopqrstuvwxyz012345
+ Now is the time for all good men is Now is the time for all good men even with errors of 1
+ }
+   processbinascstr(S2);
+     ConsoleWindowWriteLn(WindowHandle,'Return Ascii string ' + ProcessBinStrResult);
+   StringList.Add(ProcessBinStrResult);
+  StringList.SaveToStream(FileStream);
   FileStream.Free;
   StringList.Free;
    finally
    end;
-   SBIN:=ProcessStrResult;
-    //SBIN:='0100111001101111011101110010000001110111011001010010000001100001011100100110010100100000011001010110111001100111011000010110011101100101011001000010000001101001011011100010000001100001001000000110011101110010011001010110000101110100001000000110001101101001';
-    //ConsoleWindowWriteLn(WindowHandle,'Calling C processbinascstr passing SBIN a string of zeros & ones extracted from the image');
-    //ConsoleWindowWriteLn(WindowHandle,SBIN);
-   processbinascstr(SBIN);
-     ConsoleWindowWriteLn(WindowHandle,'Return Ascii string ' + ProcessBinStrResult);
-   BP:=@B;
-   PP:=BP;
 
  ConsoleWindowWriteLn(WindowHandle,'Calling WriteImage WriteFile '+WriteFile +' ' + WriteOptions);
  WriteImage;

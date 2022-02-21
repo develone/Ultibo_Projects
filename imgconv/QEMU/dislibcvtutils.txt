@@ -287,7 +287,7 @@ Disassembly of section .text:
  430:	e1500002 	cmp	r0, r2
  434:	caffffe0 	bgt	3bc <processbinascstr+0x180>
  438:	e1a0000e 	mov	r0, lr
- 43c:	ebfffffe 	bl	0 <puts>
+ 43c:	ebfffffe 	bl	0 <returnasciifromprocessstr>
  440:	e1a0d005 	mov	sp, r5
  444:	e24bd024 	sub	sp, fp, #36	; 0x24
  448:	e8bd8ff8 	pop	{r3, r4, r5, r6, r7, r8, r9, sl, fp, pc}
@@ -297,7 +297,7 @@ Disassembly of section .text:
  458:	e4c12001 	strb	r2, [r1], #1
  45c:	caffffd6 	bgt	3bc <processbinascstr+0x180>
  460:	e1a0000e 	mov	r0, lr
- 464:	ebfffffe 	bl	0 <puts>
+ 464:	ebfffffe 	bl	0 <returnasciifromprocessstr>
  468:	e1a0d005 	mov	sp, r5
  46c:	eafffff4 	b	444 <processbinascstr+0x208>
  470:	e1a0100d 	mov	r1, sp
