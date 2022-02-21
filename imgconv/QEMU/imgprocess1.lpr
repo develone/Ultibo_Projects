@@ -469,6 +469,8 @@ begin
 
    {Add some text to our string list}
  processstr('Now we are engaged in a great ci');
+ //processstr('abcdefghijklmnopqrstuvwxyz012345');
+ //processstr('Now is the time for all good me ');
  //ConsoleWindowWriteLn(WindowHandle,'ProcessStrResult = ' + ProcessStrResult);
   StringList.Add(ProcessStrResult);
  i:=length(ProcessStrResult);
@@ -603,11 +605,12 @@ begin
   StringList.Free;
    finally
    end;
-    SBIN:='0110000101100010011000110110010001100101011001100110011101101000011010010110101001101011011011000110110101101110011011110111000001110001011100100111001101110100011101010111011001110111011110000111100101111010001100000011000100110010001100110011010000110101';
-    ConsoleWindowWriteLn(WindowHandle,'Calling C processbinascstr passing SBIN a string of zeros & ones extracted from the image');
-    ConsoleWindowWriteLn(WindowHandle,SBIN);
+   SBIN:=ProcessStrResult;
+    //SBIN:='0100111001101111011101110010000001110111011001010010000001100001011100100110010100100000011001010110111001100111011000010110011101100101011001000010000001101001011011100010000001100001001000000110011101110010011001010110000101110100001000000110001101101001';
+    //ConsoleWindowWriteLn(WindowHandle,'Calling C processbinascstr passing SBIN a string of zeros & ones extracted from the image');
+    //ConsoleWindowWriteLn(WindowHandle,SBIN);
    processbinascstr(SBIN);
-
+     ConsoleWindowWriteLn(WindowHandle,'Return Ascii string ' + ProcessBinStrResult);
    BP:=@B;
    PP:=BP;
 

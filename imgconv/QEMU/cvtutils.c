@@ -85,6 +85,20 @@ void binaryToText(char *binary, int binaryLength, char *text, int symbolCount)
 		 
  
 }
+
+int validate(char *binary)
+{
+	while(*binary)
+	{
+		if((*binary != '0') && (*binary != '1') && (*binary != ' '))
+			return 0;
+        ++binary;
+	}
+	return 1;
+}
+
+
+
 void processbinascstr(char  *binary) {
 /*
 processbinascstr is going to be called from Pascal.
@@ -94,22 +108,33 @@ Calls binaryToText(char *binary, int binaryLength, char *text, int symbolCount)
 
 int binaryLength,l;
 l=strlen(binary); 
-    
-    int outstr[l]; 
-    
-    char ascstr[l / 8];
-    char *strbuf;
-		strbuf = ascstr;
-binaryLength = strlen(binary);
+binaryLength=strlen(binary);  
+int outstr[l]; 
+if(validate(binary)) {
+	int symbolCount = binaryLength / 8;
+   	char text[symbolCount];
+	//printf("%d %d %s\n",binaryLength,symbolCount,binary); 
+	binaryToText(binary,binaryLength,text,symbolCount);
+	printf("%s\n",text); 
+}          
+         
+   
+//    char ascstr[l / 8];
+//    char *strbuf;
+//		strbuf = ascstr;
+//binaryLength = strlen(binary);
 //int symbolCount = binaryLength / 8;
 //char text[symbolCount+1];
 //char *textptr;
 //*textptr=text[0];
-printf("In C %d %d\n",binaryLength,l);
-printf("%s\n",binary);
+//printf("In C %d %d\n",binaryLength,l);
+//printf("%s\n",binary);
 //binaryToText(binary,binaryLength,strbuf,l);
 //printf("%s in binary is the following text:\n%s\n", binary, text);
 //returnasciifromprocessstr(ascstr);
 }
+
+
+
 
  

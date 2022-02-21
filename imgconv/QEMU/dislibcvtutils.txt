@@ -137,15 +137,169 @@ Disassembly of section .text:
  1e8:	1affffdb 	bne	15c <binaryToText+0x1c>
  1ec:	e49df004 	pop	{pc}		; (ldr pc, [sp], #4)
 
-000001f0 <processbinascstr>:
- 1f0:	e92d4010 	push	{r4, lr}
- 1f4:	e1a04000 	mov	r4, r0
- 1f8:	ebfffffe 	bl	0 <strlen>
- 1fc:	e1a02000 	mov	r2, r0
- 200:	e1a01000 	mov	r1, r0
- 204:	e3000000 	movw	r0, #0
- 208:	e3400000 	movt	r0, #0
- 20c:	ebfffffe 	bl	0 <printf>
- 210:	e1a00004 	mov	r0, r4
- 214:	e8bd4010 	pop	{r4, lr}
- 218:	eafffffe 	b	0 <puts>
+000001f0 <validate>:
+ 1f0:	e5d03000 	ldrb	r3, [r0]
+ 1f4:	e3530000 	cmp	r3, #0
+ 1f8:	0a00000b 	beq	22c <validate+0x3c>
+ 1fc:	e2432030 	sub	r2, r3, #48	; 0x30
+ 200:	e3530020 	cmp	r3, #32
+ 204:	13520001 	cmpne	r2, #1
+ 208:	9a000003 	bls	21c <validate+0x2c>
+ 20c:	ea000008 	b	234 <validate+0x44>
+ 210:	e3530020 	cmp	r3, #32
+ 214:	13520001 	cmpne	r2, #1
+ 218:	8a000005 	bhi	234 <validate+0x44>
+ 21c:	e5f03001 	ldrb	r3, [r0, #1]!
+ 220:	e3530000 	cmp	r3, #0
+ 224:	e2432030 	sub	r2, r3, #48	; 0x30
+ 228:	1afffff8 	bne	210 <validate+0x20>
+ 22c:	e3a00001 	mov	r0, #1
+ 230:	e12fff1e 	bx	lr
+ 234:	e3a00000 	mov	r0, #0
+ 238:	e12fff1e 	bx	lr
+
+0000023c <processbinascstr>:
+ 23c:	e92d4ff8 	push	{r3, r4, r5, r6, r7, r8, r9, sl, fp, lr}
+ 240:	e28db024 	add	fp, sp, #36	; 0x24
+ 244:	e5d06000 	ldrb	r6, [r0]
+ 248:	e3560000 	cmp	r6, #0
+ 24c:	0a00000c 	beq	284 <processbinascstr+0x48>
+ 250:	e2463030 	sub	r3, r6, #48	; 0x30
+ 254:	e3560020 	cmp	r6, #32
+ 258:	13530001 	cmpne	r3, #1
+ 25c:	8a000078 	bhi	444 <processbinascstr+0x208>
+ 260:	e1a01000 	mov	r1, r0
+ 264:	ea000002 	b	274 <processbinascstr+0x38>
+ 268:	e3520020 	cmp	r2, #32
+ 26c:	135c0001 	cmpne	ip, #1
+ 270:	8a000073 	bhi	444 <processbinascstr+0x208>
+ 274:	e5f12001 	ldrb	r2, [r1, #1]!
+ 278:	e3520000 	cmp	r2, #0
+ 27c:	e242c030 	sub	ip, r2, #48	; 0x30
+ 280:	1afffff8 	bne	268 <processbinascstr+0x2c>
+ 284:	e1a04000 	mov	r4, r0
+ 288:	ebfffffe 	bl	0 <strlen>
+ 28c:	e1a0500d 	mov	r5, sp
+ 290:	e1a031c0 	asr	r3, r0, #3
+ 294:	e3500000 	cmp	r0, #0
+ 298:	e2833007 	add	r3, r3, #7
+ 29c:	e3c33007 	bic	r3, r3, #7
+ 2a0:	e04dd003 	sub	sp, sp, r3
+ 2a4:	e1a0e00d 	mov	lr, sp
+ 2a8:	0a000062 	beq	438 <processbinascstr+0x1fc>
+ 2ac:	e3500010 	cmp	r0, #16
+ 2b0:	e1a03004 	mov	r3, r4
+ 2b4:	e2408008 	sub	r8, r0, #8
+ 2b8:	da00006c 	ble	470 <processbinascstr+0x234>
+ 2bc:	e28dc002 	add	ip, sp, #2
+ 2c0:	e264a010 	rsb	sl, r4, #16
+ 2c4:	e2649008 	rsb	r9, r4, #8
+ 2c8:	e3a07000 	mov	r7, #0
+ 2cc:	e5d32007 	ldrb	r2, [r3, #7]
+ 2d0:	e5d31006 	ldrb	r1, [r3, #6]
+ 2d4:	e2422031 	sub	r2, r2, #49	; 0x31
+ 2d8:	e5d3400e 	ldrb	r4, [r3, #14]
+ 2dc:	e16f2f12 	clz	r2, r2
+ 2e0:	e3510031 	cmp	r1, #49	; 0x31
+ 2e4:	e5d31005 	ldrb	r1, [r3, #5]
+ 2e8:	e1a022a2 	lsr	r2, r2, #5
+ 2ec:	e5c37008 	strb	r7, [r3, #8]
+ 2f0:	02822002 	addeq	r2, r2, #2
+ 2f4:	e3510031 	cmp	r1, #49	; 0x31
+ 2f8:	e5d31004 	ldrb	r1, [r3, #4]
+ 2fc:	02822004 	addeq	r2, r2, #4
+ 300:	e5c37010 	strb	r7, [r3, #16]
+ 304:	e3510031 	cmp	r1, #49	; 0x31
+ 308:	e5d31003 	ldrb	r1, [r3, #3]
+ 30c:	02822008 	addeq	r2, r2, #8
+ 310:	e3510031 	cmp	r1, #49	; 0x31
+ 314:	e5d31002 	ldrb	r1, [r3, #2]
+ 318:	02822010 	addeq	r2, r2, #16
+ 31c:	e3510031 	cmp	r1, #49	; 0x31
+ 320:	e5d31001 	ldrb	r1, [r3, #1]
+ 324:	02822020 	addeq	r2, r2, #32
+ 328:	e3510031 	cmp	r1, #49	; 0x31
+ 32c:	e1a0100c 	mov	r1, ip
+ 330:	02822040 	addeq	r2, r2, #64	; 0x40
+ 334:	e3560031 	cmp	r6, #49	; 0x31
+ 338:	e5d3600f 	ldrb	r6, [r3, #15]
+ 33c:	02822080 	addeq	r2, r2, #128	; 0x80
+ 340:	e54c2002 	strb	r2, [ip, #-2]
+ 344:	e3540031 	cmp	r4, #49	; 0x31
+ 348:	e2466031 	sub	r6, r6, #49	; 0x31
+ 34c:	e5d3200d 	ldrb	r2, [r3, #13]
+ 350:	e16f6f16 	clz	r6, r6
+ 354:	e083400a 	add	r4, r3, sl
+ 358:	e2833010 	add	r3, r3, #16
+ 35c:	e28cc002 	add	ip, ip, #2
+ 360:	e1a062a6 	lsr	r6, r6, #5
+ 364:	02866002 	addeq	r6, r6, #2
+ 368:	e3520031 	cmp	r2, #49	; 0x31
+ 36c:	e5532004 	ldrb	r2, [r3, #-4]
+ 370:	02866004 	addeq	r6, r6, #4
+ 374:	e3520031 	cmp	r2, #49	; 0x31
+ 378:	e5532005 	ldrb	r2, [r3, #-5]
+ 37c:	02866008 	addeq	r6, r6, #8
+ 380:	e3520031 	cmp	r2, #49	; 0x31
+ 384:	e5532006 	ldrb	r2, [r3, #-6]
+ 388:	02866010 	addeq	r6, r6, #16
+ 38c:	e3520031 	cmp	r2, #49	; 0x31
+ 390:	e5532007 	ldrb	r2, [r3, #-7]
+ 394:	02866020 	addeq	r6, r6, #32
+ 398:	e3520031 	cmp	r2, #49	; 0x31
+ 39c:	e0832009 	add	r2, r3, r9
+ 3a0:	02866040 	addeq	r6, r6, #64	; 0x40
+ 3a4:	e1580002 	cmp	r8, r2
+ 3a8:	e54c6003 	strb	r6, [ip, #-3]
+ 3ac:	e3a06000 	mov	r6, #0
+ 3b0:	caffffc5 	bgt	2cc <processbinascstr+0x90>
+ 3b4:	e0444003 	sub	r4, r4, r3
+ 3b8:	e3a06000 	mov	r6, #0
+ 3bc:	e5d32007 	ldrb	r2, [r3, #7]
+ 3c0:	e2833008 	add	r3, r3, #8
+ 3c4:	e553c002 	ldrb	ip, [r3, #-2]
+ 3c8:	e2422031 	sub	r2, r2, #49	; 0x31
+ 3cc:	e5c36000 	strb	r6, [r3]
+ 3d0:	e16f2f12 	clz	r2, r2
+ 3d4:	e35c0031 	cmp	ip, #49	; 0x31
+ 3d8:	e553c003 	ldrb	ip, [r3, #-3]
+ 3dc:	e1a022a2 	lsr	r2, r2, #5
+ 3e0:	02822002 	addeq	r2, r2, #2
+ 3e4:	e35c0031 	cmp	ip, #49	; 0x31
+ 3e8:	e553c004 	ldrb	ip, [r3, #-4]
+ 3ec:	02822004 	addeq	r2, r2, #4
+ 3f0:	e35c0031 	cmp	ip, #49	; 0x31
+ 3f4:	e553c005 	ldrb	ip, [r3, #-5]
+ 3f8:	02822008 	addeq	r2, r2, #8
+ 3fc:	e35c0031 	cmp	ip, #49	; 0x31
+ 400:	e553c006 	ldrb	ip, [r3, #-6]
+ 404:	02822010 	addeq	r2, r2, #16
+ 408:	e35c0031 	cmp	ip, #49	; 0x31
+ 40c:	e553c007 	ldrb	ip, [r3, #-7]
+ 410:	02822020 	addeq	r2, r2, #32
+ 414:	e35c0031 	cmp	ip, #49	; 0x31
+ 418:	e553c008 	ldrb	ip, [r3, #-8]
+ 41c:	02822040 	addeq	r2, r2, #64	; 0x40
+ 420:	e35c0031 	cmp	ip, #49	; 0x31
+ 424:	0a000008 	beq	44c <processbinascstr+0x210>
+ 428:	e4c12001 	strb	r2, [r1], #1
+ 42c:	e0832004 	add	r2, r3, r4
+ 430:	e1500002 	cmp	r0, r2
+ 434:	caffffe0 	bgt	3bc <processbinascstr+0x180>
+ 438:	e1a0000e 	mov	r0, lr
+ 43c:	ebfffffe 	bl	0 <puts>
+ 440:	e1a0d005 	mov	sp, r5
+ 444:	e24bd024 	sub	sp, fp, #36	; 0x24
+ 448:	e8bd8ff8 	pop	{r3, r4, r5, r6, r7, r8, r9, sl, fp, pc}
+ 44c:	e083c004 	add	ip, r3, r4
+ 450:	e2822080 	add	r2, r2, #128	; 0x80
+ 454:	e150000c 	cmp	r0, ip
+ 458:	e4c12001 	strb	r2, [r1], #1
+ 45c:	caffffd6 	bgt	3bc <processbinascstr+0x180>
+ 460:	e1a0000e 	mov	r0, lr
+ 464:	ebfffffe 	bl	0 <puts>
+ 468:	e1a0d005 	mov	sp, r5
+ 46c:	eafffff4 	b	444 <processbinascstr+0x208>
+ 470:	e1a0100d 	mov	r1, sp
+ 474:	e3a04000 	mov	r4, #0
+ 478:	eaffffcd 	b	3b4 <processbinascstr+0x178>
