@@ -60,9 +60,9 @@ type
   TLSBPtr = ^TLSB;
   Lsb = array[0..255] of byte;
   lsbPtr = ^Lsb;
-  Buffer = String[255];
+  Buffer = array[0..255] of Char;  //String[255];
   BufPtr = ^Buffer;
-  BufferH = String[255];
+  BufferH = array[0..255] of Char;  //String[255];
   BufPtrH = ^BufferH;
 
 
@@ -477,7 +477,7 @@ begin
  B:=ProcessStrResult;
  BP:=@B;
  bbp:=@bb;
- i:=1;
+ i:=0; //i:=1; //Updated
  j:=0;
  while(i<256) do
  begin
@@ -576,9 +576,9 @@ begin
            modbuf[i,j] := clr.red mod 2 ;
            S1:=intToStr(modbuf[i,j]);
            S2:=S2+S1;
-           BPH^[i+1]:=S1[1];
-           ConsoleWindowWrite(WindowHandle,BPH^[i+1] + '=' + BP^[i+1]+',');
-           if(BPH^[i+1] <> BP^[i+1]) then
+           BPH^[i]:=S1[1];
+           ConsoleWindowWrite(WindowHandle,BPH^[i] + '=' + BP^[i]+',');
+           if(BPH^[i] <> BP^[i]) then
            begin
                 ERRCount:=ERRCount+1;
 
