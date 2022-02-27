@@ -469,8 +469,8 @@ begin
 
    {Add some text to our string list}
  //processstr('Now we are engaged in a great ci');
- //processstr('abcdefghijklmnopqrstuvwxyz012345');
- processstr('Now is the time for all good men');
+ processstr('abcdefghijklmnopqrstuvwxyz012345');
+ //processstr('Now is the time for all good men');
  //ConsoleWindowWriteLn(WindowHandle,'ProcessStrResult = ' + ProcessStrResult);
   StringList.Add(ProcessStrResult);
  i:=length(ProcessStrResult);

@@ -39,7 +39,7 @@ uses
   Crypto,
   APICrypto,
   FileSystem,
-  FATFS, 
+  FATFS,
   uFromC
 
 
@@ -48,6 +48,8 @@ uses
 function asciiValueToBinary(x0:LongWord):LongWord; cdecl; external 'libcvtutils' name 'asciiValueToBinary';
 procedure processstr(s:String); cdecl; external 'libcvtutils' name 'processstr';
 //procedure ReturnFromProcessStr(Value: PChar); cdecl; public name 'returnfromprocessstr';
+//binaryToText(formattedBinary, strlen(formattedBinary), text, symbolCount);
+procedure processbinascstr(SBIN:String);  cdecl; external 'libcvtutils' name 'processbinascstr';
 
 type
   MODR = array[0..255,0..255] of word;
@@ -58,8 +60,11 @@ type
   TLSBPtr = ^TLSB;
   Lsb = array[0..255] of byte;
   lsbPtr = ^Lsb;
-  Buffer = String[255];
+  Buffer = array[0..255] of Char;  //String[255];
   BufPtr = ^Buffer;
+  BufferH = array[0..255] of Char;  //String[255];
+  BufPtrH = ^BufferH;
+
 
 CBC = record
   {0123456789abcdef0123456789abcdef}
@@ -93,7 +98,7 @@ GCM = record
   ExpectedTag:array [1..32] of String[80];
 end;
 
-var Filename: String;
+var Filename:String;
 img: TFPMemoryImage;
 reader : TFPCustomImageReader;
 Writer : TFPCustomimageWriter;
@@ -160,18 +165,21 @@ ReadFile, WriteFile, WriteOptions : string;
  StringList:TStringList;
  FileStream:TFileStream;
 
- S1,S2:String;
+ S1,S2,SBIN:String;
  xx,yy : LongWord;
  databuffer :PChar;
  B  : Buffer;
  BP : BufPtr;
  PP : Pointer;
+ BH  : Buffer;
+ BPH : BufPtr;
+ PPH : Pointer;
  bb : Lsb;
  bbp : LsbPtr;
  modbuf : MODR;
  xorbuf : XORR;
  tlsbbuf : TLSB;
- Count:Integer;
+ Count,ERRCount:Integer;
 
     function WaitForIPComplete : string;
 
@@ -349,23 +357,9 @@ begin
  LoggingDeviceRedirectOutput(MyPLoggingDevice);}
   {Create a console window as usual}
   WindowHandle:=ConsoleWindowCreate(ConsoleDeviceGetDefault,CONSOLE_POSITION_FULL,True);
-  Filename:='C:\debug1.txt';
-  if FileExists(Filename) then
-  begin
-   {If it does exist we can delete it}
-   ConsoleWindowWriteLn(WindowHandle,'Deleting the file ' + Filename);
-   DeleteFile('C:\debug1.txt');
-  end;
-  {Now create the file, let's use a TFileStream class to do this. We pass both the
-  filename and the mode to TFileStream. fmCreate tells it to create a new file.}
- ConsoleWindowWriteLn(WindowHandle,'Creating a new file ' + Filename);
- {TFileStream will raise an exception if creating the file fails}
 
-   {If you remove the SD card and put in back in your computer, you should see the
-    file "Example 08 File Handling.txt" on it. If you open it in a notepad you should
-    see the contents exactly as they appeared on screen.}
 
-  ConsoleWindowWriteLn(WindowHandle,'Starting FPImage Imgconv');
+  ConsoleWindowWriteLn(WindowHandle,'Starting FPImage imgprocess3');
     // Prompt for file type
  {ConsoleWindowWrite(WindowHandle,'Enter Input file type (X for XPM, P for PNG, B for BMP, J for JPEG, T for TGA): ');
  ConsoleWindowReadLn(WindowHandle,INPUTFILEType);
@@ -391,7 +385,21 @@ begin
   Sleep(5000);
   ConsoleWindowWriteLn(WindowHandle,'C:\ drive is ready');
   ConsoleWindowWriteLn(WindowHandle,'');
+  Filename:='C:\debug1.txt';
+  if FileExists(Filename) then
+  begin
+   {If it does exist we can delete it}
+   ConsoleWindowWriteLn(WindowHandle,'Deleting the file ' + Filename);
+   DeleteFile('C:\debug1.txt');
+  end;
+  {Now create the file, let's use a TFileStream class to do this. We pass both the
+  filename and the mode to TFileStream. fmCreate tells it to create a new file.}
+ ConsoleWindowWriteLn(WindowHandle,'Creating a new file ' + Filename);
+ {TFileStream will raise an exception if creating the file fails}
 
+   {If you remove the SD card and put in back in your computer, you should see the
+    file "Example 08 File Handling.txt" on it. If you open it in a notepad you should
+    see the contents exactly as they appeared on screen.}
 
   ConsoleWindowWriteLn (WindowHandle, 'Local Address ' + IPAddress);
   SetOnMsg (@Msg);
@@ -435,7 +443,7 @@ begin
  ReadImage;
 
 
- CBC1.StrKeyAsc:='Now we are engaged in a great ci';
+ CBC1.StrKeyAsc:='abcdefghijklmnopqrstuvwxyz012345';
  //CBC1.StrKeyAsc:='23AE14F4A7B2DC7F1DD89CF6F07E4048';
   S1:=CBC1.StrKeyAsc;
   S2:=BytesToString(PByte(S1),Length(S1) * SizeOf(Char));
@@ -447,49 +455,146 @@ begin
 
   B:=S1;
   BP:=@B;
-
+  //ConsoleWindowWriteLn (WindowHandle,'checking that BP points to string '+BP^[1]+BP^[2]+BP^[3]);
+  ConsoleWindowWriteLn (WindowHandle,'This is the data in the buffer B '+B);
+  ConsoleWindowWriteLn (WindowHandle,'Setting PP to the value of BP the BufPtr ');
   PP:=BP;
-
-  h:=img.Height;
-
-  w:=img.Width;
+  ConsoleWindowWriteLn (WindowHandle,'PP is the pointer passed to returnfromprocessstr ');
   try
    FileStream:=TFileStream.Create(Filename,fmCreate);
 
    {We've created the file, now we need to write some content to it, we can use
     a TStringList for that but there are many other ways as well.}
    StringList:=TStringList.Create;
-    StringList.Add( 'Height ' + intToStr(h)+' Width '+intToStr(w));
-  for j := 0 to img.Height - 1 do
-     begin
 
+   {Add some text to our string list}
+ //processstr('Now we are engaged in a great ci');
+ processstr('abcdefghijklmnopqrstuvwxyz012345');
+ //processstr('Now is the time for all good men');
+ //ConsoleWindowWriteLn(WindowHandle,'ProcessStrResult = ' + ProcessStrResult);
+  StringList.Add(ProcessStrResult);
+ i:=length(ProcessStrResult);
+ B:=ProcessStrResult;
+ BP:=@B;
+ bbp:=@bb;
+ i:=0; //i:=1; //Updated
+ j:=0;
+ while(i<256) do
+ begin
+      S1:=BP^[i];
+
+
+      bbp^[j]:=strToInt(S1) and $0f;
+      ConsoleWindowWrite(WindowHandle,S1);
+      //ConsoleWindowWrite(WindowHandle,intToStr(i)+' '+intToStr(j)+' '+S1+' '+intToStr(bbp^[j]) +' ');
+      StringList.Add( intToStr(i)+' '+intToStr(j)+' '+S1+' '+intToStr(bbp^[j]) +' ');
+      i:=i+1;
+      j:=j+1;
+
+ end;
+
+ ConsoleWindowWriteLn(WindowHandle,' ');
+
+ i:=0;
+
+ while(i<256) do
+ begin
+      //S1:=BP^[i];
+      //bbp^[i-8]:=strToInt(S1);
+      ConsoleWindowWrite(WindowHandle,intToStr(i)+ ' '+intToStr(bbp^[i]) +' ');
+      i:=i+1;
+
+
+ end;
+
+ ConsoleWindowWriteLn(WindowHandle,' ');
+
+
+   h:=img.Height;
+   w:=img.Width;
+   bitcount:=0;
+
+ StringList.Add( 'Height ' + intToStr(h)+' Width '+intToStr(w));
+ ConsoleWindowWriteLn(WindowHandle,' ');
+ ConsoleWindowWriteLn(WindowHandle,'Height ' + intToStr(h)+' Width '+intToStr(w)+' This will take some time!');
+ for j := 0 to img.Height - 1 do
+     begin
+      for i := 0 to img.Width - 1 do
+      begin
+        clr := img.Colors[i, j];
+        //ConsoleWindowWriteLn(WindowHandle,intToStr(i)+' '+intToStr(j)+' '+intToStr(clr.red)+' '+intToStr(clr.green)+' '+intToStr(clr.blue));
+        StringList.Add(intToStr(i)+' '+intToStr(j)+' '+intToStr(clr.red)+' '+intToStr(clr.green)+' '+intToStr(clr.blue));
+        //ConsoleWindowWriteLn(WindowHandle,intToStr(i)+' '+intToStr(j)+' '+intToStr(clr.red)+' '+intToStr(clr.green)+' '+intToStr(clr.blue));
+        img.Colors[i, j] := clr;
+      end;
+   end;
+   ConsoleWindowWriteLn(WindowHandle,' ');
+      ConsoleWindowWriteLn(WindowHandle,'Decrypt Intial Steps. These are the bits we need to find!');
+   ConsoleWindowWriteLn(WindowHandle,'The String hidden will not be known');
+   ConsoleWindowWriteLn(WindowHandle,'Using the String hidden to test the hidden string');
+   B:=ProcessStrResult;
+   BP:=@B;
+   PP:=BP;
+
+   BH:='';
+   BPH:=@BH;
+   PPH:=BPH;  //Pointer to hidden string
+   ConsoleWindowWriteLn(WindowHandle,ProcessStrResult);
+   ConsoleWindowWriteLn(WindowHandle,' ');
+   ERRCount:=0;
+   S2:='';
+  //for j := 0 to img.Height - 1 do
+     begin
+      //for i := 0 to   1 do
       for i := 0 to img.Width - 1 do
       begin
            clr := img.Colors[i, j];
            modbuf[i,j] := clr.red mod 2 ;
            S1:=intToStr(modbuf[i,j]);
+           S2:=S2+S1;
+           BPH^[i]:=S1[1];
+           ConsoleWindowWrite(WindowHandle,BPH^[i] + '=' + BP^[i]+',');
+           if(BPH^[i] <> BP^[i]) then
+           begin
+                ERRCount:=ERRCount+1;
+
+           end;
+
            //BP^[i]:=S1;
            //ConsoleWindowWrite(WindowHandle,intToStr(modbuf[i,j])+' ');
-
-           StringList.Add(intToStr(i)+' ' + intToStr(j)+' ' + intToStr(clr.red)+' ' + intToStr(clr.green) +' '+intToStr(clr.blue)+' '+intToStr(modbuf[i,j])+' '+S1);
-           //ConsoleWindowWrite(WindowHandle,S1);
-
-
+           //ConsoleWindowWrite(WindowHandle,intToStr(i)+' '+S1+' ');
+           //ConsoleWindowWrite(WindowHandle,S1 );
+           StringList.add(S1);
            //BP^[i]:=intToStr(modbuf[i,j]);
            //B[i]:=intToStr(modbuf[i,j]);
            img.Colors[i, j] := clr;
 
       end;
-      //ConsoleWindowWriteLn(WindowHandle,' ');
+      ConsoleWindowWriteLn(WindowHandle,' ');
+
+      ConsoleWindowWriteln(WindowHandle,'ERRORS '+intToStr(ERRCount));
+      ConsoleWindowWriteLn(WindowHandle,S2);
+      //StringList.Add(' ');
  end;
  ConsoleWindowWriteLn(WindowHandle,' ');
- StringList.SaveToStream(FileStream);
+
+ {
+ S2 is the hidden string that is sent C code to convert to ASCII
+ Now we are engaged in a great ci should be Now we are engaged in a great ch
+ abcdefghijklmnopqrstuvwxyz012344 should be abcdefghijklmnopqrstuvwxyz012345
+ Now is the time for all good men is Now is the time for all good men even with errors of 1
+ }
+   processbinascstr(S2);
+     ConsoleWindowWriteLn(WindowHandle,'Return Ascii string ' + ProcessBinStrResult);
+   StringList.Add(ProcessBinStrResult);
+  StringList.SaveToStream(FileStream);
   FileStream.Free;
   StringList.Free;
    finally
    end;
-  ConsoleWindowWriteLn(WindowHandle,'Calling WriteImage WriteFile '+WriteFile +' ' + WriteOptions);
-  WriteImage;
+
+ ConsoleWindowWriteLn(WindowHandle,'Calling WriteImage WriteFile '+WriteFile +' ' + WriteOptions);
+ WriteImage;
 
  Clean;
 
