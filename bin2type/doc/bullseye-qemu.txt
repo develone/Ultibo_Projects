@@ -1,11 +1,10 @@
 
-wget https://download.qemu.org/qemu-6.1.0.tar.xz
-
-tar xvJf qemu-6.1.0.tar.xz
-
+wget https://download.qemu.org/qemu-6.2.0.tar.xz
+ 
+tar xvf qemu-6.2.0.tar.xz
 cd qemu-6.1.0
 
-./configure --target-list=aarch64-softmmu,arm-softmmu,aarch64-linux-user,arm-linux-user --ninja=/usr/bin/ninja --enable-gtk --prefix=/home/devel/qemu-6.1.0-rpios
+./configure --target-list=aarch64-s./configure --target-list=aarch64-softmmu,arm-softmmu,aarch64-linux-user,arm-linux-user --ninja=/usr/bin/ninja --enable-gtk --prefix=/home/devel/qemu-6.2.0-rpios
 
 make
 
