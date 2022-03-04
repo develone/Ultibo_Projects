@@ -6,6 +6,7 @@ Escape character is '^]'.
 This sent to client.
 
 112345678901234567890123456789012:My Secret IV:My Extra Secret AAD:The quick brown testing a longer string not dependent on length 15 1234567890 abcdefghijklmnopqrstuvwxyz
+
 0e599f59da22536d4fe2d6bd48c118e594d7ee54ba178f1c918dfd69dea863b7514a8a263a5e5846b15de04945412b3f6334f78109d079d0f8198199c7a2ca297f376f1f97d1e3e75473538b943a6824b01cae711e8c1fedf0837660b99efc554ca60904d613420c
 The quick brown testing a longer string not dependent on length 15 1234567890 abcdefghijklmnopqrstuvwxyz
 
@@ -15,3 +16,72 @@ ESCCtrl]
 ^[^]
 telnet> quit
 Connection closed.
+telnet 192.168.1.211 6050
+Trying 192.168.1.211...
+Connected to 192.168.1.211.
+Escape character is '^]'.
+112345678901234567890123456789012:My Secret IV:My Extra Secret AAD:The quick brown
+0e599f59da22536d4fe2d6bd48c118
+The quick brown
+d495df0bc8a0f10d5aba11764e898070
+**********************************************
+212345678901234567890123456789012:My Secret IV:My Extra Secret AAD:0e599f59da22536d4fe2d6bd48c118
+This show failed
+**********************************************
+tests decryption
+212345678901234567890123456789012:My Secret IV:My Extra Secret AAD:0e599f59da22536d4fe2d6bd48c118:d495df0bc8a0f10d5aba11764e898070 
+The quick brown
+**********************************************
+Reset QEMU
+128 bit key
+key 16 char 128 bits
+ 
+String sent
+11234567890123456:My Secret IV:My Extra Secret AAD:The quick brown testing a longer string not dependent on length 15 1234567890 abcdefghijklmnopqrstuvwxyz
+AES GCM Encrypt Success
+Encrypt data bf5a5780b0b590c383389ca8d642ebd3150ad44285b10b172f09cf1c52fa12f326ff9d793509118ff3b93389f0012da5139dc85538ce4c7fd2ac6a4a62074fdd66310c5e59d6266cbcf22bf2e4a4b787c37fd3b9ca83b535471bc7f7e0ada8628e7a5431004e3f49
+
+Ultibo Returns
+
+AES GCM Decrypt Success
+Tag 045DEAB8
+The quick brown testing a longer string not dependent on length 15 1234567890 abcdefghijklmnopqrstuvwxyz
+EncryptionTag d42ab6de32ee5470f07f6932785e5e2d
+**********************************************
+192 bit key
+key 24 char
+String sent
+1123456789012345678901234:My Secret IV:My Extra Secret AAD:The quick brown testing a longer string not dependent on length 15 1234567890 abcdefghijklmnopqrstuvwxyz
+28fe1a5369ccee4af6db6f68a0626c7962e0c1e36e8fe6ef9b83cfc55f0179d6befbe447ec89c69e63a8da48a5cd23c076c3ece3ed0c7a2f3640f8a3f602706d8d497f87d199fd8642ad84135c419fbd219b09546a0f51d37497c49d4cd53de84aca9e32f072d5bc
+
+Ultibo Returns
+
+AES GCM Encrypt Success
+Encrypt data 28fe1a5369ccee4af6db6f68a0626c7962e0c1e36e8fe6ef9b83cfc55f0179d6befbe447ec89c69e63a8da48a5cd23c076c3ece3ed0c7a2f3640f8a3f602706d8d497f87d199fd8642ad84135c419fbd219b09546a0f51d37497c49d4cd53de84aca9e32f072d5bc
+AES GCM Decrypt Success
+Tag 045DEAB8
+The quick brown testing a longer string not dependent on length 15 1234567890 abcdefghijklmnopqrstuvwxyz
+EncryptionTag 01da8dc1535c903b42485138c89bd4e9
+**********************************************
+256 bit key
+key 32 char
+String sent
+112345678901234567890123456789012:My Secret IV:My Extra Secret AAD:The quick brown testing a longer string not dependent on length 15 1234567890 abcdefghijklmnopqrstuvwxyz
+
+Ultibo Returns
+
+AES GCM Encrypt Success
+Encrypt data 0e599f59da22536d4fe2d6bd48c118e594d7ee54ba178f1c918dfd69dea863b7514a8a263a5e5846b15de04945412b3f6334f78109d079d0f8198199c7a2ca297f376f1f97d1e3e75473538b943a6824b01cae711e8c1fedf0837660b99efc554ca60904d613420c
+ 
+AES GCM Decrypt Success
+Tag 045B6AB8
+The quick brown testing a longer string not dependent on length 15 1234567890 abcdefghijklmnopqrstuvwxyz
+EncryptionTag f56c32e2ea3343b31748823b65590a09
+
+0e599f59da22536d4fe2d6bd48c118e594d7ee54ba178f1c918dfd69dea863b7514a8a263a5e5846b15de04945412b3f6334f78109d079d0f8198199c7a2ca297f376f1f97d1e3e75473538b943a6824b01cae711e8c1fedf0837660b99efc554ca60904d613420c
+AES GCM Decrypt Success
+Tag 045B6AB8
+The quick brown testing a longer string not dependent on length 15 1234567890 abcdefghijklmnopqrstuvwxyz
+EncryptionTag f56c32e2ea3343b31748823b65590a09
+
+
