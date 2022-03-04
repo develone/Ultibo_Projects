@@ -537,8 +537,10 @@ WriteLn('without no EOL lendata ',IntToStr(lendata));
   if AESGCMEncryptData(Key, Length(MyKey), IV, AAD, Plain, Crypt, Length(MyIV), Length(MyAAD), lendata, Tag) then
   begin
     WriteLn('AES GCM Encrypt Success');
+    fSock.SendString('AES GCM Encrypt Success');
+    fSock.SendString(EOL);
     BinCryptStr1:=BytesToString(Crypt,lendata);
-    fSock.SendString(BinCryptStr1);
+    fSock.SendString('Encrypt data '+BinCryptStr1);
     fSock.SendString(EOL);
     WriteLn('Bytes from Crypt ');
     {Clear the plain buffer}
@@ -554,10 +556,15 @@ WriteLn('without no EOL lendata ',IntToStr(lendata));
     EncryptionTag:=BytesToString(Tag,AES_BLOCK_SIZE);
     GCM1.EncryptionTag1:=EncryptionTag;
     WriteLn('EncryptionTag ', EncryptionTag);
+
     {Decrypt the Data}
     if AESGCMDecryptData(Key, Length(MyKey), IV, AAD, Crypt, Plain, Length(MyIV), Length(MyAAD), lendata, Tag) then
     begin
       WriteLn('AES GCM Decrypt Success');
+          fSock.SendString('AES GCM Decrypt Success');
+          fSock.SendString(EOL);
+          fSock.SendString('Tag '+Hexstr(@Tag));
+          fSock.SendString(EOL);
     WriteLn('Tag '+Hexstr(@Tag));
     for CC:= 0 to AES_BLOCK_SIZE - 1 do
     begin
@@ -577,7 +584,7 @@ WriteLn('Tag '+Hexstr(@Tag));
       //SetString(MyResult, PAnsiChar(Crypt), lendata);
       EncryptionTag:=BytesToString(Tag,AES_BLOCK_SIZE);
       GCM1.EncryptionTag2:=EncryptionTag;
-      fSock.SendString(EncryptionTag);
+      fSock.SendString('EncryptionTag '+ EncryptionTag);
       fSock.SendString(EOL);
     WriteLn('EncryptionTag ', EncryptionTag);
       for CC:= 0 to lendata - 1 do
