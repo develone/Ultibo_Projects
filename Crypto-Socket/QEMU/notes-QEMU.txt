@@ -83,5 +83,44 @@ AES GCM Decrypt Success
 Tag 045B6AB8
 The quick brown testing a longer string not dependent on length 15 1234567890 abcdefghijklmnopqrstuvwxyz
 EncryptionTag f56c32e2ea3343b31748823b65590a09
+**********************************************
+
+Testing chg key 256 bit and performing encryption.
+
+256 bit key
+key 32 char
+String sent
+
+1Now we are engaged in a great ci:My Secret IV:My Extra Secret AAD:The quick brown testing a longer string not dependent on length 15 1234567890 abcdefghijklmnopqrstuvwxyz
+
+Ultibo Returns
+
+Data received 1Now we are engaged in a great ci:My Secret IV:My Extra Secret AAD:The quick brown testing a longer string not dependent on length 15 1234567890 abcdefghijklmnopqrstuvwxyz
+
+AES GCM Encrypt Success
+Encrypt data 8c06c57b76d275b3c74008b0ba3821011b4c6c2ca022960241c194c757c7636cedc2dd93ab8bfb58ab3fcc475728312ca103c47915d207d6f8780a692d550ef3f0f8f87a03cd3e5eac7c9280ebd8c82e13bad589f3e8ee18035743f8e47df47de2cb7621bbc69248
+AES GCM Decrypt Success
+Tag 04607AB8
+The quick brown testing a longer string not dependent on length 15 1234567890 abcdefghijklmnopqrstuvwxyz
+EncryptionTag e5a1b5b4e59d272c32047f2c04b0f9ce
 
 
+********************************************
+256 bit key
+key 32 char
+String sent
+
+1Now we are engaged in a great ci:My Secret IV:My Extra Secret AAD:The quick brown
+
+Ultibo returns
+
+Data received 1Now we are engaged in a great ci:My Secret IV:My Extra Secret AAD:The quick brown
+
+AES GCM Encrypt Success
+Encrypt data 8c06c57b76d275b3c74008b0ba3821
+AES GCM Decrypt Success
+Tag 04607AB8
+The quick brown
+EncryptionTag 7a855950d776fbbc4a947c9033200204
+
+ 

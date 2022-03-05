@@ -470,10 +470,13 @@ begin
 begin
   WriteLn('1');
 GCM1.SockData:=SockData;
+fSock.SendString('Data received '+SockData);
+fSock.SendString(EOL);
+{These were the initial values removed on 03/05/22
 WriteLn('Key '+MyKey);
 WriteLn('IV '+MyIV);
 WriteLn('AAD '+MyAAD);
-WriteLn('Data '+MyData);
+WriteLn('Data '+MyData);}
 comindex:=LastDelimiter('\.:',SockData);
 
 
@@ -624,11 +627,20 @@ end;
 if (teststr='2') then
 begin
   WriteLn('2');
+  fSock.SendString('2');
+  fSock.SendString(EOL);
   GCM2.SockData:=SockData;
+  fSock.SendString(SockData);
+  fSock.SendString(EOL);
 WriteLn('Key '+MyKey);
+ fSock.SendString('Key '+MyKey);
+  fSock.SendString(EOL);
 WriteLn('IV '+MyIV);
 WriteLn('AAD '+MyAAD);
+
 WriteLn('Data '+MyData);
+fSock.SendString('MyData '+MyData);
+fSock.SendString(EOL);
 
 comindex:=LastDelimiter('\.:',SockData);
 WriteLn('index where tag ' +IntToStr(comindex));
@@ -642,6 +654,7 @@ comindex:=LastDelimiter('\.:',SockData);
 WriteLn('index where data '+IntToStr(comindex));
 MyData:=RightStr(SockData,DatainLen-comindex);
 WriteLn('MyData '+MyData+' '+IntToStr(Length(MyData)));
+
 SockData:=LeftStr(SockData,comindex-1);
 DatainLen:=Length(SockData);
 
