@@ -2,7 +2,7 @@ This testing encrypt & decrypt of 2 16 char strings 1The quick brown & encrypt d
  
 telnet xx.xx.xx.xx 6050
 Trying xx.xx.xx.xx...
-Connected to 192.168.1.249.
+Connected to xx.xx.xx.xx.
 Escape character is '^]'.
 112345678901234567890123456789012:My Secret IV:My Extra Secret AAD:1The quick brown
 Data received 112345678901234567890123456789012:My Secret IV:My Extra Secret AAD:1The quick brown
