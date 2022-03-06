@@ -1,0 +1,47 @@
+This testing encrypt & decrypt of 2 16 char strings 1The quick brown & encrypt decrypt2
+ 
+telnet xx.xx.xx.xx 6050
+Trying xx.xx.xx.xx...
+Connected to 192.168.1.249.
+Escape character is '^]'.
+112345678901234567890123456789012:My Secret IV:My Extra Secret AAD:1The quick brown
+Data received 112345678901234567890123456789012:My Secret IV:My Extra Secret AAD:1The quick brown
+
+Ultibo Returns
+
+AES GCM Encrypt Success
+Encrypt data 6b65921c8b264f6747a994ad55d901ab
+AES GCM Decrypt Success
+Tag 04495AB8
+1The quick brown
+EncryptionTag da101ffb3691ca9f56724d977f7cbddd
+212345678901234567890123456789012:My Secret IV:My Extra Secret AAD:6b65921c8b264f6747a994ad55d901ab:da101ffb3691ca9f56724d977f7cbddd
+2
+Data received 212345678901234567890123456789012:My Secret IV:My Extra Secret AAD:6b65921c8b264f6747a994ad55d901ab:da101ffb3691ca9f56724d977f7cbddd
+
+Ultibo Returns
+
+MyData 6b65921c8b264f6747a994ad55d901ab 32
+MYKey 12345678901234567890123456789012 32
+AES GCM Decrypt Success
+Ascii PlainStr is 1The quick brown
+
+112345678901234567890123456789012:My Secret IV:My Extra Secret AAD:encrypt decrypt2
+Data received 112345678901234567890123456789012:My Secret IV:My Extra Secret AAD:encrypt decrypt2
+
+Ultibo Returns
+
+AES GCM Encrypt Success
+Encrypt data 3f5f990bd2274e2e40a7d7bd5ec602f7
+AES GCM Decrypt Success
+Tag 04495AB8
+encrypt decrypt2
+EncryptionTag 6e113c7af07b720c7363583425821adf
+212345678901234567890123456789012:My Secret IV:My Extra Secret AAD:3f5f990bd2274e2e40a7d7bd5ec602f7:6e113c7af07b720c7363583425821adf      
+2
+Data received 212345678901234567890123456789012:My Secret IV:My Extra Secret AAD:3f5f990bd2274e2e40a7d7bd5ec602f7:6e113c7af07b720c7363583425821adf
+
+MyData 3f5f990bd2274e2e40a7d7bd5ec602f7 32
+MYKey 12345678901234567890123456789012 32
+AES GCM Decrypt Success
+Ascii PlainStr is encrypt decrypt2
