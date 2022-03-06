@@ -630,17 +630,18 @@ begin
   fSock.SendString('2');
   fSock.SendString(EOL);
   GCM2.SockData:=SockData;
-  fSock.SendString(SockData);
+  fSock.SendString('Data received '+SockData);
   fSock.SendString(EOL);
-WriteLn('Key '+MyKey);
- fSock.SendString('Key '+MyKey);
-  fSock.SendString(EOL);
-WriteLn('IV '+MyIV);
+  WriteLn ('Data received '+SockData);
+//WriteLn('Key '+MyKey);
+ //fSock.SendString('Key '+MyKey);
+  //fSock.SendString(EOL);
+{WriteLn('IV '+MyIV);
 WriteLn('AAD '+MyAAD);
 
-WriteLn('Data '+MyData);
-fSock.SendString('MyData '+MyData);
-fSock.SendString(EOL);
+WriteLn('Data '+MyData);}
+//fSock.SendString('MyData '+MyData);
+//fSock.SendString(EOL);
 
 comindex:=LastDelimiter('\.:',SockData);
 WriteLn('index where tag ' +IntToStr(comindex));
@@ -654,6 +655,8 @@ comindex:=LastDelimiter('\.:',SockData);
 WriteLn('index where data '+IntToStr(comindex));
 MyData:=RightStr(SockData,DatainLen-comindex);
 WriteLn('MyData '+MyData+' '+IntToStr(Length(MyData)));
+fSock.SendString('MyData '+MyData+' '+IntToStr(Length(MyData)));
+fSock.SendString(EOL);
 
 SockData:=LeftStr(SockData,comindex-1);
 DatainLen:=Length(SockData);
@@ -669,12 +672,15 @@ comindex:=LastDelimiter('\.:',SockData);
 WriteLn('index where IV '+IntToStr(comindex));
 MyIV:=RightStr(SockData,DatainLen-comindex);
 WriteLn('MyIV '+MyIV+' '+IntToStr(Length(MyIV)));
+
 SockData:=LeftStr(SockData,comindex-1);
 DatainLen:=Length(SockData);
 
 WriteLn('SockData '+SockData+' '+IntToStr(DatainLen));
 MYKey:=RightStr(SockData,DatainLen-1);
 WriteLn('MYKey '+MYKey+' '+IntToStr(Length(MYKey)));
+fSock.SendString('MYKey '+MYKey+' '+IntToStr(Length(MYKey)));
+fSock.SendString(EOL);
 
 
   GCM2.MyKey:=MyKey;
@@ -811,10 +817,11 @@ WriteLn('Tag '+Hexstr(@Tag));
     if AESGCMDecryptData(Key, Length(MyKey), IV, AAD, Crypt, Plain, Length(MyIV), Length(MyAAD), lendata, Tag) then
     begin
       WriteLn('AES GCM Decrypt Success');
-
+      fSock.SendString('AES GCM Decrypt Success');
+      fSock.SendString(EOL);
       {Copy the result}
       SetString(PlainStr, PAnsiChar(Plain), lendata);
-      fSock.SendString(PlainStr);
+      fSock.SendString('Ascii PlainStr is ' + PlainStr);
       fSock.SendString(EOL);
       WriteLn('Ascii PlainStr is ' + PlainStr);
       GCM2.PlainStr:=PlainStr;

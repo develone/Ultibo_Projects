@@ -123,4 +123,12 @@ Tag 04607AB8
 The quick brown
 EncryptionTag 7a855950d776fbbc4a947c9033200204
 
+
+fSock.SendString('Data received '+SockData);
+fSock.SendString(EOL);
+2Now we are engaged in a great ci:My Secret IV:My Extra Secret AAD:8c06c57b76d275b3c74008b0ba3821
+
+2Now we are engaged in a great ci:04607AB8:My Extra Secret AAD:8c06c57b76d275b3c74008b0ba3821
+
+2Now we are engaged in a great ci:04607AB8:My Extra Secret AAD:8c06c57b76d275b3c74008b0ba3821
  
