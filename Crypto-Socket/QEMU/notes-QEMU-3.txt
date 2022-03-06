@@ -1,0 +1,49 @@
+The encryption of a longer string was working, but the deccryption was failing. Changing the string from 106 to 112. This does not require padding. This appears to be the fix.
+
+String sent
+
+112345678901234567890123456789012:My Secret IV:My Extra Secret AAD:The quick brown testing a longer string not dependent on length 15 1234567890 abcdefghijklmnopqrstuvwxyz012345
+
+Ultibo Returns
+
+Data received 112345678901234567890123456789012:My Secret IV:My Extra Secret AAD:The quick brown testing a longer string not dependent on length 15 1234567890 abcdefghijklmnopqrstuvwxyz
+
+AES GCM Encrypt Success
+Encrypt data 0e599f59da22536d4fe2d6bd48c118e594d7ee54ba178f1c918dfd69dea863b7514a8a263a5e5846b15de04945412b3f6334f78109d079d0f8198199c7a2ca297f376f1f97d1e3e75473538b943a6824b01cae711e8c1fedf0837660b99efc554ca60904d613420c
+AES GCM Decrypt Success
+Tag 034C0AB8
+The quick brown testing a longer string not dependent on length 15 1234567890 abcdefghijklmnopqrstuvwxyz
+EncryptionTag f56c32e2ea3343b31748823b65590a09
+
+Adding 012345 to make the string 112 instead of 106
+
+String sent
+
+
+112345678901234567890123456789012:My Secret IV:My Extra Secret AAD:The quick brown testing a longer string not dependent on length 15 1234567890 abcdefghijklmnopqrstuvwxyz012345
+
+Ultibo Returns
+
+Data received 112345678901234567890123456789012:My Secret IV:My Extra Secret AAD:The quick brown testing a longer string not dependent on length 15 1234567890 abcdefghijklmnopqrstuvwxyz012345
+
+AES GCM Encrypt Success
+Encrypt data 0e599f59da22536d4fe2d6bd48c118e594d7ee54ba178f1c918dfd69dea863b7514a8a263a5e5846b15de04945412b3f6334f78109d079d0f8198199c7a2ca297f376f1f97d1e3e75473538b943a6824b01cae711e8c1fedf0837660b99efc554ca60904d613420cf20af45831cd
+AES GCM Decrypt Success
+Tag 034C0AB8
+The quick brown testing a longer string not dependent on length 15 1234567890 abcdefghijklmnopqrstuvwxyz012345
+EncryptionTag 3fe2f70affa859b4e9644875644878b2
+
+String sent
+
+
+212345678901234567890123456789012:My Secret IV:My Extra Secret AAD:0e599f59da22536d4fe2d6bd48c118e594d7ee54ba178f1c918dfd69dea863b7514a8a263a5e5846b15de04945412b3f6334f78109d079d0f8198199c7a2ca297f376f1f97d1e3e75473538b943a6824b01cae711e8c1fedf0837660b99efc554ca60904d613420cf20af45831cd:3fe2f70affa859b4e9644875644878b2
+
+Ultibo Returns
+
+2
+Data received 212345678901234567890123456789012:My Secret IV:My Extra Secret AAD:0e599f59da22536d4fe2d6bd48c118e594d7ee54ba178f1c918dfd69dea863b7514a8a263a5e5846b15de04945412b3f6334f78109d079d0f8198199c7a2ca297f376f1f97d1e3e75473538b943a6824b01cae711e8c1fedf0837660b99efc554ca60904d613420cf20af45831cd:3fe2f70affa859b4e9644875644878b2
+MyData 0e599f59da22536d4fe2d6bd48c118e594d7ee54ba178f1c918dfd69dea863b7514a8a263a5e5846b15de04945412b3f6334f78109d079d0f8198199c7a2ca297f376f1f97d1e3e75473538b943a6824b01cae711e8c1fedf0837660b99efc554ca60904d613420cf20af45831cd 220
+MYKey 12345678901234567890123456789012 32
+AES GCM Decrypt Success
+Ascii PlainStr is The quick brown testing a longer string not dependent on length 15 1234567890 abcdefghijklmnopqrstuvwxyz012345
+

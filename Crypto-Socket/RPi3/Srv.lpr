@@ -39,7 +39,7 @@ uses
   syncobjs,
   blcksock,
   synsock,
-  uFPGA,
+
   crypto,
   APICrypto,
   Ultibo
@@ -408,7 +408,7 @@ GCM = record
   tagstr: AnsiString;
   teststr: AnsiString;
   {Must be 16, 24 or 32 bytes}
-  MyKey: AnsiString ; 
+  MyKey: AnsiString ;
   MyIV: AnsiString;
   MyAAD: AnsiString;
   MyData: AnsiString;
@@ -418,14 +418,14 @@ var
   GCM2 during teststr 2
   GCM3 during teststr 3}
   GCM1,GCM2,GCM3:GCM;
- 
+
   mybyte:Byte;
   lendata:Longword;
   EncryptionTagToDecrypt:AnsiString;
   EncryptionTag:AnsiString;
   PlainStr:AnsiString;
   CryptStr1:AnsiString;
-  BinCryptStr1:AnsiString;  
+  BinCryptStr1:AnsiString;
   CC:LongWord;
   off:LongWord;
   Count:Integer;
@@ -434,7 +434,7 @@ var
   StringList:TStringList;
   FileStream:TFileStream;
   cryptstr: AnsiString;
-  tagstr: AnsiString; 
+  tagstr: AnsiString;
   newstr: AnsiString;
   teststr: AnsiString;
   DatainLen:LongWord;
@@ -455,7 +455,7 @@ var
 begin
   EOL:='  ';
   EOL[1]:=char(13);
-  EOL[2]:=char(10); 
+  EOL[2]:=char(10);
   DatainLen:=Length(SockData);
   newstr:=RightStr(SockData,DatainLen-1);
   teststr:=LeftStr(SockData,1);
@@ -463,28 +463,31 @@ begin
   //WriteLn(IntToStr(DatainLen));
   //WriteLn(newstr);
 //chgs planned for Srv.lpr which is the same as Srv.lpr.tmp3
- 
 
-{**************************encryption**************************}  
+
+{**************************encryption**************************}
   if (teststr='1') then
-begin  
-  WriteLn('1'); 
-GCM1.SockData:=SockData;      
+begin
+  WriteLn('1');
+GCM1.SockData:=SockData;
+fSock.SendString('Data received '+SockData);
+fSock.SendString(EOL);
+{These were the initial values removed on 03/05/22
 WriteLn('Key '+MyKey);
 WriteLn('IV '+MyIV);
 WriteLn('AAD '+MyAAD);
-WriteLn('Data '+MyData);
+WriteLn('Data '+MyData);}
 comindex:=LastDelimiter('\.:',SockData);
 
 
 WriteLn('index where data ' +IntToStr(comindex));
 MyData:=RightStr(SockData,DatainLen-comindex);
- 
+
 DatainLen:=Length(MyData);
 WriteLn('MyData '+MyData+ 'Length with EOL '+IntToStr(DatainLen));
 {Since MyData has EOL.  The above WriteLn writes the DatainLen on a new line}
 SockData:=LeftStr(SockData,comindex-1);
- 
+
 DatainLen:=Length(SockData);
 WriteLn('SockData '+SockData + ' '+IntToStr(DatainLen));
 
@@ -493,7 +496,7 @@ WriteLn('index where AAD ' +IntToStr(comindex));
 MyAAD:=RightStr(SockData,DatainLen-comindex);
 WriteLn('MyAAD '+MyAAD);
 SockData:=LeftStr(SockData,comindex-1);
- 
+
 DatainLen:=Length(SockData);
 WriteLn('SockData '+SockData+ ' '+IntToStr(DatainLen));
 comindex:=LastDelimiter('\.:',SockData);
@@ -508,8 +511,8 @@ MyKey:=RightStr(SockData,DatainLen-1);
 WriteLn('MyKey '+MyKey);
 
 lendata:=Length(MyData) - 2;
- 
-WriteLn('without no EOL lendata ',IntToStr(lendata)); 
+
+WriteLn('without no EOL lendata ',IntToStr(lendata));
   {Allocate buffers}
   Key := AllocMem(Length(MyKey));
   IV := AllocMem(Length(MyIV));
@@ -526,20 +529,22 @@ WriteLn('without no EOL lendata ',IntToStr(lendata));
   WriteLn('Key '+MyKey+' '+IntToStr(Length(MyKey)));
   WriteLn('IV '+MyIV+' '+IntToStr(Length(MyIV)));
   WriteLn('AAD '+MyAAD+' '+IntToStr(Length(MyAAD)));
-  
+
   GCM1.MyKey:=MyKey;
   GCM1.MyIV:=MyIV;
   GCM1.MyAAD:=MyAAD;
-  
+
   {Clear the crypt buffer}
   FillChar(Crypt^, lendata, 0);
   {Encrypt the data}
   if AESGCMEncryptData(Key, Length(MyKey), IV, AAD, Plain, Crypt, Length(MyIV), Length(MyAAD), lendata, Tag) then
   begin
     WriteLn('AES GCM Encrypt Success');
+    fSock.SendString('AES GCM Encrypt Success');
+    fSock.SendString(EOL);
     BinCryptStr1:=BytesToString(Crypt,lendata);
-    fSock.SendString(BinCryptStr1);
-    fSock.SendString(EOL); 
+    fSock.SendString('Encrypt data '+BinCryptStr1);
+    fSock.SendString(EOL);
     WriteLn('Bytes from Crypt ');
     {Clear the plain buffer}
     FillChar(Plain^, lendata, 0);
@@ -554,11 +559,16 @@ WriteLn('without no EOL lendata ',IntToStr(lendata));
     EncryptionTag:=BytesToString(Tag,AES_BLOCK_SIZE);
     GCM1.EncryptionTag1:=EncryptionTag;
     WriteLn('EncryptionTag ', EncryptionTag);
+
     {Decrypt the Data}
     if AESGCMDecryptData(Key, Length(MyKey), IV, AAD, Crypt, Plain, Length(MyIV), Length(MyAAD), lendata, Tag) then
     begin
       WriteLn('AES GCM Decrypt Success');
-    WriteLn('Tag '+Hexstr(@Tag));  
+          fSock.SendString('AES GCM Decrypt Success');
+          fSock.SendString(EOL);
+          fSock.SendString('Tag '+Hexstr(@Tag));
+          fSock.SendString(EOL);
+    WriteLn('Tag '+Hexstr(@Tag));
     for CC:= 0 to AES_BLOCK_SIZE - 1 do
     begin
     mybyte:=Tag^;
@@ -577,7 +587,7 @@ WriteLn('Tag '+Hexstr(@Tag));
       //SetString(MyResult, PAnsiChar(Crypt), lendata);
       EncryptionTag:=BytesToString(Tag,AES_BLOCK_SIZE);
       GCM1.EncryptionTag2:=EncryptionTag;
-      fSock.SendString(EncryptionTag);
+      fSock.SendString('EncryptionTag '+ EncryptionTag);
       fSock.SendString(EOL);
     WriteLn('EncryptionTag ', EncryptionTag);
       for CC:= 0 to lendata - 1 do
@@ -588,11 +598,11 @@ WriteLn('Tag '+Hexstr(@Tag));
     end;
     Dec(Plain,lendata);
     WriteLn(' ');
-    
+
       {Convert Crypt from Bytes to a String}
       MyResult:=BytesToString(Crypt,lendata);
       WriteLn('BytesToString Crypt '+ MyResult );
-      
+
     end
     else
     begin
@@ -617,11 +627,21 @@ end;
 if (teststr='2') then
 begin
   WriteLn('2');
+  fSock.SendString('2');
+  fSock.SendString(EOL);
   GCM2.SockData:=SockData;
-WriteLn('Key '+MyKey);
-WriteLn('IV '+MyIV);
+  fSock.SendString('Data received '+SockData);
+  fSock.SendString(EOL);
+  WriteLn ('Data received '+SockData);
+//WriteLn('Key '+MyKey);
+ //fSock.SendString('Key '+MyKey);
+  //fSock.SendString(EOL);
+{WriteLn('IV '+MyIV);
 WriteLn('AAD '+MyAAD);
-WriteLn('Data '+MyData);
+
+WriteLn('Data '+MyData);}
+//fSock.SendString('MyData '+MyData);
+//fSock.SendString(EOL);
 
 comindex:=LastDelimiter('\.:',SockData);
 WriteLn('index where tag ' +IntToStr(comindex));
@@ -635,32 +655,38 @@ comindex:=LastDelimiter('\.:',SockData);
 WriteLn('index where data '+IntToStr(comindex));
 MyData:=RightStr(SockData,DatainLen-comindex);
 WriteLn('MyData '+MyData+' '+IntToStr(Length(MyData)));
+fSock.SendString('MyData '+MyData+' '+IntToStr(Length(MyData)));
+fSock.SendString(EOL);
+
 SockData:=LeftStr(SockData,comindex-1);
 DatainLen:=Length(SockData);
- 
+
 comindex:=LastDelimiter('\.:',SockData);
 WriteLn('index where AAD '+IntToStr(comindex));
 MyAAD:=RightStr(SockData,DatainLen-comindex);
 WriteLn('MyAAD '+MyAAD+' '+IntToStr(Length(MyAAD)));
 SockData:=LeftStr(SockData,comindex-1);
 DatainLen:=Length(SockData);
- 
+
 comindex:=LastDelimiter('\.:',SockData);
 WriteLn('index where IV '+IntToStr(comindex));
 MyIV:=RightStr(SockData,DatainLen-comindex);
 WriteLn('MyIV '+MyIV+' '+IntToStr(Length(MyIV)));
+
 SockData:=LeftStr(SockData,comindex-1);
 DatainLen:=Length(SockData);
- 
+
 WriteLn('SockData '+SockData+' '+IntToStr(DatainLen));
 MYKey:=RightStr(SockData,DatainLen-1);
 WriteLn('MYKey '+MYKey+' '+IntToStr(Length(MYKey)));
- 
-  
+fSock.SendString('MYKey '+MYKey+' '+IntToStr(Length(MYKey)));
+fSock.SendString(EOL);
+
+
   GCM2.MyKey:=MyKey;
   GCM2.MyIV:=MyIV;
   GCM2.MyAAD:=MyAAD;
-  
+
 
 
 cryptstr:=MyData;
@@ -668,9 +694,9 @@ cryptstr:=MyData;
 {WriteLn('cryptstr '+cryptstr + ' ' + IntToStr(Length(cryptstr)));}
 WriteLn('cryptstr '+cryptstr);
 DatainLen:=Length(cryptstr);
- 
+
 lendata:=(Length(MyData) ) div 2;
-WriteLn('without no EOL lendata ',IntToStr(lendata));  
+WriteLn('without no EOL lendata ',IntToStr(lendata));
   testptr := AllocMem(lendata);
   Crypt := AllocMem(lendata);
 StringToBytes(cryptstr,PByte(testptr),lendata);
@@ -697,22 +723,22 @@ WriteLn('testptr '+Hexstr(@testptr)+ 'Crypt '+Hexstr(@Crypt));
     Dec(Crypt,lendata);
     WriteLn(' ');
 WriteLn('testptr '+Hexstr(@testptr)+ 'Crypt '+Hexstr(@Crypt));
-} 
+}
   Key := AllocMem(Length(MyKey));
   IV := AllocMem(Length(MyIV));
   AAD := AllocMem(Length(MyAAD));
   Plain := AllocMem(lendata);
-   
+
   Tag := AllocMem(AES_BLOCK_SIZE);
   StringToBytes(tagstr,PByte(Tag),AES_BLOCK_SIZE);
   {Copy the values}
   Move(MyKey[1], Key^, Length(MyKey));
   Move(MyIV[1], IV^, Length(MyIV));
   Move(MyAAD[1], AAD^, Length(MyAAD));
-  
+
 
 {
-WriteLn('IV '+Hexstr(@IV));  
+WriteLn('IV '+Hexstr(@IV));
 
     for CC:= 0 to (Length(MyIV) -1) do
     begin
@@ -722,8 +748,8 @@ WriteLn('IV '+Hexstr(@IV));
     end;
     Dec(IV,(Length(MyIV) -1));
     WriteLn(' ');
-WriteLn('IV '+Hexstr(@IV));  
-WriteLn('AAD '+Hexstr(@AAD));  
+WriteLn('IV '+Hexstr(@IV));
+WriteLn('AAD '+Hexstr(@AAD));
 
     for CC:= 0 to (Length(MyAAD) -1) do
     begin
@@ -733,9 +759,9 @@ WriteLn('AAD '+Hexstr(@AAD));
     end;
     Dec(AAD,(Length(MyAAD) -1));
     WriteLn(' ');
-WriteLn('AAD '+Hexstr(@AAD)); 
- 
-WriteLn('Key '+Hexstr(@Key));  
+WriteLn('AAD '+Hexstr(@AAD));
+
+WriteLn('Key '+Hexstr(@Key));
 
     for CC:= 0 to (Length(MyKey) -1) do
     begin
@@ -745,11 +771,11 @@ WriteLn('Key '+Hexstr(@Key));
     end;
     Dec(Key,(Length(MyKey) -1));
     WriteLn(' ');
-WriteLn('Key '+Hexstr(@Key)); 
- 
+WriteLn('Key '+Hexstr(@Key));
+
   {Clear the plain buffer}
   FillChar(Plain^, lendata, 0);
-WriteLn('Plain '+Hexstr(@Plain));  
+WriteLn('Plain '+Hexstr(@Plain));
     for CC:= 0 to lendata - 1 do
     begin
     mybyte:=Plain^;
@@ -758,10 +784,10 @@ WriteLn('Plain '+Hexstr(@Plain));
     end;
     Dec(Plain,lendata);
     WriteLn(' ');
-WriteLn('Plain '+Hexstr(@Plain)); 
+WriteLn('Plain '+Hexstr(@Plain));
 }
-  
-{This did not help 
+
+{This did not help
 StringToBytes('d495df0bc8a0f10d5aba11764e898070',PByte(Tag),AES_BLOCK_SIZE);
 
 going to test adding the encryption here}
@@ -773,11 +799,11 @@ going to test adding the encryption here}
   GCM2.MyAAD:=MyAAD;
  FillChar(Plain^, lendata, 0);
 StringToBytes(cryptstr,PByte(Crypt),lendata);
-StringToBytes(tagstr,PByte(Tag),AES_BLOCK_SIZE); 
+StringToBytes(tagstr,PByte(Tag),AES_BLOCK_SIZE);
 //StringToBytes('d495df0bc8a0f10d5aba11764e898070',PByte(Tag),AES_BLOCK_SIZE);
 EncryptionTagToDecrypt:=BytesToString(PByte(Tag),AES_BLOCK_SIZE);
 GCM2.EncryptionTagToDecrypt:=EncryptionTagToDecrypt;
-WriteLn('Tag '+Hexstr(@Tag));  
+WriteLn('Tag '+Hexstr(@Tag));
     for CC:= 0 to AES_BLOCK_SIZE - 1 do
     begin
     mybyte:=Tag^;
@@ -791,10 +817,11 @@ WriteLn('Tag '+Hexstr(@Tag));
     if AESGCMDecryptData(Key, Length(MyKey), IV, AAD, Crypt, Plain, Length(MyIV), Length(MyAAD), lendata, Tag) then
     begin
       WriteLn('AES GCM Decrypt Success');
-
+      fSock.SendString('AES GCM Decrypt Success');
+      fSock.SendString(EOL);
       {Copy the result}
       SetString(PlainStr, PAnsiChar(Plain), lendata);
-      fSock.SendString(PlainStr);
+      fSock.SendString('Ascii PlainStr is ' + PlainStr);
       fSock.SendString(EOL);
       WriteLn('Ascii PlainStr is ' + PlainStr);
       GCM2.PlainStr:=PlainStr;
@@ -814,13 +841,13 @@ WriteLn('Tag '+Hexstr(@Tag));
       {Convert Crypt from Bytes to a String}
       CryptStr:=BytesToString(Crypt,lendata);
       WriteLn('BytesToString Crypt '+ CryptStr );
-      
+
     end
     else
     begin
       WriteLn('AES GCM Decrypt Failure');
     end;
- 
+
 FreeMem(Key);
 FreeMem(IV);
 FreeMem(AAD);
@@ -864,4 +891,5 @@ begin
    ReadLn;
 end.
 .
+
 
