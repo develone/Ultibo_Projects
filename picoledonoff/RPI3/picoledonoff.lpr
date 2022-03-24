@@ -161,7 +161,7 @@ begin
       case state of
         stFind :
           begin
-            SerialDevice :=  SerialDeviceFindByName('USB CDC ACM Serial');
+            SerialDevice :=  SerialDeviceFindByDescription('USB CDC ACM Serial');
             ConsoleWindowWriteLn (WindowHandle, 'trying to find USB CDC ACM Serial');
 
 
