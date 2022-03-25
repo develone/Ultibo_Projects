@@ -42,7 +42,9 @@ uses
   FileSystem,  {Include the file system core and interfaces}
   FATFS,       {Include the FAT file system driver}
   MMC;         {Include the MMC/SD core to access our SD card}
-
+ type
+ Buffer = array[0..40159] of Char;  //String[255];
+ BufPtr = ^Buffer;
 {A window handle plus a couple of others.}
 var
  Count:Integer;
@@ -51,6 +53,9 @@ var
  StringList:TStringList;
  FileStream:TFileStream;
  WindowHandle:TWindowHandle;
+ B : Buffer;
+ BP : BufPtr;
+ PP : Pointer;
     function WaitForIPComplete : string;
 
    var
@@ -218,7 +223,17 @@ begin
    {And use LoadFromStream to read it}
    ConsoleWindowWriteLn(WindowHandle,'Loading the TStringList from the file');
    StringList.LoadFromStream(FileStream);
+   ConsoleWindowWriteLn(WindowHandle,'Num of strings in file StringList.Count '+intToStr(StringList.Count));
 
+   {PP is Pointer BP is a Pointer to an Buffer = array[0..40159] of Char; }
+   PP:=StringList.GetText;
+   BP:=PP;
+   ConsoleWindowWriteLn(WindowHandle,'item 0 '+ B[0]);
+   ConsoleWindowWriteLn(WindowHandle,'item 1 '+ B[1]);
+   ConsoleWindowWriteLn(WindowHandle,'item 2 '+ B[2]);
+   ConsoleWindowWriteLn(WindowHandle,'');
+   {This prints the complete string}
+   ConsoleWindowWriteLn(WindowHandle,BP[0]);
    {Iterate the strings and print them to the screen}
    ConsoleWindowWriteLn(WindowHandle,'Count '+ intToStr(Count)+ ' The contents of the file are:');
    for Count:=0 to StringList.Count - 1 do

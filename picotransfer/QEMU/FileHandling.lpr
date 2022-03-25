@@ -26,13 +26,24 @@ uses
   Platform,
   Threads,
   Console,
+  HTTP,         {Include HTTP and WebStatus so we can see from a web browser what is happening}
+  Classes,
+  uTFTP,
+  Winsock2,
+  { needed for telnet }
+  Shell,
+  ShellFilesystem,
+  ShellUpdate,
+  RemoteShell,
   Framebuffer,
   SysUtils,
-  Classes,     {Include the common classes}
+
   FileSystem,  {Include the file system core and interfaces}
   FATFS,       {Include the FAT file system driver}
   MMC;         {Include the MMC/SD core to access our SD card}
-
+ type
+ Buffer = array[0..40159] of Char;  //String[255];
+ BufPtr = ^Buffer;
 {A window handle plus a couple of others.}
 var
  Count:Integer;
@@ -41,6 +52,48 @@ var
  StringList:TStringList;
  FileStream:TFileStream;
  WindowHandle:TWindowHandle;
+ B : Buffer;
+ BP : BufPtr;
+ PP : Pointer;
+    function WaitForIPComplete : string;
+
+   var
+
+     TCP : TWinsock2TCPClient;
+
+   begin
+
+     TCP := TWinsock2TCPClient.Create;
+
+     Result := TCP.LocalAddress;
+
+     if (Result = '') or (Result = '0.0.0.0') or (Result = '255.255.255.255') then
+
+       begin
+
+         while (Result = '') or (Result = '0.0.0.0') or (Result = '255.255.255.255') do
+
+           begin
+
+             sleep (1500);
+
+             Result := TCP.LocalAddress;
+
+           end;
+
+       end;
+
+     TCP.Free;
+
+   end;
+
+procedure Msg (Sender : TObject; s : string);
+
+begin
+
+  ConsoleWindowWriteLn (WindowHandle, s);
+
+end;
 
 
 begin
@@ -157,9 +210,52 @@ begin
   {Something went wrong creating the file}
   ConsoleWindowWriteLn(WindowHandle,'Failed to create the file ' + Filename);
  end;
+ Filename:='C:\bb.bin';
+ ConsoleWindowWriteLn(WindowHandle,'starting to read '+Filename);
+ ConsoleWindowWriteLn(WindowHandle,'Opening the file ' + Filename);
+  try
+   FileStream:=TFileStream.Create(Filename,fmOpenReadWrite);
+
+   {Recreate our string list}
+   StringList:=TStringList.Create;
+
+   {And use LoadFromStream to read it}
+   ConsoleWindowWriteLn(WindowHandle,'Loading the TStringList from the file');
+   StringList.LoadFromStream(FileStream);
+   ConsoleWindowWriteLn(WindowHandle,'Num of strings in file StringList.Count '+intToStr(StringList.Count));
+
+   {PP is Pointer BP is a Pointer to an Buffer = array[0..40159] of Char; }
+   PP:=StringList.GetText;
+   BP:=PP;
+   ConsoleWindowWriteLn(WindowHandle,'item 0 '+ B[0]);
+   ConsoleWindowWriteLn(WindowHandle,'item 1 '+ B[1]);
+   ConsoleWindowWriteLn(WindowHandle,'item 2 '+ B[2]);
+   ConsoleWindowWriteLn(WindowHandle,'');
+   {This prints the complete string}
+   ConsoleWindowWriteLn(WindowHandle,BP[0]);
+   {Iterate the strings and print them to the screen}
+   ConsoleWindowWriteLn(WindowHandle,'Count '+ intToStr(Count)+ ' The contents of the file are:');
+   for Count:=0 to StringList.Count - 1 do
+    begin
+     ConsoleWindowWriteLn(WindowHandle,'Count '+ intToStr(Count));
+     ConsoleWindowWriteLn(WindowHandle,StringList.Strings[Count]);
+    end;
+
+   {Close the file and free the string list again}
+   ConsoleWindowWriteLn(WindowHandle,'Closing the file');
+   ConsoleWindowWriteLn(WindowHandle,'');
+   FileStream.Free;
+   StringList.Free;
+
+   {If you remove the SD card and put in back in your computer, you should see the
+    file "Example 08 File Handling.txt" on it. If you open it in a notepad you should
+    see the contents exactly as they appeared on screen.}
+  except
+   {TFileStream couldn't open the file}
+   ConsoleWindowWriteLn(WindowHandle,'Failed to open the file ' + Filename);
+  end;
 
  {Halt the thread}
  ThreadHalt(0);
 end.
-
 
