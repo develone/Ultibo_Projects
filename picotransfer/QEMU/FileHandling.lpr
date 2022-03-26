@@ -42,19 +42,25 @@ uses
   FATFS,       {Include the FAT file system driver}
   MMC;         {Include the MMC/SD core to access our SD card}
  type
- Buffer = array[0..40159] of Char;  //String[255];
+ Buffer = array[0..4159] of Char;
  BufPtr = ^Buffer;
 {A window handle plus a couple of others.}
 var
  Count:Integer;
  Filename:String;
+ Filenamelog:String;
+
  SearchRec:TSearchRec;
- StringList:TStringList;
+ StringList,StringListlog:TStringList;
  FileStream:TFileStream;
+ FileStreamlog:TFileStream;
  WindowHandle:TWindowHandle;
  B : Buffer;
  BP : BufPtr;
  PP : Pointer;
+ i,j: integer;
+ Characters : String;
+ CRC : String;
     function WaitForIPComplete : string;
 
    var
@@ -211,13 +217,15 @@ begin
   ConsoleWindowWriteLn(WindowHandle,'Failed to create the file ' + Filename);
  end;
  Filename:='C:\bb.bin';
- ConsoleWindowWriteLn(WindowHandle,'starting to read '+Filename);
- ConsoleWindowWriteLn(WindowHandle,'Opening the file ' + Filename);
+ Filenamelog:='C:\read.log';
+ ConsoleWindowWriteLn(WindowHandle,'starting to read '+Filename+'start of write '+Filenamelog);
+ ConsoleWindowWriteLn(WindowHandle,'Opening the file ' + Filename+'Opening the file ' + Filenamelog);
   try
    FileStream:=TFileStream.Create(Filename,fmOpenReadWrite);
-
+   //FileStreamlog:=TFileStream.Create(Filenamelog,fmOpenReadWrite);
    {Recreate our string list}
    StringList:=TStringList.Create;
+   //StringListlog:=TStringList.Create;
 
    {And use LoadFromStream to read it}
    ConsoleWindowWriteLn(WindowHandle,'Loading the TStringList from the file');
@@ -227,26 +235,36 @@ begin
    {PP is Pointer BP is a Pointer to an Buffer = array[0..40159] of Char; }
    PP:=StringList.GetText;
    BP:=PP;
-   ConsoleWindowWriteLn(WindowHandle,'item 0 '+ B[0]);
-   ConsoleWindowWriteLn(WindowHandle,'item 1 '+ B[1]);
-   ConsoleWindowWriteLn(WindowHandle,'item 2 '+ B[2]);
-   ConsoleWindowWriteLn(WindowHandle,'');
-   {This prints the complete string}
-   ConsoleWindowWriteLn(WindowHandle,BP[0]);
+
+
+   j:=Length(BP[0]);
+   ConsoleWindowWriteLn(WindowHandle,'Length '+intToStr(j));
+   ConsoleWindowWriteLn(WindowHandle,'This is all chars '+BP[0]);
+   //StringListlog.add(BP[0]);
+   i:=0;
+   j:=0;
+   while (i < 4160) do
+     begin
+       Characters:=Copy(BP[0],i,65);
+       //CRC:=Copy(Characters,65,1);
+       //ConsoleWindowWriteLn(WindowHandle,intToStr(i)+' '+Characters+' '+CRC);
+       ConsoleWindowWriteLn(WindowHandle,intToStr(i)+' '+Characters);
+       //StringList.add(intToStr(i)+' '+Characters);
+       i:=i+65;
+     end;
+    {This prints the complete string}
+
+   //ConsoleWindowWriteLn(WindowHandle,'');
    {Iterate the strings and print them to the screen}
-   ConsoleWindowWriteLn(WindowHandle,'Count '+ intToStr(Count)+ ' The contents of the file are:');
-   for Count:=0 to StringList.Count - 1 do
-    begin
-     ConsoleWindowWriteLn(WindowHandle,'Count '+ intToStr(Count));
-     ConsoleWindowWriteLn(WindowHandle,StringList.Strings[Count]);
-    end;
+   //ConsoleWindowWriteLn(WindowHandle,'Count '+ intToStr(Count)+ ' The contents of the file are:');
 
    {Close the file and free the string list again}
    ConsoleWindowWriteLn(WindowHandle,'Closing the file');
-   ConsoleWindowWriteLn(WindowHandle,'');
+   //ConsoleWindowWriteLn(WindowHandle,'');
    FileStream.Free;
    StringList.Free;
-
+   //FileStreamlog.Free;
+   //StringListlog.Free;
    {If you remove the SD card and put in back in your computer, you should see the
     file "Example 08 File Handling.txt" on it. If you open it in a notepad you should
     see the contents exactly as they appeared on screen.}
