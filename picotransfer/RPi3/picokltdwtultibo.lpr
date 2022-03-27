@@ -55,11 +55,14 @@ const
   stProcess2  = 6;
   stClose   = 7;
   stClosed  = 8;
-
+ type
+ StrBuffer = array[0..65] of String;
+ StrBufPtr = ^StrBuffer;
 var
   Count : LongWord;
   Character : char;
   Characters : string;
+  PCharacters : PString;
   WindowHandle : TWindowHandle;
   SerialDevice : PSerialDevice;
   res : LongWord;
@@ -72,7 +75,9 @@ var
   MyPLoggingDevice : ^TLoggingDevice;
   aFilename:String;
   aStringList:TStringList;
-
+  StrB : StrBuffer;
+ StrBP : StrBufPtr;
+ PP : Pointer;
   function WaitForIPComplete : string;
 
 var
@@ -127,11 +132,6 @@ end;
 
 
 begin
- aFilename:='C:\bb.bin';
- setFileName(aFileName);
- SetStingList(aStringList);
- i:=0;
- Characters:=Readit(i);
 
   LoggingDeviceSetTarget(LoggingDeviceFindByType(LOGGING_TYPE_FILE),'c:\pico.log');
   LoggingDeviceSetDefault(LoggingDeviceFindByType(LOGGING_TYPE_FILE));
@@ -178,12 +178,29 @@ begin
           begin
             SerialDevice :=  SerialDeviceFindByDescription('USB CDC ACM Serial');
             ConsoleWindowWriteLn (WindowHandle, 'trying to find USB CDC ACM Serial');
+            ConsoleWindowWriteLn (WindowHandle, 'testing reading a file');
+            aFilename:='C:\bb.bin';
+            setFileName(aFileName);
+            SetStingList(aStringList);
+            StrBP:=@PP;
+            i:=0;
+            Characters:=Readit(i);
+            while (i < 4160) do
+    	    begin
 
+                 Characters:=ReadBuffer(i);
+                 PCharacters:=@Characters;
+                 //StrBP^:=PCharacters^;
+                 ConsoleWindowWriteLn(WindowHandle,intToStr(i)+' '+Characters);
+                 Inc(PCharacters);
+                 i:=i+65;
+            end;
 
             if SerialDevice <> nil then state := stOpen;
           end;
         stOpen :
           begin
+
             sleep(2000);
              res := SerialDeviceOpen (SerialDevice, 115200, SERIAL_DATA_8BIT, SERIAL_STOP_1BIT, SERIAL_PARITY_NONE, SERIAL_FLOW_DSR_DTR, 0, 0);
              //characters := 'You said ' + Characters + #13#10;
@@ -193,7 +210,9 @@ begin
             if res = ERROR_SUCCESS then state := stLedonoff
             else if res = ERROR_INVALID_PARAMETER then state := stFind;
           end;
+
         stLedonoff :
+
           	while(True) do
 		begin
 			characters := '1';
