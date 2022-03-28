@@ -43,8 +43,8 @@ uses
   FATFS,       {Include the FAT file system driver}
   MMC;         {Include the MMC/SD core to access our SD card}
  type
- Buffer = array[0..4159] of Char;
- BufPtr = ^Buffer;
+ StrBuffer = array[0..65] of String;
+ StrBufPtr = ^StrBuffer;
 {A window handle plus a couple of others.}
 var
  Count:Integer;
@@ -55,12 +55,11 @@ var
  FileStream:TFileStream;
 
  WindowHandle:TWindowHandle;
- B : Buffer;
- BP : BufPtr;
+ StrB : StrBuffer;
+ StrBP : StrBufPtr;
  PP : Pointer;
  i,j: integer;
- Characters : String;
- CRC : String;
+
     function WaitForIPComplete : string;
 
    var
@@ -148,16 +147,37 @@ begin
  aFilename:='C:\bb.bin';
  setFileName(aFileName);
  SetStingList(aStringList);
+  StrBP:=@StrB;
  i:=0;
+ Characters:=Readit(i);
+ {The six lines above
+ only need to be done once. These are followed  with a
+ The StrBuffer array starts at 0 to 63 contains 64 Strings each of 65 characters
+ StrBP is a pointer that points to the StrBuffer array each string in the array
+ can be accessed by StrBP^[index] where the index is 0 to 63
+ The call of function Characters:=Readit(i); reads from the disk and puts the entire
+ file in the Buffer = array[0..4159] of Char; of uReadBin.pas}
+
 
  while (i < 4160) do
     	 begin
-         Characters:=Readit(i);
-         ConsoleWindowWriteLn(WindowHandle,intToStr(i)+' '+Characters);
-          i:=i+65;
+
+         Characters:=ReadBuffer(i);
+         PCharacters:=@Characters;
+
+         StrBP^[j]:=Characters;
+         ConsoleWindowWriteLn(WindowHandle,intToStr(i)+' '+StrBP^[j]);
+         Inc(PCharacters);
+         i:=i+65;
+         Inc(j);
          end;
-
-
+  ConsoleWindowWriteLn(WindowHandle,'Testing random strings');
+  {The StrBuffer array starts at 0 to 63 contains 64 Strings each of 65 characters}
+  ConsoleWindowWriteLn(WindowHandle,'63 '+StrBP^[63]);
+  ConsoleWindowWriteLn(WindowHandle,'60 '+StrBP^[60]);
+  ConsoleWindowWriteLn(WindowHandle,'50 '+StrBP^[50]);
+  ConsoleWindowWriteLn(WindowHandle,'0 '+StrBP^[0]);
+  ConsoleWindowWriteLn(WindowHandle,'9 '+StrBP^[9]);
  {Halt the thread}
  ThreadHalt(0);
 end.
