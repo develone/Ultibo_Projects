@@ -60,12 +60,15 @@ const
  StrBufPtr = ^StrBuffer;
 var
   Count : LongWord;
+  ch : char;
   Character : char;
   Characters : string;
   PCharacters : PString;
   WindowHandle : TWindowHandle;
   SerialDevice : PSerialDevice;
+
   res : LongWord;
+
 
   state, oldState : integer;
   s : string;
@@ -73,11 +76,30 @@ var
   HTTPListener:THTTPListener;
   IPAddress : string;
   MyPLoggingDevice : ^TLoggingDevice;
+  LogDevice : PLoggingDevice;
   aFilename:String;
   aStringList:TStringList;
   StrB : StrBuffer;
  StrBP : StrBufPtr;
  PP : Pointer;
+
+ procedure Log (s : string);
+begin
+  ConsoleWindowWriteLn (WindowHandle, s);
+end;
+
+function Display (s : string) : string;
+var
+  i : integer;
+begin
+  Result := '';
+  for i := 1 to length (s) do
+    if s[i] in [' ' .. '~'] then
+      Result := Result + s[i]
+    else
+      Result := Result + '<' + IntToStr (ord (s[i])) + '>';
+end;
+
   function WaitForIPComplete : string;
 
 var
@@ -207,7 +229,7 @@ begin
              //SerialDeviceWrite (SerialDevice, PChar (Characters),Length (Characters), SERIAL_WRITE_NONE, Count);
              //Characters:='';
             //res := SerialDeviceOpen (SerialDevice, 9600, SERIAL_DATA_8BIT, SERIAL_STOP_1BIT, SERIAL_PARITY_NONE, SERIAL_FLOW_NONE, 0, 0);
-            if res = ERROR_SUCCESS then state := stLedonoff
+            if res = ERROR_SUCCESS then state := stProcess0
             else if res = ERROR_INVALID_PARAMETER then state := stFind;
           end;
 
@@ -228,9 +250,26 @@ begin
 			Sleep(5000);
 		end;
         stProcess0 :
-                   begin
+          begin
+            res := SerialDeviceRead (SerialDevice, @ch, SizeOf (ch), SERIAL_READ_NON_BLOCK, Count);
+            if (res = ERROR_SUCCESS) and (Count > 0) then  // non blocking so count may be 0
+              begin
+                if ch = #13 then
+                  begin
+                    Log ('Received a line: "' + Display (Characters) + '"');
+                    Characters := '';
+                  end
+                else
+                  Characters := Characters + ch;
+              end
+            else if res = ERROR_INVALID_PARAMETER then
+              begin
+                if SerialDevice <> nil then SerialDeviceClose (SerialDevice);
+                SerialDevice := nil;
+                state := stFind;
+              end;
+          end;
 
-                   end;
          stProcess1 :
                    begin
 
