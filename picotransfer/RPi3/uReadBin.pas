@@ -39,7 +39,7 @@ var
  PP : Pointer;
  i,j: integer;
  Characters : String;
-
+ PCharacters : ^PString;
  
 
 procedure SetFileName(const aFileName : String);
