@@ -90,6 +90,11 @@ var
  syncflag : integer;
  readyflag : integer;
  cmdflag : integer;
+ numberoflinestowrite: integer;
+ debug_stprocces1 : boolean;
+ debug_stprocces2 : boolean;
+ debug_stprocces3 : boolean;
+ debug_stprocces4 : boolean;
  PP : Pointer;
 
  procedure Log (s : string);
@@ -166,6 +171,19 @@ begin
   syncflag:=0;
   readyflag:=0;
   cmdflag:=0;
+  debug_stprocces1:=False;
+  debug_stprocces2:=False;
+  debug_stprocces3:=False;
+  debug_stprocces4:=False;
+  WrFileName:='C:\kltdwt.txt';
+  numberoflinestowrite:=0;
+  //try
+  //WrFileStream:=TFileStream.Create(WrFilename,fmCreate);
+
+  {We've created the file, now we need to write some content to it, we can use
+  a TStringList for that but there are many other ways as well.}
+  //WrStringList:=TStringList.Create;
+
   LoggingDeviceSetTarget(LoggingDeviceFindByType(LOGGING_TYPE_FILE),'c:\pico.log');
   LoggingDeviceSetDefault(LoggingDeviceFindByType(LOGGING_TYPE_FILE));
   MyPLoggingDevice:=LoggingDeviceGetDefault;
@@ -308,6 +326,9 @@ begin
 
         stProcess1 :
                 begin {level0}
+                while (debug_stprocces1) do
+                begin
+                end;
                 res := SerialDeviceRead (SerialDevice, @ch, SizeOf (ch), SERIAL_READ_NON_BLOCK, Count);
                 if (res = ERROR_SUCCESS) and (Count > 0) then  // non blocking so count may be 0
                   begin
@@ -351,6 +372,9 @@ begin
                 end;
         stProcess2 :
           begin
+          while (debug_stprocces2) do
+                begin
+                end;
           //ConsoleWindowWriteLn (WindowHandle,'sleeping for 20 sec');
           sleep(100);
           //SerialDeviceFlush(SerialDevice,SERIAL_WRITE_NONE);
@@ -417,6 +441,9 @@ begin
           end;
         stProcess3 :
             begin {level0}
+            while (debug_stprocces3) do
+                begin
+                end;
             res := SerialDeviceRead (SerialDevice, @ch, SizeOf (ch), SERIAL_READ_NON_BLOCK, Count);
             if (res = ERROR_SUCCESS) and (Count > 0) then  // non blocking so count may be 0
               begin
@@ -458,17 +485,13 @@ begin
              end;
         stProcess4 :
             begin
+            while (debug_stprocces4) do
+                begin
+                end;
                    characters := '1';
 		   Count := 1;
                    ConsoleWindowWriteLn (WindowHandle, 'turning on led');
 		   SerialDeviceWrite (SerialDevice, PChar (Characters),Length (Characters), SERIAL_WRITE_NONE, Count);
-                   WrFileName:='C:\kltdwt.txt';
-                   //try
-                      WrFileStream:=TFileStream.Create(WrFilename,fmCreate);
-
-                      {We've created the file, now we need to write some content to it, we can use
-                      a TStringList for that but there are many other ways as well.}
-                      WrStringList:=TStringList.Create;
 
                    state := stProcess5;
             end;
@@ -480,7 +503,18 @@ begin
                 if ((ch = #13) or (ch =#10)) then
                   begin
                     Log ('Received a line: "' + Display (Characters) + '"');
-                    WrStringList.Add(Characters);
+                    {
+                    if (numberoflinestowrite<100) then
+                      begin
+                        WrStringList.Add(Characters);
+                        Inc(numberoflinestowrite);
+                      end
+                      else
+                      begin
+                         WrFileStream.Free;
+                         WrStringList.Free;
+                      end;
+                    }
                     //sleep(100);
                     Characters := '';
                   end
