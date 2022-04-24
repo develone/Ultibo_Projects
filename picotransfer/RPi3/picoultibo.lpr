@@ -346,6 +346,8 @@ begin
                                 readyflag:=1;
                                 ConsoleWindowWriteLn (WindowHandle,'Characters '+Characters[1]);
                                 Characters := '';
+                                sleep(8000);
+                                SerialDeviceFlush(SerialDevice,SERIAL_WRITE_NONE);
                                 state:= stProcess2;
                               end {level4}
                             else
@@ -372,7 +374,8 @@ begin
                 end;
         stProcess2 :
           begin
-
+          //sleep(8500);
+          //SerialDeviceFlush(SerialDevice,SERIAL_WRITE_NONE);
           while (debug_stprocces2) do
                 begin
                 end;
@@ -421,6 +424,8 @@ begin
                  Inc(j);
             end;
             //SerialDeviceFlush(SerialDevice,SERIAL_WRITE_NONE);
+
+
             state:= stProcess3;
             {characters := '1';
 	    Count := 1;
@@ -442,6 +447,7 @@ begin
           end;
         stProcess3 :
             begin {level0}
+
             while (debug_stprocces3) do
                 begin
                 end;
@@ -456,7 +462,7 @@ begin
                     ConsoleWindowWriteLn (WindowHandle,'Length of Characters '+intToStr(Length(Characters)));
                     if(cmdflag=0) then
                       begin {level3}
-                        if( Length(Characters)=41) and (Characters[11]='C') then
+                        if( Length(Characters)=31) and (Characters[11]='C') then
                           begin {level4}
                             syncflag:=1;
                             ConsoleWindowWriteLn (WindowHandle,'Characters '+Characters[1]);
