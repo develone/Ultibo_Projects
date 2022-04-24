@@ -462,7 +462,7 @@ begin
                     ConsoleWindowWriteLn (WindowHandle,'Length of Characters '+intToStr(Length(Characters)));
                     if(cmdflag=0) then
                       begin {level3}
-                        if( Length(Characters)=31) and (Characters[11]='C') then
+                        if( Length(Characters)=36) and (Characters='ReadyCommand (1 = Send or 0 = Wait):') then
                           begin {level4}
                             syncflag:=1;
                             ConsoleWindowWriteLn (WindowHandle,'Characters '+Characters[1]);
