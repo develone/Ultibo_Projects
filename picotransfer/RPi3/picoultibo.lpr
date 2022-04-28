@@ -69,7 +69,7 @@ var
   PCharacters : PString;
   WindowHandle : TWindowHandle;
   SerialDevice : PSerialDevice;
-
+  Rdy1,Rdy2:String;
   res : LongWord;
 
 
@@ -82,6 +82,9 @@ var
   LogDevice : PLoggingDevice;
   aFilename:String;
   aStringList:TStringList;
+  logFilename:String;
+  logStringList:TStringList;
+  logFileStream:TFileStream;
   WrFilename:String;
   WrStringList:TStringList;
   WrFileStream:TFileStream;
@@ -175,7 +178,7 @@ begin
   debug_stprocces2:=False;
   debug_stprocces3:=False;
   debug_stprocces4:=False;
-  WrFileName:='C:\kltdwt.txt';
+  //WrFileName:='C:\kltdwt.txt';
   numberoflinestowrite:=0;
   //try
   //WrFileStream:=TFileStream.Create(WrFilename,fmCreate);
@@ -232,27 +235,7 @@ begin
           begin
             SerialDevice :=  SerialDeviceFindByDescription('USB CDC ACM Serial');
             ConsoleWindowWriteLn (WindowHandle, 'trying to find USB CDC ACM Serial');
-            {ConsoleWindowWriteLn (WindowHandle, 'testing reading a file');
-            aFilename:='C:\bb.bin';
-            setFileName(aFileName);
-            SetStingList(aStringList);
 
-            StrBP:=@StrB;
-            i:=0;
-            Characters:=Readit(i);
-            while (i < 4160) do
-    	    begin
-
-                 Characters:=ReadBuffer(i);
-                 PCharacters:=@Characters;
-
-                 StrBP^[j]:=Characters;
-                 ConsoleWindowWriteLn(WindowHandle,intToStr(i)+' '+StrBP^[j]);
-                 Inc(PCharacters);
-                 i:=i+65;
-                 Inc(j);
-            end;
-            }
             if SerialDevice <> nil then state := stOpen;
           end;
         stOpen :
@@ -346,6 +329,8 @@ begin
                                 readyflag:=1;
                                 ConsoleWindowWriteLn (WindowHandle,'Characters '+Characters[1]);
                                 Characters := '';
+                                Rdy1:= 'ReadyCommand (1 = Send or 0 = Wait):';
+                                Rdy2:= 'ReadyReadyCommand (1 = Send or 0 = Wait):';
                                 sleep(8000);
                                 SerialDeviceFlush(SerialDevice,SERIAL_WRITE_NONE);
                                 state:= stProcess2;
@@ -374,14 +359,13 @@ begin
                 end;
         stProcess2 :
           begin
-          //sleep(8500);
-          //SerialDeviceFlush(SerialDevice,SERIAL_WRITE_NONE);
+
           while (debug_stprocces2) do
                 begin
                 end;
-          //ConsoleWindowWriteLn (WindowHandle,'sleeping for 20 sec');
+
           sleep(100);
-          //SerialDeviceFlush(SerialDevice,SERIAL_WRITE_NONE);
+
           aFilename:='C:\bb.bin';
           setFileName(aFileName);
           SetStingList(aStringList);
@@ -401,24 +385,7 @@ begin
                  Characters:=StrBP^[j];
                  Count := 65;
                  SerialDeviceWrite (SerialDevice, PChar (Characters),Length (Characters), SERIAL_WRITE_NONE, Count);
-                 //sleep(500);
-                 {
-                 Characters:=#13+#10;
-                 Count := 2;
-                 SerialDeviceWrite (SerialDevice, PChar (Characters),Length (Characters), SERIAL_WRITE_NONE, Count);
-                 res := SerialDeviceRead (SerialDevice, @ch, SizeOf (ch), SERIAL_READ_NON_BLOCK, Count);
-                 if (res = ERROR_SUCCESS) and (Count > 0) then  // non blocking so count may be 0
-                    begin
-                         Log ('Received a line: "' + Display (Characters) + '"');
-                         //begin //<-------
-                         if ((ch = #13) or (ch =#10)) then
-                         begin {level2}
 
-                               ConsoleWindowWriteLn (WindowHandle,'Length of Characters '+intToStr(Length(Characters)));
-                         end;
-                    end;
-                  }
-                 //ConsoleWindowWriteLn(WindowHandle,intToStr(i)+' '+StrBP^[j]);
                  Inc(PCharacters);
                  i:=i+65;
                  Inc(j);
@@ -427,22 +394,7 @@ begin
 
 
             state:= stProcess3;
-            {characters := '1';
-	    Count := 1;
-            SerialDeviceWrite (SerialDevice, PChar (Characters),Length (Characters), SERIAL_WRITE_NONE, Count);
-            sleep(500);
-            res := SerialDeviceRead (SerialDevice, @ch, SizeOf (ch), SERIAL_READ_NON_BLOCK, Count);
-            if (res = ERROR_SUCCESS) and (Count > 0) then  // non blocking so count may be 0
-              begin
-                Log ('Received a line: "' + Display (Characters) + '"');
-                //begin //<-------
-                if ((ch = #13) or (ch =#10)) then
-                  begin {level2}
 
-                    ConsoleWindowWriteLn (WindowHandle,'Length of Characters '+intToStr(Length(Characters)));
-                  end;
-              end;
-             }
 
           end;
         stProcess3 :
@@ -462,7 +414,7 @@ begin
                     ConsoleWindowWriteLn (WindowHandle,'Length of Characters '+intToStr(Length(Characters)));
                     if(cmdflag=0) then
                       begin {level3}
-                        if( Length(Characters)=36) and (Characters='ReadyCommand (1 = Send or 0 = Wait):') then
+                        if( Length(Characters)=36) or (Length(Characters)=41) then
                           begin {level4}
                             syncflag:=1;
                             ConsoleWindowWriteLn (WindowHandle,'Characters '+Characters[1]);
@@ -491,7 +443,23 @@ begin
                   end
              end;
         stProcess4 :
+
             begin
+            logFileName:='C:\kltdwt.txt';
+            if FileExists(logFilename) then
+               begin
+                    {If it does exist we can delete it}
+                    ConsoleWindowWriteLn(WindowHandle,'Deleting the file ' + logFilename);
+                    DeleteFile(logFilename);
+               end;
+
+            try
+               logFileStream:=TFileStream.Create(logFilename,fmCreate);
+               logStringList:=TStringList.Create;
+            except
+                  {Something went wrong creating the file}
+                  WriteLn('Failed to open the file ' + logFilename);
+            end;
             while (debug_stprocces4) do
                 begin
                 end;
@@ -510,18 +478,21 @@ begin
                 if ((ch = #13) or (ch =#10)) then
                   begin
                     Log ('Received a line: "' + Display (Characters) + '"');
-                    {
-                    if (numberoflinestowrite<100) then
+
+                    if (numberoflinestowrite<210) then
                       begin
-                        WrStringList.Add(Characters);
+                        logStringList.Add(Characters);
                         Inc(numberoflinestowrite);
                       end
                       else
                       begin
-                         WrFileStream.Free;
-                         WrStringList.Free;
+                         logStringList.SaveToStream(logFileStream);
+                         logFileStream.Free;
+                         logStringList.Free;
+
+
                       end;
-                    }
+
                     //sleep(100);
                     Characters := '';
                   end
