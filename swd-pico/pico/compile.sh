@@ -6,3 +6,5 @@ arm-none-eabi-gcc -c -I../include -I../ -DAARCH=32 -mcpu=cortex-a7 -marm -mfpu=n
 arm-none-eabi-gcc -c -I../include -I../ -DAARCH=32 -mcpu=cortex-a7 -marm -mfpu=neon-vfpv4 -mfloat-abi=hard  -o ultibo-swd.o ultibo-swd.c 
 arm-none-eabi-objdump -d swdloader.o > swdloader.dis
 arm-none-eabi-objdump -d ultibo-swd.o > ultibo-swd.dis
+arm-none-eabi-ar rcs libswd.a *.o
+arm-none-eabi-ar t libswd.a > libswd_obj.txt
