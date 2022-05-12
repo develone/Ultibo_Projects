@@ -1,3 +1,19 @@
+Started with Ultibo_Projects/Crypto-Socket/RPi3/Svr.lpi
+Changed  the 
+
+diff Svr.lpr ../Srv.lpr
+1c1
+< program Svr;
+---
+> program Srv;
+13,14c13
+<   //RaspberryPi3,
+<   QEMURPI3B,
+---
+>   RaspberryPi3,
+895d893
+<
+
 Nothing is found using this command
 
 find . -name QEMURPI3B.* 
@@ -13,3 +29,7 @@ find . -name QEMURPI3B.*
 
 find . -name QEMUVPB.*
 ./ultibo/core/fpc/bin/QEMUVPB.CFG
+Compare a new ultiboinstaller.sh with the one I use to install on my Rpi4B 8Gb
+
+diff ultiboinstaller.sh 041622ultiboinstaller.sh 
+1018d1017
