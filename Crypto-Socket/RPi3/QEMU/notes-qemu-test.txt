@@ -1,0 +1,15 @@
+Nothing is found using this command
+
+find . -name QEMURPI3B.* 
+
+find . -name QEMUVPB.*
+./ultibo/core/fpc/bin/QEMUVPB.CFG
+
+Svr.lpr(14,3) Fatal: Cannot find QEMURPI3B used by Svr of the Project Inspector.
+
+Nothing is found using this command
+
+find . -name QEMURPI3B.* 
+
+find . -name QEMUVPB.*
+./ultibo/core/fpc/bin/QEMUVPB.CFG
