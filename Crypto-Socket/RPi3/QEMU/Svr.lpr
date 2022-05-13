@@ -10,8 +10,9 @@ program Svr;
 
 uses
 
-  //RaspberryPi3,
-  QEMURPI3B,
+  RaspberryPi3,
+  USBCDCEthernet,
+  //QEMURPI3B,
   GlobalConfig,
   GlobalConst,
   GlobalTypes,
