@@ -1,0 +1,210 @@
+1Command (1 = Send or 0 = Wait):
+
+need to copy the data received from host to img1
+
+img1 = 0x20005f90 img2 = 0x20006f90
+
+0 img1 95 ptrs.buf 95 
+
+1 img1 100 ptrs.buf 100 
+
+2 img1 103 ptrs.buf 103 
+
+3 img1 106 ptrs.buf 106 
+
+4 img1 108 ptrs.buf 108 
+
+4091 img1 63 ptrs.buf 63 
+
+4092 img1 57 ptrs.buf 57 
+
+4093 img1 98 ptrs.buf 98 
+
+4094 img1 66 ptrs.buf 66 
+
+4095 img1 78 ptrs.buf 78 
+
+need to copy the data from img1 to img2
+
+0 img2 95 img1 95 
+
+1 img2 100 img1 100 
+
+2 img2 103 img1 103 
+
+3 img2 106 img1 106 
+
+4 img2 108 img1 108 
+
+4091 img2 63 img1 63 
+
+4092 img2 57 img1 57 
+
+4093 img2 98 img1 98 
+
+4094 img2 66 img1 66 
+
+4095 img2 78 img1 78 
+
+Feature #0:  (38.000000,29.000000) with value of 19844
+
+Feature #1:  (29.000000,39.000000) with value of 9270
+
+Feature #2:  (24.000000,29.000000) with value of 5185
+
+Feature #3:  (39.000000,39.000000) with value of 465
+
+Feature #4:  (-1.000000,-1.000000) with value of -1
+
+Feature #5:  (-1.000000,-1.000000) with value of -1
+
+Feature #6:  (-1.000000,-1.000000) with value of -1
+
+Feature #7:  (-1.000000,-1.000000) with value of -1
+
+Feature #8:  (-1.000000,-1.000000) with value of -1
+
+Feature #9:  (-1.000000,-1.000000) with value of -1
+
+Feature #10:  (-1.000000,-1.000000) with value of -1
+
+Feature #11:  (-1.000000,-1.000000) with value of -1
+
+Feature #12:  (-1.000000,-1.000000) with value of -1
+
+Feature #13:  (-1.000000,-1.000000) with value of -1
+
+Feature #14:  (-1.000000,-1.000000) with value of -1
+
+Feature #15:  (-1.000000,-1.000000) with value of -1
+
+Feature #16:  (-1.000000,-1.000000) with value of -1
+
+Feature #17:  (-1.000000,-1.000000) with value of -1
+
+Feature #18:  (-1.000000,-1.000000) with value of -1
+
+Feature #19:  (-1.000000,-1.000000) with value of -1
+
+Feature #20:  (-1.000000,-1.000000) with value of -1
+
+Feature #21:  (-1.000000,-1.000000) with value of -1
+
+Feature #22:  (-1.000000,-1.000000) with value of -1
+
+Feature #23:  (-1.000000,-1.000000) with value of -1
+
+Feature #24:  (-1.000000,-1.000000) with value of -1
+
+Feature #25:  (-1.000000,-1.000000) with value of -1
+
+Feature #26:  (-1.000000,-1.000000) with value of -1
+
+Feature #27:  (-1.000000,-1.000000) with value of -1
+
+Feature #28:  (-1.000000,-1.000000) with value of -1
+
+Feature #29:  (-1.000000,-1.000000) with value of -1
+
+Feature #30:  (-1.000000,-1.000000) with value of -1
+
+Feature #31:  (-1.000000,-1.000000) with value of -1
+
+Feature #32:  (-1.000000,-1.000000) with value of -1
+
+Feature #33:  (-1.000000,-1.000000) with value of -1
+
+Feature #34:  (-1.000000,-1.000000) with value of -1
+
+Feature #35:  (-1.000000,-1.000000) with value of -1
+
+Feature #36:  (-1.000000,-1.000000) with value of -1
+
+Feature #37:  (-1.000000,-1.000000) with value of -1
+
+Feature #38:  (-1.000000,-1.000000) with value of -1
+
+Feature #39:  (-1.000000,-1.000000) with value of -1
+
+Feature #40:  (-1.000000,-1.000000) with value of -1
+
+Feature #41:  (-1.000000,-1.000000) with value of -1
+
+Feature #42:  (-1.000000,-1.000000) with value of -1
+
+Feature #43:  (-1.000000,-1.000000) with value of -1
+
+Feature #44:  (-1.000000,-1.000000) with value of -1
+
+Feature #45:  (-1.000000,-1.000000) with value of -1
+
+Feature #46:  (-1.000000,-1.000000) with value of -1
+
+Feature #47:  (-1.000000,-1.000000) with value of -1
+
+Feature #48:  (-1.000000,-1.000000) with value of -1
+
+Feature #49:  (-1.000000,-1.000000) with value of -1
+
+Feature #50:  (-1.000000,-1.000000) with value of -1
+
+Feature #51:  (-1.000000,-1.000000) with value of -1
+
+Feature #52:  (-1.000000,-1.000000) with value of -1
+
+Feature #53:  (-1.000000,-1.000000) with value of -1
+
+Feature #54:  (-1.000000,-1.000000) with value of -1
+
+Feature #55:  (-1.000000,-1.000000) with value of -1
+
+Feature #56:  (-1.000000,-1.000000) with value of -1
+
+Feature #57:  (-1.000000,-1.000000) with value of -1
+
+Feature #58:  (-1.000000,-1.000000) with value of -1
+
+Feature #59:  (-1.000000,-1.000000) with value of -1
+
+Feature #60:  (-1.000000,-1.000000) with value of -1
+
+Feature #61:  (-1.000000,-1.000000) with value of -1
+
+Feature #62:  (-1.000000,-1.000000) with value of -1
+
+Feature #63:  (-1.000000,-1.000000) with value of -1
+
+Feature #64:  (-1.000000,-1.000000) with value of -1
+
+Feature #65:  (-1.000000,-1.000000) with value of -1
+
+Feature #66:  (-1.000000,-1.000000) with value of -1
+
+Feature #67:  (-1.000000,-1.000000) with value of -1
+
+Feature #68:  (-1.000000,-1.000000) with value of -1
+
+Feature #69:  (-1.000000,-1.000000) with value of -1
+
+Feature #70:  (-1.000000,-1.000000) with value of -1
+
+Feature #71:  (-1.000000,-1.000000) with value of -1
+
+Feature #72:  (-1.000000,-1.000000) with value of -1
+
+Feature #73:  (-1.000000,-1.000000) with value of -1
+
+Feature #74:  (-1.000000,-1.000000) with value of -1
+
+Feature #75:  (-1.000000,-1.000000) with value of -1
+
+Feature #76:  (-1.000000,-1.000000) with value of -1
+
+Feature #77:  (-1.000000,-1.000000) with value of -1
+
+Feature #78:  (-1.000000,-1.000000) with value of -1
+
+Feature #79:  (-1.000000,-1.000000) with value of -1
+
+Feature #80:  (-1.000000,-1.000000) with value of -1
+
