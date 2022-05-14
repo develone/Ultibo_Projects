@@ -11,7 +11,6 @@ program picoultibo ;
 
 uses
   RaspberryPi3,
-  USBCDCEthernet,
   GlobalConfig,   //Add the global config unit
   GlobalConst,
   GlobalTypes,
@@ -62,9 +61,6 @@ const
  type
  StrBuffer = array[0..65] of String;
  StrBufPtr = ^StrBuffer;
-
- RecCharBuffer = array[0..75] of Char;
- RecCharBufPtr = ^RecCharBuffer;
 var
   Count : LongWord;
   ch : char;
@@ -94,8 +90,6 @@ var
   WrFileStream:TFileStream;
   StrB : StrBuffer;
  StrBP : StrBufPtr;
- RecCharB : RecCharBuffer;
- RecCharBP : RecCharBufPtr;
  syncflag : integer;
  readyflag : integer;
  cmdflag : integer;
@@ -248,8 +242,7 @@ begin
           begin
             sleep(1000);
              res := SerialDeviceOpen (SerialDevice, 115200, SERIAL_DATA_8BIT, SERIAL_STOP_1BIT, SERIAL_PARITY_NONE, SERIAL_FLOW_DSR_DTR, 0, 0);
-            RecCharBP:=@RecCharB;
-            if res = ERROR_SUCCESS then state := stProcess0
+             if res = ERROR_SUCCESS then state := stProcess0
             else if res = ERROR_INVALID_PARAMETER then state := stFind;
           end;
 
@@ -269,20 +262,45 @@ begin
 			Sleep(5000);
 		end;
         stProcess0 :
-
             begin {level0}
-              while( syncflag = 0) do
+            res := SerialDeviceRead (SerialDevice, @ch, SizeOf (ch), SERIAL_READ_NON_BLOCK, Count);
+            if (res = ERROR_SUCCESS) and (Count > 0) then  // non blocking so count may be 0
               begin
-                res := SerialDeviceRead (SerialDevice, RecCharBP, 65, SERIAL_READ_PEEK_BUFFER, Count);
-                 if(res > 60) then
-                   begin
-                     syncflag:=1;
-                     SerialDeviceFlush(SerialDevice,SERIAL_FLUSH_RECEIVE);
-                     state:= stProcess2;
-                   end;
-                 Sleep(100);
-              end;
+                Log ('Received a line: "' + Display (Characters) + '"');
+                //begin //<-------
+                if ((ch = #13) or (ch =#10)) then
+                  begin {level2}
 
+                    ConsoleWindowWriteLn (WindowHandle,'Length of Characters '+intToStr(Length(Characters)));
+                    if(syncflag=0) then
+                      begin {level3}
+                        if( Length(Characters)=4) and (Characters[1]='S') then
+                          begin {level4}
+                            syncflag:=1;
+                            ConsoleWindowWriteLn (WindowHandle,'Characters '+Characters[1]);
+                            Characters := '';
+                            state:= stProcess1;
+                          end {level4}
+                        else
+                         if(Length(Characters)>4) then
+                           begin
+                             Characters := '';
+                           end;
+                      end; {level3}  //<-------
+                  end {level2} //<-------
+                  //end {level1} //<-------
+                else
+                  Characters := Characters + ch;
+                //end;
+              end //<-------
+            else if res = ERROR_INVALID_PARAMETER then
+                  begin
+                    if SerialDevice <> nil then SerialDeviceClose (SerialDevice);
+                      begin
+                        SerialDevice := nil;
+                        state := stFind;
+                      end
+                  end
 
 
 
@@ -494,7 +512,6 @@ begin
   { Halt the thread if we exit the loop }
   ThreadHalt (0);
 end.
-
 
 
 
