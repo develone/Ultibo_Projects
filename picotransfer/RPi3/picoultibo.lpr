@@ -240,9 +240,9 @@ begin
           end;
         stOpen :
           begin
-            sleep(1000);
+            sleep(10000);
              res := SerialDeviceOpen (SerialDevice, 115200, SERIAL_DATA_8BIT, SERIAL_STOP_1BIT, SERIAL_PARITY_NONE, SERIAL_FLOW_DSR_DTR, 0, 0);
-             if res = ERROR_SUCCESS then state := stProcess0
+             if res = ERROR_SUCCESS then state := stProcess2
             else if res = ERROR_INVALID_PARAMETER then state := stFind;
           end;
 
@@ -392,8 +392,8 @@ begin
             end;
             //SerialDeviceFlush(SerialDevice,SERIAL_WRITE_NONE);
 
-
-            state:= stProcess3;
+            sleep(1000);
+            state:= stProcess4;
 
 
           end;
