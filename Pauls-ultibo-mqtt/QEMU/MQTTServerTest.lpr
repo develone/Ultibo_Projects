@@ -166,8 +166,8 @@ begin
           '7' :
             begin
               MQC.Host := '10.0.0.4';
-              MQC.Username := 'user';
-              MQC.Password := 'pass';
+              MQC.Username := 'testuser';
+              MQC.Password := 'password123';
               MQC.LocalBounce := false;
               MQC.Activate (true);
             end;
