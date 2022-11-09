@@ -1,0 +1,21 @@
+RaspberryPi3, -->  RaspberryPi2,
+2 times in MQTTServerTest.lpr
+{$ifdef use_tftp} --> //{$ifdef use_tftp} 
+{$endif} --> //{$endif}
+
+192.168.1.180 & 192.168.1.142 asssigned by ATTtpHTfPi on eth0
+MQC.Host := '10.0.0.4'; --> MQC.Host := '192.168.1.180';
+MQC.Username := 'user'; --> MQC.Username := 'testuser';
+MQC.Password := 'pass'; --> MQC.Password := 'password123';
+ 
+
+devel@pi4-27:~/Ultibo_Projects/Pauls-ultibo-mqtt/RPi2 $ tftp 192.168.1.180 < cmdstftp
+'5' : MQ.Activate (true);
+
+devel@pi4-27:~/Ultibo_Projects/Pauls-ultibo-mqtt/RPi2 $ tftp 192.168.1.142 < cmdstftp
+'7' :
+0' :
+0' :
+0' :
+
+ 
