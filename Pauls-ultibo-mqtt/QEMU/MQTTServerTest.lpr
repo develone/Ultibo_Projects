@@ -9,10 +9,17 @@ uses
   GlobalConst,
   GlobalTypes,
   Platform,
+  Syscalls,
+  Logging,
+ FileSystem,  {Include the file system core and interfaces}
+ FATFS,       {Include the FAT file system driver}
+ MMC,         {Include the MMC/SD core to access our SD card}
   Threads,
   SysUtils,
-  Classes, Console,
-
+  Classes,
+  Console,
+  HTTP,         {Include HTTP and WebStatus so we can see from a web browser what is happening}
+  WebStatus,
    { needed for telnet }
       Shell,
      ShellFilesystem,
@@ -38,6 +45,7 @@ type
 
 var
   Console1, Console2, Console3 : TWindowHandle;
+  HTTPListener:THTTPListener;
 {$ifdef use_tftp}
   IPAddress : string;
 {$endif}
@@ -144,6 +152,13 @@ begin
   SetOnMsg (@Msg2);
   Log2 ('');
 {$endif}
+  {Create and start the HTTP Listener for our web status page}
+ HTTPListener:=THTTPListener.Create;
+ HTTPListener.Active:=True;
+ {Wait a few seconds for all initialization (like filesystem and network) to be done}
+ Sleep(5000);
+ {Register the web status page, the "Thread List" page will allow us to see what is happening in the example}
+ WebStatusRegister(HTTPListener,'','',True);
   MQ := TMQTTServer.Create;
   Helper := THelper.Create;
   Helper.i := 0; // suppress note
