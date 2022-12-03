@@ -180,7 +180,7 @@ begin
           '6' : MQ.Activate (false);
           '7' :
             begin
-              MQC.Host := '10.0.0.4';
+              MQC.Host := '192.168.1.229';
               MQC.Username := 'testuser';
               MQC.Password := 'password123';
               MQC.LocalBounce := false;
@@ -190,7 +190,7 @@ begin
           '9' :
             begin
               MQC.Subscribe ('update/memo', qtEXACTLY_ONCE);
-              MQC.Subscribe ('update/png/+', qtEXACTLY_ONCE);
+              //MQC.Subscribe ('update/png/+', qtEXACTLY_ONCE);
               MQC.Subscribe ('will/#', qtEXACTLY_ONCE);
             end;
           '0' : MQC.Publish ('update/memo', #0#11'hello there', qtEXACTLY_ONCE, false);
