@@ -1,0 +1,9 @@
+devel@pi4-27:~/Ultibo_Projects/bluetooth/pi3 $ tftp 192.168.1.231
+tftp> binary 
+tftp> put kernel7.img
+Sent 3339216 bytes in 12.5 seconds
+tftp> put kernel7.img
+Sent 3339216 bytes in 12.2 seconds
+tftp> put kernel7.img
+Sent 3339216 bytes in 12.2 seconds
+tftp> 
