@@ -21,6 +21,17 @@ uses
   Classes,
   uLog,
   Devices,
+  HTTP,
+  WebStatus,
+  { needed for telnet }
+  Shell,
+  ShellFilesystem,
+  ShellUpdate,
+  RemoteShell,
+  { needed for telnet }
+  FileSystem,
+  FATFS,
+  MMC,
   {$ifdef use_tftp}
   uTFTP, Winsock2,
   {$endif}
@@ -29,6 +40,7 @@ uses
   { Add additional units here };
 
 var
+  HTTPListener:THTTPListener;
   Console1, Console2, Console3 : TWindowHandle;
 {$ifdef use_tftp}
   IPAddress : string;
@@ -134,6 +146,13 @@ begin
       bt^.DeviceLEEvent := @LEEvent;
       PBT_UARTDevice (BT^.Device.DeviceData)^.MarkerEvent := @MarkerEvent;
     end;
+   {Create and start the HTTP Listener for our web status page}
+ HTTPListener:=THTTPListener.Create;
+ HTTPListener.Active:=True;
+ {Wait a few seconds for all initialization (like filesystem and network) to be done}
+ Sleep(5000);
+ {Register the web status page, the "Thread List" page will allow us to see what is happening in the example}
+ WebStatusRegister(HTTPListener,'','',True);
   while true do
     begin
       if ConsoleGetKey (ch, nil) then
