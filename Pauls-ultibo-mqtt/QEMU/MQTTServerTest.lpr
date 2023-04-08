@@ -10,6 +10,7 @@ uses
   GlobalTypes,
   Platform,
   Syscalls,
+  DateUtils,
   Logging,
  FileSystem,  {Include the file system core and interfaces}
  FATFS,       {Include the FAT file system driver}
@@ -45,6 +46,8 @@ type
 
 var
   Console1, Console2, Console3 : TWindowHandle;
+  Counter:LongWord;
+  pubtime:String;
   HTTPListener:THTTPListener;
 {$ifdef use_tftp}
   IPAddress : string;
@@ -142,7 +145,30 @@ begin
   Console2 := ConsoleWindowCreate (ConsoleDeviceGetDefault, CONSOLE_POSITION_TOPRIGHT, false);
   Console3 := ConsoleWindowCreate (ConsoleDeviceGetDefault, CONSOLE_POSITION_BOTTOMRIGHT, false);
   SetLogProc (@Log1);
+   {Initialize a variable so we can count how long we've been waiting}
+ Counter:=0;
 
+ {Let's wait for a while for the time to be updated}
+ while YearOf(Now) < 2000 do
+  begin
+   {Sleep for a second}
+   Sleep(1000);
+
+   {Update our counter}
+   Inc(Counter);
+
+   {Check how long we have waited}
+   if Counter > 90 then
+    begin
+     {Print a failure message on the console}
+     ConsoleWindowWriteLn(Console3,'Sorry, failed to get the time after 90 seconds. Is the network connected?');
+
+     {Break out of the loop and continue}
+     Break;
+    end;
+  end;
+  ConsoleWindowWriteLn(Console3,'The date and time is ' + FormatDateTime('yyyy-mm-dd-hh-mm-ss',Now));
+  pubtime:=   FormatDateTime('yyyy-mm-dd-hh-mm-ss',Now);
   Log3 ('MQTT Client & Server Tester.');
   Log3 ('');
   WaitForSDDrive;
@@ -180,11 +206,14 @@ begin
           '6' : MQ.Activate (false);
           '7' :
             begin
-              MQC.Host := '192.168.1.229';
+
+              MQC.Host := '192.168.1.212';
               MQC.Username := 'testuser';
               MQC.Password := 'password123';
               MQC.LocalBounce := false;
               MQC.Activate (true);
+              MQC.Publish ('pub_time', #0#11'hello there', qtEXACTLY_ONCE, false);
+
             end;
           '8' : MQC.Activate (false);
           '9' :
@@ -193,7 +222,7 @@ begin
               //MQC.Subscribe ('update/png/+', qtEXACTLY_ONCE);
               MQC.Subscribe ('will/#', qtEXACTLY_ONCE);
             end;
-          '0' : MQC.Publish ('update/memo', #0#11'hello there', qtEXACTLY_ONCE, false);
+          '0' : MQC.Publish ('pub_time', #0#11'hello there', qtEXACTLY_ONCE, false);
           'Q' :
             begin
               MQT := TMQTTThread (MQ.Threads.First);

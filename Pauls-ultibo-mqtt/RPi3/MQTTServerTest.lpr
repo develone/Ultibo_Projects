@@ -50,9 +50,10 @@ type
 var
   Console1, Console2, Console3 : TWindowHandle;
   Counter:LongWord;
+  pubtime:String;
+  HTTPListener:THTTPListener;
 {$ifdef use_tftp}
   IPAddress : string;
-  pubtime : string;
 {$endif}
 
 
@@ -184,6 +185,13 @@ begin
   SetOnMsg (@Msg2);
   Log2 ('');
 {$endif}
+  {Create and start the HTTP Listener for our web status page}
+ HTTPListener:=THTTPListener.Create;
+ HTTPListener.Active:=True;
+ {Wait a few seconds for all initialization (like filesystem and network) to be done}
+ Sleep(5000);
+ {Register the web status page, the "Thread List" page will allow us to see what is happening in the example}
+ WebStatusRegister(HTTPListener,'','',True);
   MQ := TMQTTServer.Create;
   Helper := THelper.Create;
   Helper.i := 0; // suppress note
