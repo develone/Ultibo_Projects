@@ -222,7 +222,7 @@ begin
               //MQC.Subscribe ('update/png/+', qtEXACTLY_ONCE);
               MQC.Subscribe ('will/#', qtEXACTLY_ONCE);
             end;
-          '0' : MQC.Publish ('pub_time', #0#11'hello there', qtEXACTLY_ONCE, false);
+          '0' : MQC.Publish ('pub_time', pubtime, qtEXACTLY_ONCE, false);
           'Q' :
             begin
               MQT := TMQTTThread (MQ.Threads.First);

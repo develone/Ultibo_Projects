@@ -782,7 +782,7 @@ begin
     end;
   MessageID := 1000;
   FOnMonHdr := nil;
-  FPort := 1883;
+  FPort := 18830;
   FMaxRetries := DefMaxRetries;
   FRetryTime := DefRetryTime;
   Brokers := TList.Create;
@@ -879,7 +879,7 @@ begin
             begin
               aBroker := AddBroker ('', 0);
               aBroker.Host := ReadString (Sections[i], 'Prim Host', '');
-              aBroker.Port := ReadInteger (Sections[i], 'Port', 1883);
+              aBroker.Port := ReadInteger (Sections[i], 'Port', 18830);
               EnFlag := ReadBool (Sections[i], 'Enabled', false);
               if EnFlag then aBroker.Activate (true);
             end;
@@ -1387,7 +1387,7 @@ begin
   FHost := '';
   FUsername := '';
   FPassword := '';
-  FPort := 1883;
+  FPort := 18830;
   FEnable := false;
   FGraceful := false;
   FOnline := false;
