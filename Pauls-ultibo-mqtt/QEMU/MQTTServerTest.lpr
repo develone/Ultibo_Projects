@@ -167,6 +167,8 @@ begin
      Break;
     end;
   end;
+  SetCurrentTimezone('Mountain Standard Time');
+  ConsoleWindowWriteLn(Console3,'Timezone is ' + GetCurrentTimezone);
   ConsoleWindowWriteLn(Console3,'The date and time is ' + FormatDateTime('yyyy-mm-dd-hh-mm-ss',Now));
   pubtime:=   FormatDateTime('yyyy-mm-dd-hh-mm-ss',Now);
   Log3 ('MQTT Client & Server Tester.');
