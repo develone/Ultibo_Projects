@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Compiler Value="/home/devel/ultibo/core/fpc/bin/fpc" Date="1661611579"/>
+  <Params Value=" -Tultibo -Parm -CpARMV7A -WpQEMUVPB @/home/devel/ultibo/core/fpc/bin/QEMUVPB.CFG -MObjFPC -Scghi -CX -O2 -XX -l -vewnhibq -Fi/home/devel/Ultibo_Projects/FFT/bwfilter-QEMU/bwfilter/QEMU/lib/arm-ultibo -Fu/home/devel/Ultibo_Projects/FFT/bwfilter-QEMU/bwfilter/QEMU/ -FU/home/devel/Ultibo_Projects/FFT/bwfilter-QEMU/bwfilter/QEMU/lib/arm-ultibo/ -FE/home/devel/Ultibo_Projects/FFT/bwfilter-QEMU/bwfilter/QEMU/ -o/home/devel/Ultibo_Projects/FFT/bwfilter-QEMU/bwfilter/QEMU/butterworthlp butterworthlp.lpr"/>
+</CONFIG>
