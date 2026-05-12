@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <Compiler Value="/home/devel/ultibo/core/fpc/bin/fpc" Date="1778344693"/>
+  <Params Value="-Tultibo -Parm -CpARMV7A -WpRPI2B @/home/devel/ultibo/core/fpc/bin/RPI2.CFG -MObjFPC -Scghi -CX -O2 -XX -l -vewnhibq -Fi/home/devel/ultibo/core/examples/01-HelloWorld/RPi2/lib/arm-ultibo -Fu/home/devel/ultibo/core/examples/01-HelloWorld/RPi2/ -FU/home/devel/ultibo/core/examples/01-HelloWorld/RPi2/lib/arm-ultibo/ -FE/home/devel/ultibo/core/examples/01-HelloWorld/RPi2/ -o/home/devel/ultibo/core/examples/01-HelloWorld/RPi2/HelloWorld HelloWorld.lpr"/>
+</CONFIG>
