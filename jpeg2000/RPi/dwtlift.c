@@ -820,8 +820,8 @@ void lift_config(int dec, int enc, int TCP_DISTORATIO, int FILTER, int CR, int f
 	
  	
 	char *lclip = (char *)*bufferptr;
-	//printf("In lift_config first byte 0x%x\n",lclip[0]);
-	//printf("bpp %ld\n",bp);
+	printf("In lift_config first byte 0x%x\n",lclip[0]);
+	printf("bpp %ld\n",bp);
 
 	printf("size %ld ",imgsz);
 	printf("pointer passed %x %x ",*bufferptr,bufferptr);
@@ -1254,7 +1254,7 @@ void lift_config(int dec, int enc, int TCP_DISTORATIO, int FILTER, int CR, int f
 
 void decom_test(int x0, int y0, int x1, int y1,char *ff_in) {
     const char *input_file;
-    input_file = "dtest.j2k";
+    input_file = "test.j2k";
     
 	printf("In decom_test called by Pascal %s %d %d %d %d %s\n",input_file,x0,y0,x1,y1,ff_in);
 	decompress(x0, y0, x1, y1,ff_in);	
