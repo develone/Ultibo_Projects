@@ -1,0 +1,66 @@
+devel@pi4-50:~ $ telnet 192.168.12.160
+
+
+Ultibo Core (Release: Beetroot Version: 2.6.173 Date: 9 February 2026)
+ (Type HELP for a list of available commands)
+  Directory of C:\
+
+ 2026-05-11 22:42:30               24  config-1.txt
+ 2026-05-09 16:12:42            52460  bootcode.bin
+ 2026-05-09 16:12:42             7221  fixup.dat
+ 2026-05-09 16:12:42            10197  fixup_x.dat
+ 2026-05-09 16:12:42          2963616  start.elf
+ 2026-05-09 16:12:42          2991400  start4x.elf
+ 2026-05-09 16:10:36               24  256com
+ 2026-05-09 16:10:36               24  256decom
+ 2026-05-09 16:10:36           196730  lena_rgb_256.bmp
+ 2026-05-09 16:10:36               24  testfile
+ 2026-05-27 18:07:05             7848  test.j2k
+ 2026-05-09 16:10:36           196730  MyBitmap.bmp
+ 2026-05-22 19:46:04          3787872  kernel7.img
+ 2026-05-17 00:07:06               24  64com
+ 2026-05-22 19:46:04          3787872  kernel7.idwt
+ 2026-05-11 18:19:28          3787872  kernel7.img.jpeg
+ 2026-05-17 00:11:30           196662  MySavedBitmap.bmp
+ 2026-05-13 15:59:32          2996612  kernel7.img.dwt2
+ 2026-05-13 16:00:08          2996612  kernel7.img.dwt3
+ 2026-05-17 00:06:32            12426  lena_rgb_64.bmp
+ 2026-05-22 18:31:16               24  64decom
+ 2026-05-22 18:39:40               16  red
+ 2026-05-22 18:39:40               16  green
+ 2026-05-22 18:39:40               16  blue
+ 2026-05-22 18:39:40              170  test_wr.bmp
+ 2026-05-22 19:46:04          3787872  kernel7.img.dwt
+          26 file(s) 27780364 bytes
+          0 dir(s)
+
+devel@pi5-70:~/master-repos/Ultibo_Projects/jpeg2000/RPi2 $ cd working-0527/
+devel@pi5-70:~/master-repos/Ultibo_Projects/jpeg2000/RPi2/working-0527 $ tftp 192.168.12.160
+tftp> binary
+tftp> get config-1.txt
+tftp> get bootcode.bin
+tftp> get fixup.dat
+tftp> get fixup_x.dat
+tftp> get start.elf
+tftp> get start4x.elf
+tftp> get 256com
+tftp> get 256decom
+tftp> get lena_rgb_256.bmp
+tftp> get testfile
+tftp> get test.j2k
+tftp> get MyBitmap.bmp
+tftp> get kernel7.img
+tftp> get 64com
+tftp> get kernel7.idwt
+tftp> get kernel7.img.jpeg
+tftp> get MySavedBitmap.bmp
+tftp> get kernel7.img.dwt2
+tftp> get kernel7.img.dwt3
+tftp> get lena_rgb_64.bmp
+tftp> get 64decom
+tftp> get red
+tftp> get green              
+tftp> get blue
+tftp> get test_wr.bmp
+tftp> get kernel7.img.dwt
+tftp> quit
