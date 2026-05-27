@@ -3,7 +3,7 @@ program DWT_LIFT_RPi2;
 {$mode objfpc}{$H+}
 
 uses
- RaspberryPi2, {<-- Change this to suit which model you have!!}
+ RaspberryPi3, {<-- Change this to suit which model you have!!}
  GlobalConfig,
  GlobalConst,
  GlobalTypes,
