@@ -3,7 +3,7 @@ program DWT_LIFT_RPi2;
 {$mode objfpc}{$H+}
 
 uses
- RaspberryPi3, {<-- Change this to suit which model you have!!}
+ RaspberryPi2, {<-- Change this to suit which model you have!!}
  GlobalConfig,
  GlobalConst,
  GlobalTypes,
@@ -199,22 +199,23 @@ begin
    FileStream:=TFileStream.Create(Filename,fmOpenRead);
    FileStream.Read(CR,sizeof(CR));
    COMPRESSION_RATIO:=CR;
-   ConsoleWindowWriteLn(Handle, 'xx0 ' + intToStr(xx0));
+   //ConsoleWindowWriteLn(Handle, 'xx0 ' + intToStr(xx0));
    FileStream.Read(enc,sizeof(enc));
    ENCODE:=enc;
-   ConsoleWindowWriteLn(Handle, 'xx0 ' + intToStr(xx0));
+   //ConsoleWindowWriteLn(Handle, 'xx0 ' + intToStr(xx0));
    FileStream.Read(xx0,sizeof(xx0));
    da_x0:=xx0;
-   ConsoleWindowWriteLn(Handle, 'xx0 ' + intToStr(xx0));
+   //ConsoleWindowWriteLn(Handle, 'xx0 ' + intToStr(xx0));
    FileStream.Read(yy0,sizeof(yy0));
    da_y0:=yy0;
-   ConsoleWindowWriteLn(Handle, 'yy0 ' + intToStr(yy0));
+   //ConsoleWindowWriteLn(Handle, 'yy0 ' + intToStr(yy0));
    FileStream.Read(xx1,sizeof(xx1));
    da_x1:=xx1;
-   ConsoleWindowWriteLn(Handle, 'xx1 ' + intToStr(xx1));
+   //ConsoleWindowWriteLn(Handle, 'xx1 ' + intToStr(xx1));
    FileStream.Read(yy1,sizeof(yy1));
    da_y1:=yy1;
-   ConsoleWindowWriteLn(Handle, 'yy1 ' + intToStr(yy1));
+   //ConsoleWindowWriteLn(Handle, 'yy1 ' + intToStr(yy1));
+   ConsoleWindowWriteLn(Handle, 'xx0 ' + intToStr(xx0) + ' yy0 ' + intToStr(yy0) + ' xx1 ' + intToStr(xx1) + ' yy1 ' + intToStr(yy1));
 
    {FileStream.Read(decompstr,1);
    ConsoleWindowWriteLn(Handle, 'decomp file ' + decompstr); }
